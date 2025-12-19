@@ -1,0 +1,81 @@
+import React, { createContext, useState, useEffect, useContext } from 'react';
+import api from '../services/api';
+import { AuthContext } from './AuthContext';
+
+export const WishlistContext = createContext();
+
+export const WishlistProvider = ({ children }) => {
+    const { authenticated } = useContext(AuthContext);
+    const [wishlist, setWishlist] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    useEffect(() => {
+        if (authenticated) {
+            fetchWishlist();
+        } else {
+            setWishlist([]);
+        }
+    }, [authenticated]);
+
+    const fetchWishlist = async () => {
+        setLoading(true);
+        try {
+            const response = await api.get('/wishlist');
+            setWishlist(response.data.data || []);
+        } catch (error) {
+            console.error('Error fetching wishlist:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const addToWishlist = async (productId) => {
+        if (!authenticated) {
+            return { success: false, message: 'Veuillez vous connecter pour ajouter à votre liste de souhaits.' };
+        }
+
+        try {
+            const response = await api.post('/wishlist', { product_id: productId });
+            await fetchWishlist();
+            return { success: true, message: response.data.message };
+        } catch (error) {
+            return { success: false, message: error.response?.data?.message || 'Erreur lors de l\'ajout à la liste.' };
+        }
+    };
+
+    const removeFromWishlist = async (productId) => {
+        try {
+            await api.delete(`/wishlist/${productId}`);
+            setWishlist(prev => prev.filter(item => item.product_id !== productId));
+            return { success: true, message: 'Produit retiré de la liste.' };
+        } catch (error) {
+            return { success: false, message: 'Erreur lors de la suppression.' };
+        }
+    };
+
+    const isInWishlist = (productId) => {
+        return wishlist.some(item => (item.product_id === productId || item.id === productId));
+    };
+
+    const toggleWishlist = async (productId) => {
+        if (isInWishlist(productId)) {
+            return await removeFromWishlist(productId);
+        } else {
+            return await addToWishlist(productId);
+        }
+    };
+
+    return (
+        <WishlistContext.Provider value={{
+            wishlist,
+            loading,
+            addToWishlist,
+            removeFromWishlist,
+            isInWishlist,
+            toggleWishlist,
+            fetchWishlist
+        }}>
+            {children}
+        </WishlistContext.Provider>
+    );
+};
