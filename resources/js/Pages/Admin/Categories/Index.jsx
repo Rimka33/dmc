@@ -104,16 +104,24 @@ export default function Index({ categories }) {
                             Affichage de {categories.from} à {categories.to} sur {categories.total} catégories
                         </span>
                         <div className="flex gap-2">
-                            {categories.links.map((link) => (
-                                <Link
-                                    key={link.label}
-                                    href={link.url}
-                                    dangerouslySetInnerHTML={{ __html: link.label }}
-                                    className={`px-3 py-1 rounded-md text-sm transition-all ${link.active
+                            {categories.links.map((link, key) => (
+                                link.url ? (
+                                    <Link
+                                        key={key}
+                                        href={link.url}
+                                        dangerouslySetInnerHTML={{ __html: link.label }}
+                                        className={`px-3 py-1 rounded-md text-sm transition-all ${link.active
                                             ? 'bg-forest-green text-white font-bold'
-                                            : link.url ? 'bg-white text-gray-600 hover:bg-gray-100' : 'text-gray-300 pointer-events-none'
-                                        }`}
-                                />
+                                            : 'bg-white text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                    />
+                                ) : (
+                                    <span
+                                        key={key}
+                                        dangerouslySetInnerHTML={{ __html: link.label }}
+                                        className="px-3 py-1 rounded-md text-sm text-gray-300 pointer-events-none"
+                                    ></span>
+                                )
                             ))}
                         </div>
                     </div>

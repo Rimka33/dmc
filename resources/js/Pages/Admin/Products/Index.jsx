@@ -72,8 +72,8 @@ export default function Index({ products, filters }) {
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden border border-gray-100">
-                                                    {product.images?.length > 0 ? (
-                                                        <img src={product.images[0].image_path} alt="" className="w-full h-full object-cover" />
+                                                    {product.images?.length > 0 && product.images[0]?.image_path ? (
+                                                        <img src={`/storage/products/${product.images[0].image_path}`} alt="" className="w-full h-full object-cover" />
                                                     ) : (
                                                         <ShoppingBag size={20} className="text-gray-400" />
                                                     )}
@@ -138,16 +138,24 @@ export default function Index({ products, filters }) {
                             Affichage de {products.from} à {products.to} sur {products.total} produits
                         </span>
                         <div className="flex gap-2">
-                            {products.links.map((link) => (
-                                <Link
-                                    key={link.label}
-                                    href={link.url}
-                                    dangerouslySetInnerHTML={{ __html: link.label }}
-                                    className={`px-3 py-1 rounded-md text-xs transition-all ${link.active
+                            {products.links.map((link, key) => (
+                                link.url ? (
+                                    <Link
+                                        key={key}
+                                        href={link.url}
+                                        dangerouslySetInnerHTML={{ __html: link.label }}
+                                        className={`px-3 py-1 rounded-md text-xs transition-all ${link.active
                                             ? 'bg-forest-green text-white font-bold'
-                                            : link.url ? 'bg-white text-gray-600 hover:bg-gray-100' : 'text-gray-300 pointer-events-none'
-                                        }`}
-                                />
+                                            : 'bg-white text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                    />
+                                ) : (
+                                    <span
+                                        key={key}
+                                        dangerouslySetInnerHTML={{ __html: link.label }}
+                                        className="px-3 py-1 rounded-md text-xs text-gray-300 pointer-events-none"
+                                    ></span>
+                                )
                             ))}
                         </div>
                     </div>

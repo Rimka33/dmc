@@ -3,6 +3,7 @@ import MainLayout from '../../Layouts/MainLayout';
 import { AuthContext } from '../../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
+import { ShoppingBag, User, MapPin, Heart, Edit, Trash2, Plus } from 'lucide-react';
 
 export default function UserDashboard() {
     const { user, authenticated, loading, logout } = useContext(AuthContext);
@@ -34,22 +35,22 @@ export default function UserDashboard() {
     if (loading || !user) return (
         <MainLayout>
             <div className="flex justify-center py-24">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-forest-green"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-forest-green"></div>
             </div>
         </MainLayout>
     );
 
     return (
         <MainLayout>
-            <div className="py-16 bg-[#011a0a] relative overflow-hidden">
+            <div className="py-16 bg-dark-green relative overflow-hidden">
                 <div className="container mx-auto px-4 relative z-10">
                     <div className="flex flex-col md:flex-row items-center gap-8">
                         <div className="w-24 h-24 rounded-full bg-forest-green flex items-center justify-center border-4 border-neon-green/20 shadow-xl overflow-hidden">
-                            {user.avatar ? <img src={user.avatar} alt={user.name} /> : <span className="text-4xl font-black text-white">{user.name.charAt(0)}</span>}
+                            {user?.avatar ? <img src={user.avatar} alt={user?.name} /> : <span className="text-4xl font-black text-white">{user?.name?.charAt(0)}</span>}
                         </div>
                         <div className="text-center md:text-left">
-                            <h1 className="text-3xl font-black text-white uppercase italic tracking-tighter mb-1">Bonjour, {user.name}</h1>
-                            <p className="text-neon-green font-bold text-sm tracking-widest uppercase opacity-70">Membre depuis {new Date(user.created_at).getFullYear()}</p>
+                            <h1 className="text-3xl font-black text-white uppercase italic tracking-tighter mb-1">Bonjour, {user?.name}</h1>
+                            <p className="text-neon-green font-bold text-sm tracking-widest uppercase opacity-70">Membre depuis {new Date(user?.created_at).getFullYear()}</p>
                         </div>
                         <div className="md:ml-auto flex gap-4">
                             <button onClick={logout} className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-black text-[10px] uppercase tracking-widest rounded-xl transition-all border border-white/10">
@@ -72,14 +73,15 @@ export default function UserDashboard() {
                                     { id: 'profile', label: 'Profil', icon: 'user' },
                                     { id: 'addresses', label: 'Adresses', icon: 'map-pin' },
                                     { id: 'wishlist', label: 'Wishlist', icon: 'heart', link: '/wishlist' }
-                                ].map(item => (
-                                    item.link ? (
+                                ].map(item => {
+                                    const IconComponent = item.icon === 'shopping-bag' ? ShoppingBag : item.icon === 'user' ? User : item.icon === 'map-pin' ? MapPin : Heart;
+                                    return item.link ? (
                                         <Link
                                             key={item.id}
                                             to={item.link}
                                             className="flex items-center gap-4 p-4 rounded-2xl font-black text-[11px] uppercase tracking-widest text-gray-400 hover:text-forest-green hover:bg-forest-green/5 transition-all"
                                         >
-                                            <i className={`icon-${item.icon} text-lg`}></i>
+                                            <IconComponent className="w-5 h-5" />
                                             {item.label}
                                         </Link>
                                     ) : (
@@ -88,11 +90,11 @@ export default function UserDashboard() {
                                             onClick={() => setActiveTab(item.id)}
                                             className={`w-full flex items-center gap-4 p-4 rounded-2xl font-black text-[11px] uppercase tracking-widest transition-all ${activeTab === item.id ? 'bg-forest-green text-white shadow-lg shadow-forest-green/20 scale-[1.02]' : 'text-gray-400 hover:text-forest-green hover:bg-forest-green/5'}`}
                                         >
-                                            <i className={`icon-${item.icon} text-lg`}></i>
+                                            <IconComponent className="w-5 h-5" />
                                             {item.label}
                                         </button>
-                                    )
-                                ))}
+                                    );
+                                })}
                             </nav>
                         </div>
                     </aside>
@@ -141,7 +143,7 @@ export default function UserDashboard() {
                                     </div>
                                 ) : (
                                     <div className="bg-gray-50 p-12 rounded-[2rem] text-center border-2 border-dashed border-gray-200">
-                                        <i className="icon-shopping-bag text-5xl text-gray-200 mb-6 block"></i>
+                                        <ShoppingBag className="w-20 h-20 text-gray-200 mx-auto mb-6" />
                                         <p className="text-gray-500 font-bold mb-8">Vous n'avez pas encore passé de commande.</p>
                                         <Link to="/shop" className="px-10 py-4 bg-gray-900 text-white font-black text-xs uppercase tracking-widest rounded-2xl hover:bg-forest-green transition-all shadow-xl shadow-gray-200/50">
                                             Boutique
@@ -159,15 +161,15 @@ export default function UserDashboard() {
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                             <div>
                                                 <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1">Nom complet</label>
-                                                <input type="text" defaultValue={user.name} className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-forest-green focus:outline-none transition-all font-bold text-gray-900" />
+                                                <input type="text" defaultValue={user?.name} className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-forest-green focus:outline-none transition-all font-bold text-gray-900" />
                                             </div>
                                             <div>
                                                 <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1">Adresse Email</label>
-                                                <input type="email" defaultValue={user.email} className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl opacity-50 cursor-not-allowed font-bold text-gray-900" disabled />
+                                                <input type="email" defaultValue={user?.email} className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl opacity-50 cursor-not-allowed font-bold text-gray-900" disabled />
                                             </div>
                                             <div>
                                                 <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3 ml-1">Téléphone</label>
-                                                <input type="text" defaultValue={user.phone} placeholder="+221 ..." className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-forest-green focus:outline-none transition-all font-bold text-gray-900" />
+                                                <input type="text" defaultValue={user?.phone} placeholder="+221 ..." className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-forest-green focus:outline-none transition-all font-bold text-gray-900" />
                                             </div>
                                         </div>
                                         <button className="px-10 py-5 bg-forest-green text-white font-black text-[10px] uppercase tracking-[0.2em] rounded-2xl hover:bg-dark-green transition-all shadow-xl shadow-forest-green/20">
@@ -182,20 +184,20 @@ export default function UserDashboard() {
                             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                                 <div className="flex justify-between items-center mb-8">
                                     <h2 className="text-2xl font-black text-gray-900 uppercase italic tracking-tighter">Mes <span className="text-forest-green">Adresses</span></h2>
-                                    <button className="px-6 py-3 bg-gray-900 text-white font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-forest-green transition-all">Ajouter</button>
+                                    <button className="px-6 py-3 bg-gray-900 text-white font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-forest-green transition-all flex items-center gap-2"><Plus className="w-4 h-4" /> Ajouter</button>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                     <div className="p-8 bg-white border-2 border-forest-green rounded-[2rem] shadow-xl shadow-forest-green/5 relative overflow-hidden group">
                                         <div className="absolute top-4 right-4 flex gap-2">
-                                            <button className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:text-forest-green transition-all"><i className="icon-edit"></i></button>
-                                            <button className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:text-red-500 transition-all"><i className="icon-trash-2"></i></button>
+                                            <button className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:text-forest-green transition-all"><Edit className="w-4 h-4" /></button>
+                                            <button className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-400 hover:text-red-500 transition-all"><Trash2 className="w-4 h-4" /></button>
                                         </div>
                                         <div className="flex items-center gap-2 mb-4">
                                             <span className="text-[9px] font-black text-white bg-forest-green px-3 py-1 rounded-full uppercase tracking-wider">Défaut</span>
                                         </div>
-                                        <p className="font-bold text-gray-900 mb-2">{user.name}</p>
-                                        <p className="text-sm font-medium text-gray-500 leading-relaxed mb-6">{user.address || 'Aucune adresse renseignée'}<br />{user.city}, {user.postal_code}</p>
-                                        <p className="text-xs font-black text-gray-900">{user.phone}</p>
+                                        <p className="font-bold text-gray-900 mb-2">{user?.name}</p>
+                                        <p className="text-sm font-medium text-gray-500 leading-relaxed mb-6">{user?.address || 'Aucune adresse renseignée'}<br />{user?.city}, {user?.postal_code}</p>
+                                        <p className="text-xs font-black text-gray-900">{user?.phone}</p>
                                     </div>
                                 </div>
                             </div>

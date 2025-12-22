@@ -17,6 +17,6 @@
     @vite(['resources/css/app.css', 'resources/js/app.jsx'])
 </head>
 <body class="antialiased bg-[#011a0a]">
-    <div id="app"></div>
+    @inertia
 </body>
 </html>

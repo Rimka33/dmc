@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { CartContext } from '../../contexts/CartContext';
 import { AuthContext } from '../../contexts/AuthContext';
 import api from '../../services/api';
+import { User, DollarSign, Smartphone, Landmark, Loader, ArrowRight, Check, ShoppingBag, CreditCard } from 'lucide-react';
 
 export default function Checkout() {
     const navigate = useNavigate();
@@ -25,7 +26,6 @@ export default function Checkout() {
     const [processing, setProcessing] = useState(false);
     const [errors, setErrors] = useState({});
 
-    // Pré-remplir avec les infos utilisateur si disponible
     useEffect(() => {
         if (user) {
             setFormData(prev => ({
@@ -40,7 +40,6 @@ export default function Checkout() {
         }
     }, [user]);
 
-    // Rediriger si le panier est vide
     useEffect(() => {
         if (!cartLoading && cart.items.length === 0) {
             navigate('/panier');
@@ -70,7 +69,6 @@ export default function Checkout() {
             const response = await api.post('/orders', formData);
 
             if (response.data.success) {
-                // Le panier est déjà vidé par le backend (si session-based on devra peut être appeler clearCart)
                 await clearCart();
                 navigate(`/checkout/received?order=${response.data.data.order_number}`);
             }
@@ -90,34 +88,74 @@ export default function Checkout() {
     return (
         <MainLayout>
             {/* Hero Banner */}
-            <div className="py-16 relative overflow-hidden" style={{ background: 'linear-gradient(to bottom, rgba(1, 26, 10, 0.9), rgba(1, 26, 10, 0.7)), url(/images/cart-bg.jpg) center/cover' }}>
-                <div className="container mx-auto px-4 text-center">
-                    <h1 className="text-4xl font-bold text-neon-green uppercase mb-4 tracking-widest italic">VÉRIFIER</h1>
-                    <div className="flex items-center justify-center gap-2 text-white text-sm font-medium">
+            <div className="relative h-56 bg-gradient-to-br from-gray-900 via-gray-800 to-black overflow-hidden">
+                <div className="absolute inset-0 opacity-20">
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-96 h-96">
+                        <CreditCard className="w-full h-full text-white opacity-10" />
+                    </div>
+                </div>
+                <div className="container mx-auto px-4 h-full flex flex-col items-center justify-center relative z-10">
+                    <h1 className="text-5xl font-black text-neon-green uppercase mb-3 tracking-tight">VÉRIFICATION</h1>
+                    <div className="flex items-center gap-2 text-white/70 text-sm">
                         <Link to="/" className="hover:text-neon-green transition-colors">Accueil</Link>
-                        <span className="text-gray-400">/</span>
+                        <span>/</span>
                         <Link to="/panier" className="hover:text-neon-green transition-colors">Panier</Link>
-                        <span className="text-gray-400">/</span>
+                        <span>/</span>
                         <span className="text-neon-green font-bold">Vérification</span>
                     </div>
                 </div>
             </div>
 
-            <section className="py-16 bg-white min-h-screen">
+            {/* Progress Bar */}
+            <section className="bg-white border-b">
+                <div className="container mx-auto px-4 py-6">
+                    <div className="max-w-2xl mx-auto">
+                        <div className="flex items-center justify-between relative">
+                            <div className="absolute top-5 left-0 right-0 h-1 bg-gray-200">
+                                <div className="h-full bg-neon-green transition-all duration-500" style={{ width: '66%' }}></div>
+                            </div>
+
+                            <div className="relative flex flex-col items-center bg-white px-2 z-10">
+                                <div className="w-10 h-10 rounded-full bg-neon-green flex items-center justify-center text-black font-black mb-2 shadow-lg">
+                                    <Check className="w-5 h-5" />
+                                </div>
+                                <span className="text-[10px] font-black text-gray-900 uppercase tracking-wider">Panier</span>
+                            </div>
+
+                            <div className="relative flex flex-col items-center bg-white px-2 z-10">
+                                <div className="w-10 h-10 rounded-full bg-neon-green flex items-center justify-center text-black font-black mb-2 shadow-lg">
+                                    <CreditCard className="w-5 h-5" />
+                                </div>
+                                <span className="text-[10px] font-black text-gray-900 uppercase tracking-wider">Vérification</span>
+                            </div>
+
+                            <div className="relative flex flex-col items-center bg-white px-2 z-10">
+                                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-gray-400 font-black mb-2">
+                                    3
+                                </div>
+                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider">Confirmation</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Content */}
+            <section className="py-12 bg-gray-50 min-h-screen">
                 <div className="container mx-auto px-4">
                     {!authenticated && (
-                        <div className="max-w-7xl mx-auto mb-10">
-                            <div className="bg-forest-green/5 border-l-4 border-forest-green p-6 rounded-r-xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div className="max-w-7xl mx-auto mb-8">
+                            <div className="bg-blue-50 border-l-4 border-blue-500 p-5 rounded-r-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-forest-green rounded-full flex items-center justify-center text-white text-xl">
-                                        <i className="icon-user"></i>
+                                    <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white flex-shrink-0">
+                                        <User className="w-6 h-6" />
                                     </div>
                                     <div>
-                                        <h3 className="font-bold text-gray-900">Avez-vous déjà un compte ?</h3>
-                                        <p className="text-gray-600 text-sm">Connectez-vous pour un paiement plus rapide et suivre vos commandes.</p>
+                                        <h3 className="font-bold text-gray-900 mb-1">Avez-vous déjà un compte ?</h3>
+                                        <p className="text-gray-600 text-sm">Connectez-vous pour un paiement plus rapide.</p>
                                     </div>
                                 </div>
-                                <Link to="/mon-compte" className="px-6 py-3 bg-forest-green text-white font-bold rounded-lg hover:bg-dark-green transition-all shadow-md text-center">
+                                <Link to="/mon-compte" className="px-6 py-3 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 transition-all text-center whitespace-nowrap">
                                     SE CONNECTER
                                 </Link>
                             </div>
@@ -125,11 +163,11 @@ export default function Checkout() {
                     )}
 
                     <form onSubmit={handleSubmit} className="max-w-7xl mx-auto">
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                             {/* Billing Details */}
-                            <div className="lg:col-span-7 space-y-10">
-                                <div>
-                                    <h2 className="text-2xl font-bold text-gray-900 mb-8 uppercase italic border-b-2 border-neon-green inline-block">Détails de livraison</h2>
+                            <div className="lg:col-span-2">
+                                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+                                    <h2 className="text-2xl font-black text-gray-900 uppercase mb-6 pb-4 border-b">Détails de livraison</h2>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div className="md:col-span-2">
@@ -142,10 +180,10 @@ export default function Checkout() {
                                                 value={formData.customer_name}
                                                 onChange={handleChange}
                                                 placeholder="ex: Jean Dupont"
-                                                className="w-full px-5 py-4 border-2 border-gray-100 rounded-xl focus:border-forest-green focus:outline-none transition-colors bg-gray-50/50"
+                                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-forest-green focus:outline-none transition-colors"
                                                 required
                                             />
-                                            {errors.customer_name && <p className="text-red-500 text-xs mt-2 font-medium">{errors.customer_name[0]}</p>}
+                                            {errors.customer_name && <p className="text-red-500 text-xs mt-1">{errors.customer_name[0]}</p>}
                                         </div>
 
                                         <div>
@@ -158,10 +196,10 @@ export default function Checkout() {
                                                 value={formData.customer_phone}
                                                 onChange={handleChange}
                                                 placeholder="ex: +221 77 000 00 00"
-                                                className="w-full px-5 py-4 border-2 border-gray-100 rounded-xl focus:border-forest-green focus:outline-none transition-colors bg-gray-50/50"
+                                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-forest-green focus:outline-none transition-colors"
                                                 required
                                             />
-                                            {errors.customer_phone && <p className="text-red-500 text-xs mt-2 font-medium">{errors.customer_phone[0]}</p>}
+                                            {errors.customer_phone && <p className="text-red-500 text-xs mt-1">{errors.customer_phone[0]}</p>}
                                         </div>
 
                                         <div>
@@ -174,10 +212,10 @@ export default function Checkout() {
                                                 value={formData.customer_email}
                                                 onChange={handleChange}
                                                 placeholder="ex: jean.dupont@email.com"
-                                                className="w-full px-5 py-4 border-2 border-gray-100 rounded-xl focus:border-forest-green focus:outline-none transition-colors bg-gray-50/50"
+                                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-forest-green focus:outline-none transition-colors"
                                                 required
                                             />
-                                            {errors.customer_email && <p className="text-red-500 text-xs mt-2 font-medium">{errors.customer_email[0]}</p>}
+                                            {errors.customer_email && <p className="text-red-500 text-xs mt-1">{errors.customer_email[0]}</p>}
                                         </div>
 
                                         <div className="md:col-span-2">
@@ -190,10 +228,10 @@ export default function Checkout() {
                                                 placeholder="Rue, quartier, numéro de porte, points de repère..."
                                                 value={formData.shipping_address}
                                                 onChange={handleChange}
-                                                className="w-full px-5 py-4 border-2 border-gray-100 rounded-xl focus:border-forest-green focus:outline-none transition-colors bg-gray-50/50"
+                                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-forest-green focus:outline-none transition-colors"
                                                 required
                                             />
-                                            {errors.shipping_address && <p className="text-red-500 text-xs mt-2 font-medium">{errors.shipping_address[0]}</p>}
+                                            {errors.shipping_address && <p className="text-red-500 text-xs mt-1">{errors.shipping_address[0]}</p>}
                                         </div>
 
                                         <div>
@@ -206,10 +244,10 @@ export default function Checkout() {
                                                 value={formData.shipping_city}
                                                 onChange={handleChange}
                                                 placeholder="ex: Dakar"
-                                                className="w-full px-5 py-4 border-2 border-gray-100 rounded-xl focus:border-forest-green focus:outline-none transition-colors bg-gray-50/50"
+                                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-forest-green focus:outline-none transition-colors"
                                                 required
                                             />
-                                            {errors.shipping_city && <p className="text-red-500 text-xs mt-2 font-medium">{errors.shipping_city[0]}</p>}
+                                            {errors.shipping_city && <p className="text-red-500 text-xs mt-1">{errors.shipping_city[0]}</p>}
                                         </div>
 
                                         <div>
@@ -222,141 +260,128 @@ export default function Checkout() {
                                                 value={formData.shipping_postal_code}
                                                 onChange={handleChange}
                                                 placeholder="ex: 10000"
-                                                className="w-full px-5 py-4 border-2 border-gray-100 rounded-xl focus:border-forest-green focus:outline-none transition-colors bg-gray-50/50"
+                                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-forest-green focus:outline-none transition-colors"
                                             />
                                         </div>
-                                    </div>
-                                </div>
 
-                                <div>
-                                    <h3 className="text-xl font-bold text-gray-900 mb-6 uppercase italic">Informations complémentaires</h3>
-                                    <label className="block text-xs font-bold text-gray-700 uppercase mb-2 tracking-wider">
-                                        Notes de commande (optionnel)
-                                    </label>
-                                    <textarea
-                                        name="notes"
-                                        value={formData.notes}
-                                        onChange={handleChange}
-                                        rows="4"
-                                        placeholder="Instructions spéciales pour la livraison..."
-                                        className="w-full px-5 py-4 border-2 border-gray-100 rounded-xl focus:border-forest-green focus:outline-none transition-colors bg-gray-50/50 resize-none"
-                                    ></textarea>
+                                        <div className="md:col-span-2">
+                                            <label className="block text-xs font-bold text-gray-700 uppercase mb-2 tracking-wider">
+                                                Notes de commande (optionnel)
+                                            </label>
+                                            <textarea
+                                                name="notes"
+                                                value={formData.notes}
+                                                onChange={handleChange}
+                                                rows="4"
+                                                placeholder="Instructions spéciales pour la livraison..."
+                                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-forest-green focus:outline-none transition-colors resize-none"
+                                            ></textarea>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
                             {/* Order Summary */}
-                            <div className="lg:col-span-5">
-                                <div className="bg-gray-50 rounded-3xl p-8 border border-gray-100 shadow-sm sticky top-28">
-                                    <h3 className="text-2xl font-bold text-gray-900 mb-8 uppercase italic border-b border-gray-200 pb-4">Résumé de la commande</h3>
+                            <div className="lg:col-span-1">
+                                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
+                                    <h3 className="text-xl font-black text-gray-900 uppercase mb-6 pb-4 border-b">Votre commande</h3>
 
                                     {/* Products */}
-                                    <div className="space-y-4 mb-8">
-                                        <div className="flex justify-between font-bold text-gray-500 text-xs uppercase tracking-widest pb-3 border-b border-gray-200">
-                                            <span>PRODUIT</span>
-                                            <span>TOTAL</span>
+                                    <div className="space-y-4 mb-6">
+                                        <div className="flex justify-between font-bold text-gray-500 text-[10px] uppercase tracking-widest pb-3 border-b">
+                                            <span>Produit</span>
+                                            <span>Total</span>
                                         </div>
 
-                                        <div className="max-h-64 overflow-y-auto pr-2 space-y-4">
+                                        <div className="max-h-64 overflow-y-auto space-y-3">
                                             {cart.items.map((item) => (
-                                                <div key={item.id} className="flex justify-between items-center gap-4">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-12 h-12 bg-white rounded-lg p-1 border border-gray-100 flex-shrink-0">
-                                                            <img src={item.image_path} alt={item.name} className="w-full h-full object-contain" />
+                                                <div key={item.id} className="flex justify-between items-center gap-3">
+                                                    <div className="flex items-center gap-2 flex-1 min-w-0">
+                                                        <div className="w-10 h-10 bg-gray-50 rounded p-1 border border-gray-100 flex-shrink-0">
+                                                            <img src={item.image_path || item.image} alt={item.name} className="w-full h-full object-contain" />
                                                         </div>
-                                                        <span className="text-sm font-bold text-gray-700 line-clamp-2">
-                                                            {item.name} <span className="text-forest-green ml-1">× {item.quantity}</span>
+                                                        <span className="text-xs font-medium text-gray-700 line-clamp-2">
+                                                            {item.name} <span className="text-forest-green">× {item.quantity}</span>
                                                         </span>
                                                     </div>
-                                                    <span className="font-bold text-gray-900 whitespace-nowrap">{item.total_formatted}</span>
+                                                    <span className="font-bold text-gray-900 text-sm whitespace-nowrap">{item.total_formatted || `${(item.price * item.quantity).toLocaleString()} F CFA`}</span>
                                                 </div>
                                             ))}
                                         </div>
 
-                                        <div className="pt-6 space-y-3">
-                                            <div className="flex justify-between text-gray-600">
+                                        <div className="pt-4 space-y-3 border-t">
+                                            <div className="flex justify-between text-sm text-gray-600">
                                                 <span>Sous-total</span>
-                                                <span className="font-bold">{cart.subtotal_formatted}</span>
+                                                <span className="font-bold">{cart.subtotal_formatted || `${(cart.subtotal || 0).toLocaleString()} F CFA`}</span>
                                             </div>
-                                            <div className="flex justify-between text-gray-600">
+                                            <div className="flex justify-between text-sm text-gray-600">
                                                 <span>Expédition</span>
-                                                <span className="font-bold text-forest-green">{cart.shipping_formatted}</span>
+                                                <span className="font-bold text-forest-green">{cart.shipping_formatted || '5.000 F CFA'}</span>
                                             </div>
-                                            <div className="flex justify-between text-2xl font-bold pt-4 border-t-2 border-gray-200">
-                                                <span className="text-gray-900">TOTAL</span>
-                                                <span className="text-forest-green">{cart.total_formatted}</span>
+                                            <div className="flex justify-between text-lg font-black pt-3 border-t-2 border-gray-900">
+                                                <span className="text-gray-900 uppercase">Total</span>
+                                                <span className="text-neon-green">{cart.total_formatted || `${((cart.subtotal || 0) + (cart.shipping || 5000)).toLocaleString()} F CFA`}</span>
                                             </div>
                                         </div>
                                     </div>
 
                                     {/* Payment Methods */}
-                                    <div className="space-y-4 mb-8">
-                                        <h4 className="font-bold text-gray-900 uppercase text-sm tracking-wider mb-4">Mode de paiement</h4>
+                                    <div className="space-y-3 mb-6">
+                                        <h4 className="font-black text-gray-900 uppercase text-xs tracking-wider mb-3">Mode de paiement</h4>
 
-                                        <div className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${formData.payment_method === 'cash_on_delivery' ? 'border-forest-green bg-white shadow-md' : 'border-transparent bg-gray-100 hover:bg-white hover:border-gray-200'}`}
-                                            onClick={() => setFormData({ ...formData, payment_method: 'cash_on_delivery' })}>
-                                            <div className="flex items-center gap-3">
-                                                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${formData.payment_method === 'cash_on_delivery' ? 'border-forest-green' : 'border-gray-400'}`}>
-                                                    {formData.payment_method === 'cash_on_delivery' && <div className="w-2.5 h-2.5 bg-forest-green rounded-full"></div>}
-                                                </div>
-                                                <span className="font-bold text-gray-900">Paiement à la livraison</span>
-                                                <i className="icon-cash ml-auto text-xl opacity-50"></i>
-                                            </div>
-                                            {formData.payment_method === 'cash_on_delivery' && (
-                                                <p className="text-xs text-gray-500 mt-2 ml-8">Payez en espèces dès réception de votre commande à domicile.</p>
-                                            )}
-                                        </div>
+                                        <label className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${formData.payment_method === 'cash_on_delivery' ? 'border-forest-green bg-green-50' : 'border-gray-200 hover:border-gray-300'}`}>
+                                            <input
+                                                type="radio"
+                                                name="payment_method"
+                                                value="cash_on_delivery"
+                                                checked={formData.payment_method === 'cash_on_delivery'}
+                                                onChange={handleChange}
+                                                className="w-4 h-4 text-forest-green"
+                                            />
+                                            <DollarSign className="w-5 h-5 text-forest-green" />
+                                            <span className="text-sm font-bold text-gray-900">Paiement à la livraison</span>
+                                        </label>
 
-                                        <div className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${formData.payment_method === 'mobile_money' ? 'border-forest-green bg-white shadow-md' : 'border-transparent bg-gray-100 hover:bg-white hover:border-gray-200'}`}
-                                            onClick={() => setFormData({ ...formData, payment_method: 'mobile_money' })}>
-                                            <div className="flex items-center gap-3">
-                                                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${formData.payment_method === 'mobile_money' ? 'border-forest-green' : 'border-gray-400'}`}>
-                                                    {formData.payment_method === 'mobile_money' && <div className="w-2.5 h-2.5 bg-forest-green rounded-full"></div>}
-                                                </div>
-                                                <span className="font-bold text-gray-900">Mobile Money (Wave / OM)</span>
-                                                <i className="icon-smartphone ml-auto text-xl opacity-50"></i>
-                                            </div>
-                                            {formData.payment_method === 'mobile_money' && (
-                                                <p className="text-xs text-gray-500 mt-2 ml-8">Payez via Wave ou Orange Money. Notre équipe vous contactera pour finaliser le transfert.</p>
-                                            )}
-                                        </div>
+                                        <label className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${formData.payment_method === 'mobile_money' ? 'border-forest-green bg-green-50' : 'border-gray-200 hover:border-gray-300'}`}>
+                                            <input
+                                                type="radio"
+                                                name="payment_method"
+                                                value="mobile_money"
+                                                checked={formData.payment_method === 'mobile_money'}
+                                                onChange={handleChange}
+                                                className="w-4 h-4 text-forest-green"
+                                            />
+                                            <Smartphone className="w-5 h-5 text-forest-green" />
+                                            <span className="text-sm font-bold text-gray-900">Mobile Money</span>
+                                        </label>
 
-                                        <div className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${formData.payment_method === 'bank_transfer' ? 'border-forest-green bg-white shadow-md' : 'border-transparent bg-gray-100 hover:bg-white hover:border-gray-200'}`}
-                                            onClick={() => setFormData({ ...formData, payment_method: 'bank_transfer' })}>
-                                            <div className="flex items-center gap-3">
-                                                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${formData.payment_method === 'bank_transfer' ? 'border-forest-green' : 'border-gray-400'}`}>
-                                                    {formData.payment_method === 'bank_transfer' && <div className="w-2.5 h-2.5 bg-forest-green rounded-full"></div>}
-                                                </div>
-                                                <span className="font-bold text-gray-900">Transfert Bancaire</span>
-                                                <i className="icon-bank ml-auto text-xl opacity-50"></i>
-                                            </div>
-                                            {formData.payment_method === 'bank_transfer' && (
-                                                <p className="text-xs text-gray-500 mt-2 ml-8">Effectuez votre paiement directement sur notre compte bancaire. Utilisez votre ID de commande comme référence.</p>
-                                            )}
-                                        </div>
+                                        <label className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${formData.payment_method === 'bank_transfer' ? 'border-forest-green bg-green-50' : 'border-gray-200 hover:border-gray-300'}`}>
+                                            <input
+                                                type="radio"
+                                                name="payment_method"
+                                                value="bank_transfer"
+                                                checked={formData.payment_method === 'bank_transfer'}
+                                                onChange={handleChange}
+                                                className="w-4 h-4 text-forest-green"
+                                            />
+                                            <Landmark className="w-5 h-5 text-forest-green" />
+                                            <span className="text-sm font-bold text-gray-900">Transfert Bancaire</span>
+                                        </label>
                                     </div>
 
                                     {/* Terms */}
-                                    <div className="mb-8">
-                                        <p className="text-[10px] text-gray-400 leading-relaxed mb-4">
-                                            Vos données personnelles seront utilisées pour traiter votre commande, soutenir votre expérience sur ce site Web et à d'autres fins décrites dans notre{' '}
-                                            <Link to="/confidentialite" className="text-forest-green underline font-bold">politique de confidentialité</Link>.
-                                        </p>
-
-                                        <label className="flex items-start gap-3 cursor-pointer group">
-                                            <div className="relative mt-1">
-                                                <input
-                                                    type="checkbox"
-                                                    name="termsAccepted"
-                                                    checked={formData.termsAccepted}
-                                                    onChange={handleChange}
-                                                    className="peer sr-only"
-                                                    required
-                                                />
-                                                <div className="w-5 h-5 border-2 border-gray-300 rounded peer-checked:border-forest-green peer-checked:bg-forest-green transition-all"></div>
-                                                <i className="icon-check absolute top-0 left-0 text-white text-xs opacity-0 peer-checked:opacity-100 flex items-center justify-center w-full h-full"></i>
-                                            </div>
-                                            <span className="text-xs text-gray-600 group-hover:text-gray-900 transition-colors font-medium">
-                                                J'ai lu et j'accepte les <Link to="/termes" className="text-forest-green underline font-bold">termes et conditions</Link> du site Web <span className="text-red-500">*</span>
+                                    <div className="mb-6">
+                                        <label className="flex items-start gap-3 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                name="termsAccepted"
+                                                checked={formData.termsAccepted}
+                                                onChange={handleChange}
+                                                className="w-4 h-4 mt-1 text-forest-green rounded"
+                                                required
+                                            />
+                                            <span className="text-xs text-gray-600">
+                                                J'ai lu et j'accepte les <Link to="/termes" className="text-forest-green underline font-bold">termes et conditions</Link> <span className="text-red-500">*</span>
                                             </span>
                                         </label>
                                     </div>
@@ -365,17 +390,17 @@ export default function Checkout() {
                                     <button
                                         type="submit"
                                         disabled={processing}
-                                        className="w-full py-5 bg-forest-green text-white font-extrabold uppercase rounded-2xl hover:bg-dark-green transition-all shadow-xl shadow-forest-green/20 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-3 text-lg"
+                                        className="w-full py-4 bg-forest-green text-white font-black uppercase rounded-lg hover:bg-dark-green transition-all shadow-lg text-sm tracking-wider disabled:opacity-50 flex items-center justify-center gap-2"
                                     >
                                         {processing ? (
                                             <>
-                                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                                                TRAITEMENT...
+                                                <Loader className="w-5 h-5 animate-spin" />
+                                                Traitement...
                                             </>
                                         ) : (
                                             <>
-                                                CONFIRMER LA COMMANDE
-                                                <i className="icon-arrow-right"></i>
+                                                Confirmer la commande
+                                                <ArrowRight className="w-5 h-5" />
                                             </>
                                         )}
                                     </button>

@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import MainLayout from '../../Layouts/MainLayout';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
+import { WishlistContext } from '../../contexts/WishlistContext';
+import { Heart, Star, ChevronLeft, ChevronRight, Check } from 'lucide-react';
 
 // Countdown Component
 function Countdown({ endDate }) {
@@ -34,70 +36,150 @@ function Countdown({ endDate }) {
     return (
         <div className="grid grid-cols-4 gap-2">
             <div className="bg-gray-100 rounded p-2 text-center">
-                <div className="text-sm font-bold">{timeLeft.days}</div>
-                <div className="text-xs">Jours</div>
+                <div className="text-sm font-bold text-black">{timeLeft.days}</div>
+                <div className="text-xs text-black">Jours</div>
             </div>
             <div className="bg-gray-100 rounded p-2 text-center">
-                <div className="text-sm font-bold">{timeLeft.hours}</div>
-                <div className="text-xs">Heures</div>
+                <div className="text-sm font-bold text-black">{timeLeft.hours}</div>
+                <div className="text-xs text-black">Heures</div>
             </div>
             <div className="bg-gray-100 rounded p-2 text-center">
-                <div className="text-sm font-bold">{timeLeft.minutes}</div>
-                <div className="text-xs">Mins</div>
+                <div className="text-sm font-bold text-black">{timeLeft.minutes}</div>
+                <div className="text-xs text-black">Mins</div>
             </div>
             <div className="bg-gray-100 rounded p-2 text-center">
-                <div className="text-sm font-bold">{timeLeft.seconds}</div>
-                <div className="text-xs">Secs</div>
+                <div className="text-sm font-bold text-black">{timeLeft.seconds}</div>
+                <div className="text-xs text-black">Secs</div>
             </div>
+        </div>
+    );
+}
+
+// Horizontal Product Card for Featured Section
+function HorizontalProductCard({ product }) {
+    const { isInWishlist, toggleWishlist } = useContext(WishlistContext);
+
+    if (!product) return null;
+
+    return (
+        <div className="bg-white rounded-xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group flex h-44 relative border border-gray-100/50">
+            {/* Wishlist Button */}
+            <button
+                onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleWishlist(product);
+                }}
+                className="absolute top-3 right-3 z-30 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors"
+                title={isInWishlist(product.id) ? "Retirer des favoris" : "Ajouter aux favoris"}
+            >
+                <Heart className={`w-4 h-4 ${isInWishlist(product.id) ? 'text-red-500 fill-red-500' : ''}`} />
+            </button>
+
+            {/* Main Single Link for the whole card content */}
+            <Link to={`/produit/${product.id}`} className="flex w-full h-full">
+                {/* Image Section */}
+                <div className="w-2/5 relative overflow-hidden bg-gray-50 flex-shrink-0">
+                    <img
+                        src={product.primary_image}
+                        alt={product.name}
+                        className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500"
+                    />
+                </div>
+
+                {/* Content Section */}
+                <div className="flex-1 p-5 flex flex-col justify-center text-left">
+                    <div className="flex items-center gap-1 mb-2">
+                        {[...Array(5)].map((_, i) => (
+                            <Star
+                                key={i}
+                                className={`w-3 h-3 ${i < Math.floor(product.rating || 0) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200 fill-gray-200'}`}
+                            />
+                        ))}
+                        <span className="text-[10px] text-gray-400 ml-1">({product.review_count || 0})</span>
+                    </div>
+
+                    <h3 className="text-sm font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-forest-green transition-colors leading-tight">
+                        {product.name}
+                    </h3>
+
+                    <div className="flex items-baseline gap-2 mt-auto">
+                        <span className="text-base font-black text-forest-green">
+                            {product.price_formatted}
+                        </span>
+                        {product.has_discount && (
+                            <span className="text-xs text-gray-400 line-through">
+                                {product.old_price_formatted}
+                            </span>
+                        )}
+                    </div>
+                </div>
+            </Link>
         </div>
     );
 }
 
 // Product Card Component
 function ProductCard({ product }) {
+    const { isInWishlist, toggleWishlist } = useContext(WishlistContext);
+
     return (
-        <div className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow overflow-hidden group">
-            <div className="relative aspect-square overflow-hidden bg-gray-50">
-                <img
-                    src={product.primary_image}
-                    alt={product.name}
-                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
-                />
-                {product.is_on_sale && (
-                    <span className="absolute top-2 left-2 px-2 py-1 bg-red-600 text-white text-xs font-bold uppercase rounded">
-                        SOLDE
-                    </span>
-                )}
-            </div>
-            <div className="p-4">
-                <p className="text-xs text-gray-500 uppercase mb-1">{product.category_name}</p>
-                <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 min-h-[2.5rem]">
-                    {product.name}
-                </h3>
-                <div className="flex items-center gap-1 mb-2">
-                    {[...Array(5)].map((_, i) => (
-                        <svg
-                            key={i}
-                            className={`w-4 h-4 ${i < Math.floor(product.rating || 0) ? 'text-yellow-400' : 'text-gray-300'}`}
-                            fill="currentColor"
-                            viewBox="0 0 20 20"
-                        >
-                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                        </svg>
-                    ))}
-                    <span className="text-sm text-gray-500 ml-1">({product.review_count || 0})</span>
-                </div>
-                <div className="flex items-baseline gap-2">
-                    <span className="text-lg font-bold text-forest-green">
-                        {product.price_formatted}
-                    </span>
-                    {product.has_discount && (
-                        <span className="text-sm text-gray-400 line-through">
-                            {product.old_price_formatted}
+        <div className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow overflow-hidden group relative">
+            <Link to={`/produit/${product.id}`} className="flex flex-col h-full">
+                <div className="relative aspect-square overflow-hidden bg-white mb-2">
+                    <img
+                        src={product.primary_image}
+                        alt={product.name}
+                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-6"
+                    />
+
+                    {product.is_on_sale && (
+                        <span className="absolute top-2 left-2 px-1.5 py-0.5 bg-red-600 text-white text-[8px] font-black uppercase rounded shadow-lg z-10">
+                            SOLDE
                         </span>
                     )}
                 </div>
-            </div>
+
+                <div className="flex flex-col flex-grow text-left px-4 pb-4">
+                    <p className="text-[9px] text-gray-400 uppercase font-bold tracking-wider mb-1 leading-none">
+                        {product.category_name}
+                    </p>
+                    <h3 className="text-[13px] font-bold text-gray-800 mb-1.5 line-clamp-2 min-h-[2.2rem] leading-snug group-hover:text-forest-green transition-colors">
+                        {product.name}
+                    </h3>
+
+                    <div className="flex items-center gap-1 mb-2">
+                        {[...Array(5)].map((_, i) => (
+                            <Star
+                                key={i}
+                                className={`w-2.5 h-2.5 ${i < Math.floor(product.rating || 5) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200 fill-gray-200'}`}
+                            />
+                        ))}
+                    </div>
+
+                    <div className="mt-auto flex items-baseline gap-1.5">
+                        <span className="text-[15px] font-black text-forest-green">
+                            {product.price_formatted}
+                        </span>
+                        {product.has_discount && (
+                            <span className="text-[11px] text-gray-400 line-through font-bold">
+                                {product.old_price_formatted}
+                            </span>
+                        )}
+                    </div>
+                </div>
+            </Link>
+
+            <button
+                onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleWishlist(product);
+                }}
+                className="absolute top-2 right-2 z-20 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+            >
+                <Heart className={`w-4 h-4 ${isInWishlist(product.id) ? 'text-red-500 fill-red-500' : ''}`} />
+            </button>
         </div>
     );
 }
@@ -118,10 +200,10 @@ export default function Home() {
             try {
                 const response = await api.get('/home');
                 setData({
-                    featuredProducts: response.data.featuredProducts || [],
-                    categories: response.data.categories || [],
+                    featuredProducts: response.data.featuredProducts?.data || response.data.featuredProducts || [],
+                    categories: response.data.categories?.data || response.data.categories || [],
                     specialOffers: response.data.specialOffers || [],
-                    newProducts: response.data.newProducts || []
+                    newProducts: response.data.newProducts?.data || response.data.newProducts || []
                 });
             } catch (error) {
                 console.error("Erreur lors du chargement de la home", error);
@@ -161,7 +243,7 @@ export default function Home() {
     return (
         <MainLayout>
             {/* Hero and Featured Products with Gradient Background */}
-            <div style={{ background: 'linear-gradient(to bottom, rgba(1, 26, 10, 1), rgba(5, 128, 49, 1))' }}>
+            <div className="bg-gradient-dark-green" style={{ marginTop: '-7%' }}>
                 {/* Hero Section */}
                 <section className="header py-16 relative overflow-hidden">
                     <div className="container mx-auto px-4">
@@ -172,7 +254,7 @@ export default function Home() {
                                     Chez DAROUL Mouhty COMPUTER - SARL
                                 </p>
 
-                                <h1 className="text-3xl md:text-4xl lg:text-4xl font-bold text-white uppercase leading-tight">
+                                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white uppercase leading-tight">
                                     Retrouver le Meilleur matériels informatiques
                                 </h1>
 
@@ -195,30 +277,18 @@ export default function Home() {
                                 <img
                                     src="/images/hero-slider-2.png"
                                     alt="Laptop"
-                                    className="absolute top-10 -right-20 w-25 h-25 object-contain rotate-180"
+                                    className="absolute top-10 -right-20 w-48 h-48 object-contain rotate-12"
                                 />
                             </div>
                         </div>
 
                         {/* Slider Navigation */}
-                        <div className="flex items-center justify-center gap-4 mt-8">
-                            <button className="w-8 h-8 flex items-center justify-center bg-white/10 rounded hover:bg-neon-green transition-colors">
-                                <i className="icon-chevron-left text-white"></i>
-                            </button>
-                            <div className="flex gap-2">
-                                <span className="text-white font-bold">1</span>
-                                <span className="text-white">-</span>
-                                <span className="text-white font-bold">2</span>
-                            </div>
-                            <button className="w-8 h-8 flex items-center justify-center bg-white/10 rounded hover:bg-neon-green transition-colors">
-                                <i className="icon-chevron-right text-white"></i>
-                            </button>
-                        </div>
+
                     </div>
                 </section>
 
                 {/* Featured Products Carousel */}
-                <section className="py-0 bg-transparent pb-16">
+                <section className="py-0 bg-transparent pb-16" style={{ marginTop: '-7%' }}>
                     <div className="container mx-auto px-4">
                         <h2 className="text-2xl font-bold text-white uppercase mb-8">Produits en vedette</h2>
 
@@ -235,9 +305,7 @@ export default function Home() {
                                             style={{ width: `${100 / itemsPerView}%` }}
                                             className="flex-shrink-0 px-3"
                                         >
-                                            <Link to={`/produit/${product.id}`}>
-                                                <ProductCard product={product} />
-                                            </Link>
+                                            <HorizontalProductCard product={product} />
                                         </div>
                                     ))}
                                 </div>
@@ -250,14 +318,14 @@ export default function Home() {
                                         onClick={prevSlide}
                                         className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-16 w-12 h-12 flex items-center justify-center bg-gray-200 hover:bg-neon-green transition-colors rounded-full z-10"
                                     >
-                                        <i className="icon-chevron-left text-black text-xl"></i>
+                                        <ChevronLeft className="w-6 h-6 text-black" />
                                     </button>
 
                                     <button
                                         onClick={nextSlide}
                                         className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-16 w-12 h-12 flex items-center justify-center bg-gray-200 hover:bg-neon-green transition-colors rounded-full z-10"
                                     >
-                                        <i className="icon-chevron-right text-black text-xl"></i>
+                                        <ChevronRight className="w-6 h-6 text-black" />
                                     </button>
 
                                     {/* Slide Indicators */}
@@ -310,10 +378,10 @@ export default function Home() {
                             <h2 className="text-3xl font-bold text-gray-900 uppercase">Offres du moment</h2>
                             <div className="flex gap-1">
                                 <button className="w-10 h-10 flex items-center justify-center bg-gray-100 rounded hover:bg-neon-green transition-colors">
-                                    <i className="icon-chevron-left"></i>
+                                    <ChevronLeft className="w-5 h-5" />
                                 </button>
                                 <button className="w-10 h-10 flex items-center justify-center bg-gray-100 rounded hover:bg-neon-green transition-colors">
-                                    <i className="icon-chevron-right"></i>
+                                    <ChevronRight className="w-5 h-5" />
                                 </button>
                             </div>
                         </div>
@@ -365,7 +433,7 @@ export default function Home() {
                                                     <ul className="mt-3 space-y-1 text-sm text-gray-600">
                                                         {offer.features?.slice(0, 3).map((feature, i) => (
                                                             <li key={i} className="flex items-center gap-2">
-                                                                <i className="icon-check text-forest-green"></i>
+                                                                <Check className="w-4 h-4 text-forest-green" />
                                                                 <span>{feature}</span>
                                                             </li>
                                                         ))}
@@ -373,8 +441,6 @@ export default function Home() {
                                                 </div>
 
                                                 <div className="mt-4">
-                                                    {/* On pourrait ajouter un timer ici si l'API renvoie une date de fin */}
-
                                                     <div className="mt-3">
                                                         <div className="h-2 bg-gray-200 rounded overflow-hidden">
                                                             <div
@@ -417,28 +483,28 @@ export default function Home() {
 
                                 <div className="grid grid-cols-2 gap-4 mt-6 text-sm text-gray-700">
                                     <div className="flex items-start gap-3">
-                                        <i className="icon-monitor"></i>
+                                        <img src="/images/icons/monitor.jpeg" alt="4K+" className="w-8 h-8" />
                                         <div>
                                             <strong>4K+</strong>
                                             <div className="text-xs">Écran 4K+ Ultra HD</div>
                                         </div>
                                     </div>
                                     <div className="flex items-start gap-3">
-                                        <i className="icon-palette"></i>
+                                        <img src="/images/icons/palette.jpeg" alt="DCI-P3" className="w-8 h-8" />
                                         <div>
                                             <strong>DCI-P3</strong>
                                             <div className="text-xs">Gamme de couleurs de niveau cinéma</div>
                                         </div>
                                     </div>
                                     <div className="flex items-start gap-3">
-                                        <i className="icon-sun"></i>
+                                        <img src="/images/icons/sun.jpeg" alt="HDR" className="w-8 h-8" />
                                         <div>
                                             <strong>HDR</strong>
                                             <div className="text-xs">Plage dynamique élevée</div>
                                         </div>
                                     </div>
                                     <div className="flex items-start gap-3">
-                                        <i className="icon-usb"></i>
+                                        <img src="/images/icons/usb.jpeg" alt="USB-C" className="w-8 h-8" />
                                         <div>
                                             <strong>USB-C</strong>
                                             <div className="text-xs">Connecteur USB-C</div>
@@ -483,10 +549,10 @@ export default function Home() {
 
                             <div className="flex gap-2">
                                 <button className="w-10 h-10 flex items-center justify-center bg-white rounded hover:bg-neon-green transition-colors">
-                                    <i className="icon-chevron-left"></i>
+                                    <ChevronLeft className="w-5 h-5" />
                                 </button>
                                 <button className="w-10 h-10 flex items-center justify-center bg-white rounded hover:bg-neon-green transition-colors">
-                                    <i className="icon-chevron-right"></i>
+                                    <ChevronRight className="w-5 h-5" />
                                 </button>
                             </div>
                         </div>
@@ -494,9 +560,9 @@ export default function Home() {
                         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                             {/* Left: Large Feature */}
                             <div className="lg:col-span-4 order-2 lg:order-1">
-                                <div className="hidden md:flex flex-col justify-between h-full">
+                                <div className="hidden md:flex flex-col justify-between h-full bg-white/15 backdrop-blur-sm rounded-lg p-6">
                                     <div className="mb-6">
-                                        <p className="text-neon-green text-sm font-bold uppercase">NOUVELLES ARRIVAGES</p>
+                                        <p className="text-forest-green text-sm font-bold uppercase">NOUVELLES ARRIVAGES</p>
                                         <h3 className="text-2xl font-bold uppercase text-gray-900 mt-2">ORDINATEURS PORTABLES</h3>
                                         <Link to="/shop" className="inline-block mt-3 text-sm text-forest-green font-bold">Voir Plus →</Link>
                                     </div>
@@ -515,9 +581,7 @@ export default function Home() {
                             <div className="lg:col-span-8 order-1 lg:order-2">
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                                     {data.newProducts.slice(0, 8).map((product, index) => (
-                                        <Link key={index} to={`/produit/${product.id}`}>
-                                            <ProductCard product={product} />
-                                        </Link>
+                                        <ProductCard key={index} product={product} />
                                     ))}
                                 </div>
                             </div>

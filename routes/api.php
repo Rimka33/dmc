@@ -11,7 +11,9 @@ use App\Http\Controllers\Api\CartController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\WishlistController;
+
 use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\Api\QuestionController;
 use App\Http\Controllers\Api\AddressController;
 use App\Http\Controllers\Api\NotificationController;
 
@@ -108,12 +110,14 @@ Route::middleware('auth:sanctum')->prefix('wishlist')->group(function () {
 // AVIS PRODUITS
 // ============================================================================
 
-// Public - Voir les avis
+// Public - Voir les avis et questions
 Route::get('/products/{productId}/reviews', [ReviewController::class, 'index']);
+Route::get('/products/{productId}/questions', [QuestionController::class, 'index']);
 
-// Authentifié - Gérer ses avis
+// Authentifié - Gérer ses avis et questions
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/products/{productId}/reviews', [ReviewController::class, 'store']);
+    Route::post('/products/{productId}/questions', [QuestionController::class, 'store']);
     Route::put('/reviews/{id}', [ReviewController::class, 'update']);
     Route::delete('/reviews/{id}', [ReviewController::class, 'destroy']);
     Route::post('/reviews/{id}/helpful', [ReviewController::class, 'markHelpful']);

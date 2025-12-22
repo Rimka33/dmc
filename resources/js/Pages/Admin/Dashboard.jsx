@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from '@inertiajs/react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import {
     ShoppingBag,

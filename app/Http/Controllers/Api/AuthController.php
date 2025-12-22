@@ -36,7 +36,10 @@ class AuthController extends Controller
             ], 403);
         }
 
-        // Créer un token Sanctum
+        // Connecter l'utilisateur pour la session web (utile pour l'admin Inertia)
+        \Illuminate\Support\Facades\Auth::login($user, true);
+
+        // Créer un token Sanctum pour le frontend API
         $token = $user->createToken('auth-token')->plainTextToken;
 
         return response()->json([
@@ -69,6 +72,9 @@ class AuthController extends Controller
             'role' => 'customer',
             'is_active' => true,
         ]);
+
+        // Connecter l'utilisateur pour la session web
+        \Illuminate\Support\Facades\Auth::login($user, true);
 
         // Créer un token Sanctum
         $token = $user->createToken('auth-token')->plainTextToken;

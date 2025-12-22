@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import MainLayout from '../../Layouts/MainLayout';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
+import { MapPin, Phone, Mail, Send, Check, Loader } from 'lucide-react';
 
 export default function Contact() {
     const [data, setData] = useState({
@@ -42,7 +43,7 @@ export default function Contact() {
     return (
         <MainLayout>
             {/* Hero Banner */}
-            <div className="py-24 relative overflow-hidden" style={{ background: 'linear-gradient(to bottom, rgba(1, 26, 10, 0.9), rgba(1, 26, 10, 0.8)), url(/images/contact-bg.jpg) center/cover' }}>
+            <div className="py-24 relative overflow-hidden" style={{ background: 'linear-gradient(to bottom, rgba(1, 26, 10, 1), rgba(5, 128, 49, 1)), url(/images/contact-bg.jpg) center/cover' }}>
                 <div className="container mx-auto px-4 text-center relative z-10">
                     <h1 className="text-5xl md:text-6xl font-black text-neon-green uppercase mb-6 tracking-tighter italic">CONTACTEZ-NOUS</h1>
                     <div className="flex items-center justify-center gap-3 text-white text-sm font-bold tracking-widest uppercase bg-white/5 py-3 px-6 rounded-full inline-flex border border-white/10">
@@ -75,7 +76,7 @@ export default function Contact() {
                             <div className="space-y-8">
                                 <div className="flex items-start gap-6 group">
                                     <div className="w-14 h-14 bg-gray-900 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-forest-green transition-all shadow-lg rotate-3 group-hover:rotate-0">
-                                        <i className="icon-map-pin text-neon-green text-2xl"></i>
+                                        <MapPin className="w-6 h-6 text-neon-green" />
                                     </div>
                                     <div>
                                         <h3 className="font-black text-gray-900 uppercase text-xs tracking-widest mb-2">Notre Bureau</h3>
@@ -85,7 +86,7 @@ export default function Contact() {
 
                                 <div className="flex items-start gap-6 group">
                                     <div className="w-14 h-14 bg-gray-900 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-forest-green transition-all shadow-lg -rotate-3 group-hover:rotate-0">
-                                        <i className="icon-phone text-neon-green text-2xl"></i>
+                                        <Phone className="w-6 h-6 text-neon-green" />
                                     </div>
                                     <div>
                                         <h3 className="font-black text-gray-900 uppercase text-xs tracking-widest mb-2">Appelez-nous</h3>
@@ -96,7 +97,7 @@ export default function Contact() {
 
                                 <div className="flex items-start gap-6 group">
                                     <div className="w-14 h-14 bg-gray-900 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-forest-green transition-all shadow-lg rotate-6 group-hover:rotate-0">
-                                        <i className="icon-mail text-neon-green text-2xl"></i>
+                                        <Mail className="w-6 h-6 text-neon-green" />
                                     </div>
                                     <div>
                                         <h3 className="font-black text-gray-900 uppercase text-xs tracking-widest mb-2">Email Direct</h3>
@@ -126,7 +127,7 @@ export default function Contact() {
                             {success ? (
                                 <div className="bg-neon-green/10 border-2 border-neon-green p-8 rounded-3xl text-center">
                                     <div className="w-20 h-20 bg-neon-green rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-neon-green/20">
-                                        <i className="icon-check text-black text-3xl font-black"></i>
+                                        <Check className="w-10 h-10 text-black" />
                                     </div>
                                     <h3 className="text-2xl font-black text-gray-900 mb-2 uppercase tracking-tighter">MESSAGE ENVOYÉ !</h3>
                                     <p className="text-gray-600 font-medium mb-8">Merci pour votre message. Nous reviendrons vers vous très prochainement.</p>
@@ -199,13 +200,13 @@ export default function Contact() {
                                     >
                                         {processing ? (
                                             <>
-                                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                                <Loader className="w-5 h-5 animate-spin" />
                                                 ENVOI EN COURS...
                                             </>
                                         ) : (
                                             <>
                                                 ENVOYER LE MESSAGE
-                                                <i className="icon-send"></i>
+                                                <Send className="w-4 h-4" />
                                             </>
                                         )}
                                     </button>

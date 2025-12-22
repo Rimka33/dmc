@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,9 +18,24 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->name('admin.
     // CRUD Produits & Catégories
     Route::resource('products', \App\Http\Controllers\Admin\AdminProductController::class);
     Route::resource('categories', \App\Http\Controllers\Admin\AdminCategoryController::class);
+    Route::resource('orders', \App\Http\Controllers\Admin\AdminOrderController::class);
+    Route::resource('users', \App\Http\Controllers\Admin\AdminUserController::class);
+    Route::get('/settings', [\App\Http\Controllers\Admin\AdminSettingController::class, 'index'])->name('settings.index');
     
     // Les autres routes admin seront ajoutées dans les phases suivantes
 });
+
+// Redirection pour le middleware auth
+Route::get('/login', function () {
+    return view('app');
+})->name('login');
+
+Route::post('/logout', function (Illuminate\Http\Request $request) {
+    Illuminate\Support\Facades\Auth::logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+    return redirect('/');
+})->name('logout');
 
 /*
 |--------------------------------------------------------------------------
@@ -29,5 +45,5 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->name('admin.
 */
 
 Route::get('/{any}', function () {
-    return view('app'); // Vue qui charge le frontend React
+    return Inertia::render('ClientEntry');
 })->where('any', '.*');

@@ -26,7 +26,7 @@ class CategoryController extends Controller
     /**
      * Affiche une catégorie avec ses produits
      */
-    public function show($slug)
+    public function show(Request $request, $slug)
     {
         $category = Category::where('slug', $slug)
             ->where('is_active', true)
@@ -34,11 +34,20 @@ class CategoryController extends Controller
             ->firstOrFail();
 
         // Récupérer les produits de cette catégorie
-        $products = $category->products()
+        $query = $category->products()
             ->with(['images', 'category'])
             ->where('is_active', true)
-            ->inStock()
-            ->paginate(12);
+            ->inStock();
+
+        // Filtre de prix
+        if ($request->has('min_price')) {
+            $query->where('price', '>=', $request->min_price);
+        }
+        if ($request->has('max_price')) {
+            $query->where('price', '<=', $request->max_price);
+        }
+
+        $products = $query->paginate(12);
 
         return response()->json([
             'category' => new CategoryResource($category),

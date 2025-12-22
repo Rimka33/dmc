@@ -3,6 +3,7 @@ import MainLayout from '../../Layouts/MainLayout';
 import { Link } from 'react-router-dom';
 import { WishlistContext } from '../../contexts/WishlistContext';
 import { CartContext } from '../../contexts/CartContext';
+import { Heart, Trash2 } from 'lucide-react';
 
 export default function Wishlist() {
     const { wishlist, loading, removeFromWishlist } = useContext(WishlistContext);
@@ -20,7 +21,7 @@ export default function Wishlist() {
 
     return (
         <MainLayout>
-            <div className="py-24 relative overflow-hidden" style={{ background: 'linear-gradient(to bottom, rgba(1, 26, 10, 0.9), rgba(1, 26, 10, 0.8)), url(/images/wishlist-bg.jpg) center/cover' }}>
+            <div className="py-24 relative overflow-hidden" style={{ background: 'linear-gradient(to bottom, rgba(1, 26, 10, 1), rgba(5, 128, 49, 1)), url(/images/wishlist-bg.jpg) center/cover' }}>
                 <div className="container mx-auto px-4 text-center relative z-10">
                     <h1 className="text-5xl md:text-6xl font-black text-neon-green uppercase mb-6 tracking-tighter italic">MA LISTE DE SOUHAITS</h1>
                     <div className="flex items-center justify-center gap-3 text-white text-sm font-bold tracking-widest uppercase bg-white/5 py-3 px-6 rounded-full inline-flex border border-white/10">
@@ -90,7 +91,7 @@ export default function Wishlist() {
                                                             onClick={() => removeFromWishlist(product.id)}
                                                             className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 hover:bg-red-50 hover:text-red-500 transition-all"
                                                         >
-                                                            <i className="icon-trash-2"></i>
+                                                            <Trash2 className="w-5 h-5" />
                                                         </button>
                                                     </td>
                                                 </tr>
@@ -103,7 +104,7 @@ export default function Wishlist() {
                     ) : (
                         <div className="text-center py-24 max-w-md mx-auto">
                             <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-8 shadow-inner">
-                                <i className="icon-heart text-5xl text-gray-200"></i>
+                                <Heart className="w-12 h-12 text-gray-200" />
                             </div>
                             <h2 className="text-3xl font-black text-gray-900 uppercase italic tracking-tighter mb-4">Votre liste est vide</h2>
                             <p className="text-gray-500 font-medium mb-10 leading-relaxed">

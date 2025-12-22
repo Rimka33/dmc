@@ -46,7 +46,7 @@ export const WishlistProvider = ({ children }) => {
     const removeFromWishlist = async (productId) => {
         try {
             await api.delete(`/wishlist/${productId}`);
-            setWishlist(prev => prev.filter(item => item.product_id !== productId));
+            await fetchWishlist();
             return { success: true, message: 'Produit retiré de la liste.' };
         } catch (error) {
             return { success: false, message: 'Erreur lors de la suppression.' };
