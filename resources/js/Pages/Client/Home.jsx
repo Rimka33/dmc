@@ -5,6 +5,7 @@ import api from '../../services/api';
 import { WishlistContext } from '../../contexts/WishlistContext';
 import { CartContext } from '../../contexts/CartContext';
 import { Heart, Star, ChevronLeft, ChevronRight, Check, Plus, X, Camera, LayoutGrid, ChevronDown } from 'lucide-react';
+import ShimmerImage from '../../Components/ShimmerImage';
 import { AuthContext } from '../../contexts/AuthContext';
 import { useRef } from 'react';
 
@@ -87,11 +88,11 @@ function HorizontalProductCard({ product }) {
             <Link to={`/produit/${product.id}`} className="flex w-full h-full">
                 {/* Image Section */}
                 <div className="w-2/5 relative overflow-hidden bg-gray-50 flex-shrink-0">
-                    <img
+                    <ShimmerImage
                         src={product.primary_image || '/images/products/default.png'}
                         alt={product.name}
-                        onError={(e) => { e.target.src = '/images/products/default.png'; }}
                         className="w-full h-full object-contain p-4 group-hover:scale-110 transition-transform duration-500"
+                        fallback={'/images/products/default.png'}
                     />
                 </div>
 
@@ -136,11 +137,11 @@ function ProductCard({ product }) {
         <div className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow overflow-hidden group relative">
             <Link to={`/produit/${product.id}`} className="flex flex-col h-full">
                 <div className="relative aspect-square overflow-hidden bg-white mb-2">
-                    <img
+                    <ShimmerImage
                         src={product.primary_image || '/images/products/default.png'}
                         alt={product.name}
-                        onError={(e) => { e.target.src = '/images/products/default.png'; }}
                         className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-6"
+                        fallback={'/images/products/default.png'}
                     />
 
                     {product.is_on_sale && (

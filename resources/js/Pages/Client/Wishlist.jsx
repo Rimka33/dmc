@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { WishlistContext } from '../../contexts/WishlistContext';
 import { CartContext } from '../../contexts/CartContext';
 import { Heart, Trash2 } from 'lucide-react';
+import ShimmerImage from '../../Components/ShimmerImage';
 
 export default function Wishlist() {
     const { wishlist, loading, removeFromWishlist } = useContext(WishlistContext);
@@ -58,11 +59,11 @@ export default function Wishlist() {
                                                     <td className="px-8 py-6">
                                                         <div className="flex items-center gap-6">
                                                             <div className="w-20 h-20 bg-gray-50 rounded-2xl p-2 flex-shrink-0">
-                                                                <img
+                                                                <ShimmerImage
                                                                     src={product.primary_image || '/images/products/default.png'}
                                                                     alt={product.name}
-                                                                    onError={(e) => { e.target.src = '/images/products/default.png'; }}
                                                                     className="w-full h-full object-contain"
+                                                                    fallback={'/images/products/default.png'}
                                                                 />
                                                             </div>
                                                             <div>

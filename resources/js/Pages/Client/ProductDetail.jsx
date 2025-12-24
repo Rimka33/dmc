@@ -18,6 +18,7 @@ import {
     Check,
     MessageCircle
 } from 'lucide-react';
+import ShimmerImage from '../../Components/ShimmerImage';
 
 export default function ProductDetail() {
     const { id } = useParams();
@@ -236,19 +237,19 @@ export default function ProductDetail() {
                                             className="w-full h-full object-contain"
                                         />
                                     ) : (
-                                        <img
+                                        <ShimmerImage
                                             src={product.images[selectedImage].path}
                                             alt={product.name}
-                                            onError={(e) => { e.target.src = '/images/products/default.png'; }}
                                             className="w-full h-full object-contain"
+                                            fallback={'/images/products/default.png'}
                                         />
                                     )
                                 ) : (
-                                    <img
+                                    <ShimmerImage
                                         src={product.primary_image || '/images/products/default.png'}
                                         alt={product.name}
-                                        onError={(e) => { e.target.src = '/images/products/default.png'; }}
                                         className="w-full h-full object-contain"
+                                        fallback={'/images/products/default.png'}
                                     />
                                 )}
                             </div>
@@ -278,10 +279,11 @@ export default function ProductDetail() {
                                                     </div>
                                                 </div>
                                             ) : (
-                                                <img
+                                                <ShimmerImage
                                                     src={media.path}
                                                     alt={`${product.name} ${index + 1}`}
                                                     className="w-full h-20 object-contain"
+                                                    fallback={'/images/products/default.png'}
                                                 />
                                             )}
                                         </button>
@@ -768,10 +770,11 @@ export default function ProductDetail() {
                                     className="bg-white rounded-lg shadow-sm hover:shadow-xl transition-all p-4 group"
                                 >
                                     <div className="aspect-square mb-3 overflow-hidden rounded">
-                                        <img
+                                        <ShimmerImage
                                             src={related.primary_image}
                                             alt={related.name}
                                             className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300"
+                                            fallback={'/images/products/default.png'}
                                         />
                                     </div>
                                     <h3 className="font-semibold text-sm text-gray-900 mb-2 line-clamp-2 min-h-[40px]">

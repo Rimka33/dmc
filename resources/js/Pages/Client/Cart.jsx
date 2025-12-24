@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { CartContext } from '../../contexts/CartContext';
 import { AuthContext } from '../../contexts/AuthContext';
 import { Trash2, ShoppingBag, Truck, Store, Loader } from 'lucide-react';
+import ShimmerImage from '../../Components/ShimmerImage';
 
 export default function Cart() {
     const { user } = useContext(AuthContext);
@@ -196,11 +197,11 @@ export default function Cart() {
                                                             <Trash2 className="w-5 h-5" />
                                                         </button>
                                                         <div className="w-20 h-20 bg-gray-50 rounded-lg p-2 flex items-center justify-center flex-shrink-0 border border-gray-100">
-                                                            <img
+                                                            <ShimmerImage
                                                                 src={item.image || item.image_path || '/images/products/default.png'}
                                                                 alt={item.name}
-                                                                onError={(e) => { e.target.src = '/images/products/default.png'; }}
                                                                 className="w-full h-full object-contain"
+                                                                fallback={'/images/products/default.png'}
                                                             />
                                                         </div>
                                                         <div className="min-w-0">

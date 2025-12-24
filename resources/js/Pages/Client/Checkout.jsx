@@ -5,6 +5,7 @@ import { CartContext } from '../../contexts/CartContext';
 import { AuthContext } from '../../contexts/AuthContext';
 import api from '../../services/api';
 import { User, DollarSign, Smartphone, Landmark, Loader, ArrowRight, Check, ShoppingBag, CreditCard } from 'lucide-react';
+import ShimmerImage from '../../Components/ShimmerImage';
 
 export default function Checkout() {
     const navigate = useNavigate();
@@ -374,7 +375,12 @@ export default function Checkout() {
                                                 <div key={`checkout-item-${item.id || item.product_id || index}`} className="flex justify-between items-center gap-3">
                                                     <div className="flex items-center gap-2 flex-1 min-w-0">
                                                         <div className="w-10 h-10 bg-gray-50 rounded p-1 border border-gray-100 flex-shrink-0">
-                                                            <img src={item.image || item.image_path || '/images/products/default.png'} alt={item.name} className="w-full h-full object-contain" />
+                                                            <ShimmerImage
+                                                                src={item.image || item.image_path || '/images/products/default.png'}
+                                                                alt={item.name}
+                                                                className="w-full h-full object-contain"
+                                                                fallback={'/images/products/default.png'}
+                                                            />
                                                         </div>
                                                         <span className="text-xs font-medium text-gray-700 line-clamp-2">
                                                             {item.name} <span className="text-forest-green">× {item.quantity}</span>

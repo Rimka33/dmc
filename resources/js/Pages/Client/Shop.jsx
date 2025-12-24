@@ -16,6 +16,7 @@ import {
     Heart,
     ChevronDown
 } from 'lucide-react';
+import ShimmerImage from '../../Components/ShimmerImage';
 
 const StarRating = ({ rating, count }) => (
     <div className="flex items-center gap-1 mb-2">
@@ -39,10 +40,11 @@ function ProductCard({ product, viewMode = 'grid' }) {
             <div className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group border border-gray-100 flex gap-6 p-5 relative">
                 <Link to={`/produit/${product.id}`} className="flex-shrink-0">
                     <div className="relative w-56 aspect-square overflow-hidden bg-white rounded-2xl flex-shrink-0">
-                        <img
+                        <ShimmerImage
                             src={product.primary_image}
                             alt={product.name}
                             className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-4"
+                            fallback={'/images/products/default.png'}
                         />
                         {product.is_on_sale && (
                             <span className="absolute top-3 left-3 px-2 py-1 bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-lg">
@@ -101,20 +103,20 @@ function ProductCard({ product, viewMode = 'grid' }) {
     return (
         <div className="group relative bg-white flex flex-col h-full transition-all border border-gray-100 rounded-2xl overflow-hidden hover:shadow-xl duration-300">
             {/* Image Container */}
-            <Link to={`/produit/${product.id}`} className="relative aspect-square overflow-hidden bg-white mb-2 block overflow-hidden">
-                <img
-                    src={product.primary_image || '/images/products/default.png'}
-                    alt={product.name}
-                    onError={(e) => { e.target.src = '/images/products/default.png'; }}
-                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-4"
-                />
+                <Link to={`/produit/${product.id}`} className="relative aspect-square overflow-hidden bg-white mb-2 block overflow-hidden">
+                    <ShimmerImage
+                        src={product.primary_image || '/images/products/default.png'}
+                        alt={product.name}
+                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-4"
+                        fallback={'/images/products/default.png'}
+                    />
 
-                {product.is_on_sale && (
-                    <span className="absolute top-2 left-2 px-2 py-1 bg-red-600 text-white text-[9px] font-black uppercase rounded shadow-lg z-10">
-                        SOLDE
-                    </span>
-                )}
-            </Link>
+                    {product.is_on_sale && (
+                        <span className="absolute top-2 left-2 px-2 py-1 bg-red-600 text-white text-[9px] font-black uppercase rounded shadow-lg z-10">
+                            SOLDE
+                        </span>
+                    )}
+                </Link>
 
             {/* Content Container */}
             <div className="flex flex-col flex-grow text-left px-4 pb-4">

@@ -4,6 +4,7 @@ import { AuthContext } from '../../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
 import { ShoppingBag, Package, ChevronRight, Calendar, CreditCard, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
+import ShimmerImage from '../../Components/ShimmerImage';
 
 export default function Orders() {
     const { user, authenticated, loading } = useContext(AuthContext);
@@ -113,11 +114,11 @@ export default function Orders() {
                                         <div className="flex items-center gap-1.5 flex-wrap">
                                             {order.items?.slice(0, 4).map((item, idx) => (
                                                 <div key={idx} className="w-8 h-8 bg-gray-50 rounded-lg border border-gray-200 p-0.5 relative group/item flex-shrink-0" title={item.product_name}>
-                                                    <img
+                                                    <ShimmerImage
                                                         src={item.product?.primary_image || '/images/products/default.png'}
                                                         alt={item.product_name}
-                                                        onError={(e) => { e.target.src = '/images/products/default.png'; }}
                                                         className="w-full h-full object-contain"
+                                                        fallback={'/images/products/default.png'}
                                                     />
                                                     {item.quantity > 1 && (
                                                         <span className="absolute -top-1 -right-1 bg-forest-green text-white text-[7px] font-bold w-4 h-4 rounded-full flex items-center justify-center">

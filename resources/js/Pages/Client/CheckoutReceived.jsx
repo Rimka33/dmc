@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import api from '../../services/api';
 import { AuthContext } from '../../contexts/AuthContext';
 import { Check, Phone, Mail, Package } from 'lucide-react';
+import ShimmerImage from '../../Components/ShimmerImage';
 
 export default function CheckoutReceived() {
     const location = useLocation();
@@ -143,10 +144,11 @@ export default function CheckoutReceived() {
                                         <div key={`order-item-${item.id || index}-${item.product_id || ''}`} className="flex items-center justify-between p-6 hover:bg-gray-50/50 transition-colors">
                                             <div className="flex items-center gap-4">
                                                 <div className="w-16 h-16 bg-gray-50 rounded-lg p-2 border border-gray-100 flex-shrink-0">
-                                                    <img
+                                                    <ShimmerImage
                                                         src={item.product?.primary_image || '/images/products/default.png'}
                                                         alt={item.product_name}
                                                         className="w-full h-full object-contain"
+                                                        fallback={'/images/products/default.png'}
                                                     />
                                                 </div>
                                                 <div>
