@@ -23,6 +23,14 @@ export default function Index({ categories }) {
         }
     };
 
+    const resolveSrc = (path) => {
+        if (!path) return '/images/placeholder.png';
+        if (path.startsWith('http://') || path.startsWith('https://')) return path;
+        if (path.startsWith('/')) return path;
+        if (path.startsWith('images/') || path.startsWith('public/images/')) return `/${path.replace(/^\/+/, '')}`;
+        return `/storage/${path}`;
+    };
+
     const columns = [
         {
             key: 'icon',
@@ -32,7 +40,7 @@ export default function Index({ categories }) {
                 <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden border border-gray-100">
                     {row.image ? (
                         <img
-                            src={`/storage/${row.image}`}
+                            src={resolveSrc(row.image)}
                             alt={row.name}
                             className="w-full h-full object-cover"
                             onError={(e) => { e.target.src = '/images/placeholder.png'; }}

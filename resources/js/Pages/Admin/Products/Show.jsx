@@ -11,6 +11,14 @@ export default function Show({ product }) {
         return new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'XOF' }).format(amount);
     };
 
+    const resolveSrc = (path) => {
+        if (!path) return '/images/placeholder.png';
+        if (path.startsWith('http://') || path.startsWith('https://')) return path;
+        if (path.startsWith('/')) return path;
+        if (path.startsWith('images/') || path.startsWith('public/images/')) return `/${path.replace(/^\/+/, '')}`;
+        return `/storage/${path}`;
+    };
+
     return (
         <AdminLayout>
             <div className="space-y-6">
@@ -83,30 +91,32 @@ export default function Show({ product }) {
                             {product.images && product.images.length > 0 ? (
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                     {product.images.map((media) => {
-                                        const isVideo = media.image_path.endsWith('.mp4') || media.image_path.endsWith('.webm');
-                                        return (
-                                            <div key={media.id} className="relative group rounded-lg overflow-hidden border border-gray-200 aspect-square">
-                                                {isVideo ? (
-                                                    <video
-                                                        src={`/storage/${media.image_path}`}
-                                                        className="w-full h-full object-cover"
-                                                        controls
-                                                    />
-                                                ) : (
-                                                    <img
-                                                        src={`/storage/${media.image_path}`}
-                                                        alt={product.name}
-                                                        className="w-full h-full object-cover"
-                                                    />
-                                                )}
-                                                {media.is_primary && (
-                                                    <div className="absolute top-2 left-2 bg-forest-green text-white text-[10px] px-2 py-1 rounded-full uppercase font-bold shadow-sm">
-                                                        Principal
-                                                    </div>
-                                                )}
-                                            </div>
-                                        );
-                                    })}
+                                            const src = resolveSrc(media.image_path);
+                                            const isVideo = typeof src === 'string' && (src.endsWith('.mp4') || src.endsWith('.webm'));
+                                            return (
+                                                <div key={media.id} className="relative group rounded-lg overflow-hidden border border-gray-200 aspect-square">
+                                                    {isVideo ? (
+                                                        <video
+                                                            src={src}
+                                                            className="w-full h-full object-cover"
+                                                            controls
+                                                        />
+                                                    ) : (
+                                                        <img
+                                                            src={src}
+                                                            alt={product.name}
+                                                            className="w-full h-full object-cover"
+                                                            onError={(e) => { e.target.src = '/images/placeholder.png'; }}
+                                                        />
+                                                    )}
+                                                    {media.is_primary && (
+                                                        <div className="absolute top-2 left-2 bg-forest-green text-white text-[10px] px-2 py-1 rounded-full uppercase font-bold shadow-sm">
+                                                            Principal
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            );
+                                        })}
                                 </div>
                             ) : (
                                 <div className="text-center py-8 text-gray-500 italic">

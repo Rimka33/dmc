@@ -28,6 +28,16 @@ export default function Index({ products, filters = {} }) {
         }
     };
 
+    // Résout correctement le chemin d'une image : accepte les chemins stockés
+    // dans storage (DB), les chemins publics sous /images/... ou les URL complètes.
+    const resolveSrc = (path) => {
+        if (!path) return '/images/placeholder.png';
+        if (path.startsWith('http://') || path.startsWith('https://')) return path;
+        if (path.startsWith('/')) return path;
+        if (path.startsWith('images/') || path.startsWith('public/images/')) return `/${path.replace(/^\/+/, '')}`;
+        return `/storage/${path}`;
+    };
+
     const filterOptions = [
         {
             key: 'status',
@@ -69,7 +79,7 @@ export default function Index({ products, filters = {} }) {
                     <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden border border-gray-100 flex-shrink-0">
                         {row.images?.length > 0 ? (
                             <img
-                                src={row.images[0].image_path ? `/storage/${row.images[0].image_path}` : '/images/placeholder.png'}
+                                src={resolveSrc(row.images[0].image_path)}
                                 alt={row.name}
                                 className="w-full h-full object-cover"
                                 onError={(e) => { e.target.src = '/images/placeholder.png'; }}
