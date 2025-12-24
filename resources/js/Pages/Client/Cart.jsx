@@ -2,30 +2,70 @@ import React, { useState, useContext } from 'react';
 import MainLayout from '../../Layouts/MainLayout';
 import { Link, useNavigate } from 'react-router-dom';
 import { CartContext } from '../../contexts/CartContext';
-import { Trash2, ShoppingBag, Truck, Store } from 'lucide-react';
+import { AuthContext } from '../../contexts/AuthContext';
+import { Trash2, ShoppingBag, Truck, Store, Loader } from 'lucide-react';
 
 export default function Cart() {
-    const { cart, updateQuantity, removeFromCart, loading } = useContext(CartContext);
+    const { user } = useContext(AuthContext);
+    const { cart, updateQuantity, removeFromCart, clearCart, loading } = useContext(CartContext);
     const [couponCode, setCouponCode] = useState('');
     const [deliveryMethod, setDeliveryMethod] = useState('delivery'); // 'delivery' or 'pickup'
     const navigate = useNavigate();
+
+    const [isUpdating, setIsUpdating] = useState(false);
+    const [isProcessing, setIsProcessing] = useState(false);
+
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
 
     const applyCoupon = () => {
         alert('Fonctionnalité de coupon bientôt disponible !');
     };
 
-    const proceedToCheckout = () => {
-        if (deliveryMethod === 'pickup') {
-            // Skip verification, go directly to confirmation
-            navigate('/checkout');
+    const proceedToCheckout = async () => {
+        // Optimisation : Si "Retrait en boutique" et utilisateur connecté avec infos complètes -> Commande directe
+        if (deliveryMethod === 'pickup' && user && user.phone) {
+            setShowConfirmModal(true);
         } else {
-            // Go to verification page
-            navigate('/checkout');
+            // Flux standard (Livraison OU Invité OU Infos manquantes)
+            navigate('/checkout', { state: { deliveryMethod } });
+        }
+    };
+
+    const handleConfirmPickup = async () => {
+        setShowConfirmModal(false);
+        setIsProcessing(true);
+        try {
+            // Construction de la commande simplifiée
+            const orderData = {
+                customer_name: user.name,
+                customer_email: user.email,
+                customer_phone: user.phone,
+                delivery_method: 'pickup',
+                payment_method: 'cash_on_delivery', // Paiement au comptoir par défaut
+                notes: 'Commande Express - Retrait Boutique',
+                termsAccepted: true // Auto-acceptation implicite via le confirm
+            };
+
+            const response = await import('../../services/api').then(module => module.default.post('/orders', orderData));
+
+            if (response.data.success) {
+                await clearCart();
+                // Redirection vers "Mes Commandes" comme demandé par l'utilisateur
+                navigate('/mes-commandes');
+            }
+        } catch (error) {
+            console.error("Erreur commande express:", error);
+            // En cas d'erreur (ex: validation), on redirige vers le checkout classique
+            navigate('/checkout', { state: { deliveryMethod } });
+        } finally {
+            setIsProcessing(false);
         }
     };
 
     const handleRemove = async (productId) => {
+        setIsUpdating(true);
         const result = await removeFromCart(productId);
+        setIsUpdating(false);
         if (!result.success) {
             alert('Erreur lors de la suppression');
         }
@@ -33,7 +73,9 @@ export default function Cart() {
 
     const handleUpdateQuantity = async (productId, newQuantity) => {
         if (newQuantity < 1) return;
+        setIsUpdating(true);
         const result = await updateQuantity(productId, newQuantity);
+        setIsUpdating(false);
         if (!result.success) {
             alert('Erreur lors de la mise à jour');
         }
@@ -49,17 +91,21 @@ export default function Cart() {
         );
     }
 
-    const shippingCost = deliveryMethod === 'delivery' ? (cart.shipping || 5000) : 0;
-    const finalTotal = (cart.subtotal || 0) + shippingCost;
+    const currentSubtotal = Number(cart.subtotal) || 0;
+    const shippingCost = deliveryMethod === 'delivery' ? (Number(cart.shipping) || 5000) : 0;
+    const finalTotal = currentSubtotal + shippingCost;
 
     return (
         <MainLayout>
             {/* Hero Banner */}
-            <div className="relative h-56 bg-gradient-to-br from-gray-900 via-gray-800 to-black overflow-hidden">
-                <div className="absolute inset-0 opacity-20">
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-96 h-96">
-                        <ShoppingBag className="w-full h-full text-white opacity-10" />
-                    </div>
+            <div className="relative h-56 bg-black overflow-hidden">
+                <div className="absolute inset-0">
+                    <img
+                        src="/images/back.jpg"
+                        alt="cart banner"
+                        className="w-full h-full object-cover opacity-60"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
                 </div>
                 <div className="container mx-auto px-4 h-full flex flex-col items-center justify-center relative z-10">
                     <h1 className="text-5xl font-black text-neon-green uppercase mb-3 tracking-tight">PANIER</h1>
@@ -137,8 +183,8 @@ export default function Cart() {
 
                                     {/* Items */}
                                     <div className="divide-y divide-gray-100">
-                                        {cart.items.map((item) => (
-                                            <div key={item.id} className="p-6 hover:bg-gray-50/50 transition-colors">
+                                        {cart.items.map((item, index) => (
+                                            <div key={`cart-item-${item.id || item.product_id || index}`} className="p-6 hover:bg-gray-50/50 transition-colors">
                                                 <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                                                     {/* Product Info */}
                                                     <div className="col-span-1 md:col-span-6 flex items-center gap-4">
@@ -151,8 +197,9 @@ export default function Cart() {
                                                         </button>
                                                         <div className="w-20 h-20 bg-gray-50 rounded-lg p-2 flex items-center justify-center flex-shrink-0 border border-gray-100">
                                                             <img
-                                                                src={item.image_path || item.image || '/images/products/default.png'}
+                                                                src={item.image || item.image_path || '/images/products/default.png'}
                                                                 alt={item.name}
+                                                                onError={(e) => { e.target.src = '/images/products/default.png'; }}
                                                                 className="w-full h-full object-contain"
                                                             />
                                                         </div>
@@ -282,22 +329,33 @@ export default function Cart() {
 
                                         <div className="flex justify-between items-center pt-4 border-t-2 border-gray-900">
                                             <span className="text-lg font-black text-gray-900 uppercase">Total</span>
-                                            <span className="text-2xl font-black text-neon-green">{finalTotal.toLocaleString()} F CFA</span>
+                                            <span className={`text-2xl font-black text-neon-green transition-opacity duration-300 ${isUpdating ? 'opacity-50' : 'opacity-100'}`}>
+                                                {finalTotal.toLocaleString()} F CFA
+                                            </span>
                                         </div>
                                     </div>
 
                                     <button
                                         onClick={proceedToCheckout}
-                                        className="w-full py-4 bg-forest-green text-white font-black uppercase rounded-lg hover:bg-dark-green transition-all shadow-lg text-sm tracking-wider"
+                                        disabled={isProcessing}
+                                        className="w-full py-4 bg-forest-green text-white font-black uppercase rounded-lg hover:bg-dark-green transition-all shadow-lg text-sm tracking-wider disabled:opacity-75 flex items-center justify-center gap-2"
                                     >
-                                        Passer la commande
+                                        {isProcessing ? (
+                                            <>
+                                                <Loader className="w-5 h-5 animate-spin" />
+                                                Traitement...
+                                            </>
+                                        ) : (
+                                            'Passer la commande'
+                                        )}
                                     </button>
 
-                                    <div className="mt-6 flex items-center justify-center gap-3 opacity-40 grayscale">
-                                        <img src="/images/payment/visa.png" alt="Visa" className="h-5" />
-                                        <img src="/images/payment/mastercard.png" alt="Mastercard" className="h-5" />
-                                        <img src="/images/payment/wave.png" alt="Wave" className="h-5" />
-                                        <img src="/images/payment/orange-money.png" alt="Orange Money" className="h-5" />
+                                    <div className="mt-6 flex items-center justify-center">
+                                        <img
+                                            src="/images/payment-methods.png"
+                                            alt="Moyens de paiement sécurisés"
+                                            className="h-6 object-contain opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all"
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -305,6 +363,53 @@ export default function Cart() {
                     )}
                 </div>
             </section>
-        </MainLayout>
+
+            {/* Confirmation Modal */}
+            {
+                showConfirmModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                        {/* Backdrop */}
+                        <div
+                            className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+                            onClick={() => setShowConfirmModal(false)}
+                        ></div>
+
+                        {/* Modal Content */}
+                        <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200">
+                            <div className="text-center">
+                                <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <Store className="w-8 h-8 text-forest-green" />
+                                </div>
+
+                                <h3 className="text-xl font-black text-gray-900 uppercase mb-2">
+                                    Confirmer le retrait ?
+                                </h3>
+
+                                <p className="text-gray-600 text-sm mb-6 leading-relaxed">
+                                    Vous avez choisi de récupérer votre commande en boutique.
+                                    Les articles seront réservés et disponibles immédiatement à notre showroom.
+                                </p>
+
+                                <div className="flex flex-col gap-3">
+                                    <button
+                                        onClick={handleConfirmPickup}
+                                        className="w-full py-3.5 bg-forest-green text-white font-bold uppercase rounded-lg hover:bg-dark-green transition-all shadow-lg flex items-center justify-center gap-2"
+                                    >
+                                        Oui, confirmer la commande
+                                    </button>
+
+                                    <button
+                                        onClick={() => setShowConfirmModal(false)}
+                                        className="w-full py-3.5 bg-gray-100 text-gray-600 font-bold uppercase rounded-lg hover:bg-gray-200 transition-all"
+                                    >
+                                        Annuler
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+        </MainLayout >
     );
 }

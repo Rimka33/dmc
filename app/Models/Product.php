@@ -139,7 +139,7 @@ class Product extends Model
      */
     public function scopeInStock($query)
     {
-        return $query->where('stock_status', 'in_stock');
+        return $query->whereIn('stock_status', ['in_stock', 'low_stock']);
     }
 
     /**
@@ -191,6 +191,10 @@ class Product extends Model
      */
     public function getPrimaryImageAttribute()
     {
+        if ($this->relationLoaded('images')) {
+            return $this->images->where('is_primary', true)->first() 
+                ?? $this->images->first();
+        }
         return $this->images()->where('is_primary', true)->first() 
             ?? $this->images()->first();
     }

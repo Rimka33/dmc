@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef } from 'react';
 import MainLayout from '../../Layouts/MainLayout';
 import { Link, useSearchParams } from 'react-router-dom';
 import api from '../../services/api';
@@ -25,7 +25,9 @@ const StarRating = ({ rating, count }) => (
                 className={`w-2.5 h-2.5 ${i < Math.floor(rating || 5) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200 fill-gray-200'}`}
             />
         ))}
-        <span className="text-[9px] text-gray-400 ml-1">({count || 0})</span>
+        <span className="text-[9px] text-gray-400 ml-1">
+            (<span>{count || 0}</span>)
+        </span>
     </div>
 );
 
@@ -99,11 +101,12 @@ function ProductCard({ product, viewMode = 'grid' }) {
     return (
         <div className="group relative bg-white flex flex-col h-full transition-all border border-gray-100 rounded-2xl overflow-hidden hover:shadow-xl duration-300">
             {/* Image Container */}
-            <Link to={`/produit/${product.id}`} className="relative aspect-square overflow-hidden bg-gray-50 mb-2 block overflow-hidden">
+            <Link to={`/produit/${product.id}`} className="relative aspect-square overflow-hidden bg-white mb-2 block overflow-hidden">
                 <img
-                    src={product.primary_image}
+                    src={product.primary_image || '/images/products/default.png'}
                     alt={product.name}
-                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-6 mix-blend-multiply"
+                    onError={(e) => { e.target.src = '/images/products/default.png'; }}
+                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-4"
                 />
 
                 {product.is_on_sale && (
@@ -143,10 +146,13 @@ function ProductCard({ product, viewMode = 'grid' }) {
 
             {/* Wishlist Button Overlay */}
             <button
-                onClick={(e) => {
+                onClick={async (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    toggleWishlist(product);
+                    const result = await toggleWishlist(product);
+                    if (result && !result.success) {
+                        alert(result.message);
+                    }
                 }}
                 className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-gray-400 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 duration-300 hover:scale-110"
             >
@@ -171,6 +177,18 @@ export default function Shop() {
     const [sortOrder, setSortOrder] = useState('desc');
     const [currentPage, setCurrentPage] = useState(1);
     const [viewMode, setViewMode] = useState('grid');
+    const [minPrice, setMinPrice] = useState('');
+    const [maxPrice, setMaxPrice] = useState('');
+    const [openFilter, setOpenFilter] = useState(null);
+    const scrollContainerRef = useRef(null);
+
+    const scroll = (direction) => {
+        if (scrollContainerRef.current) {
+            const { scrollLeft, clientWidth } = scrollContainerRef.current;
+            const scrollTo = direction === 'left' ? scrollLeft - clientWidth / 2 : scrollLeft + clientWidth / 2;
+            scrollContainerRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
+        }
+    };
 
     useEffect(() => {
         const querySearch = searchParams.get('search');
@@ -199,6 +217,8 @@ export default function Shop() {
 
             if (selectedCategory) params.category_id = selectedCategory;
             if (search) params.search = search;
+            if (minPrice) params.min_price = minPrice;
+            if (maxPrice) params.max_price = maxPrice;
 
             const response = await api.get('/products', { params });
 
@@ -233,7 +253,7 @@ export default function Shop() {
 
     useEffect(() => {
         fetchProducts(1, false);
-    }, [selectedCategory, sortBy, sortOrder, search]);
+    }, [selectedCategory, sortBy, sortOrder, search, minPrice, maxPrice]);
 
     const handleLoadMore = () => {
         if (currentPage < pagination.last_page) {
@@ -261,128 +281,281 @@ export default function Shop() {
         }
     };
 
+    const selectedCategoryData = categories.find(c => c.id == selectedCategory);
+
     return (
         <MainLayout>
-            {/* Banner Section matching design */}
-            <div className="relative h-[380px] bg-black overflow-hidden flex items-center justify-center">
+            {/* Banner Section matching design - Dynamic Background */}
+            <div className="relative h-[300px] md:h-[340px] bg-[#021008] overflow-visible flex items-center justify-center mb-20">
                 <div className="absolute inset-0 z-0">
+                    {/* The Image - Masked by gradient */}
                     <img
-                        src="https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80"
-                        alt="shop banner"
-                        className="w-full h-full object-cover opacity-40 grayscale"
+                        src={selectedCategoryData?.image || selectedCategoryData?.icon || '/images/back.jpg'}
+                        alt=""
+                        className="absolute right-0 top-0 w-full h-full object-cover md:object-contain object-right opacity-90 transition-opacity duration-1000"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/60"></div>
+
+                    {/* Multi-stop Smooth Gradient: Solid -> Smooth Fade -> Transparent */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#021008] via-[#021008] via-[#021008]/90 via-[#021008]/40 to-transparent z-10"></div>
                 </div>
 
-                <div className="relative z-10 text-center space-y-4">
-                    <h1 className="text-5xl md:text-6xl font-black text-neon-green uppercase tracking-[0.25em] drop-shadow-[0_0_20px_rgba(85,255,0,0.3)]">
-                        BOUTIQUE
+                <div className="relative z-10 text-center px-4 -mt-10">
+                    <h1 className="text-2xl md:text-4xl font-black text-neon-green uppercase tracking-[0.1em] drop-shadow-[0_0_20px_rgba(85,255,0,0.4)] mb-4 leading-tight">
+                        {selectedCategoryData?.name || "BOUTIQUE"}
                     </h1>
-                    <div className="flex items-center justify-center gap-2 text-white/70 text-[11px] font-black uppercase tracking-widest">
+                    <div className="flex items-center justify-center gap-2 text-white/70 text-[10px] md:text-[11px] font-black uppercase tracking-widest">
                         <Link to="/" className="hover:text-neon-green transition-colors">Accueil</Link>
-                        <span className="text-white/30 text-[8px] mx-1 opacity-50">—</span>
-                        <span className="text-white">Boutique</span>
+                        <ChevronRight className="w-3 h-3 text-white/30" />
+                        <span className="text-white">
+                            {selectedCategoryData?.name || "Boutique"}
+                        </span>
                     </div>
                 </div>
 
-                <div className="absolute right-10 bottom-10 hidden lg:block opacity-20 transform rotate-12 scale-150">
-                    <LayoutGrid className="w-48 h-48 text-white" />
+                {/* Categories Row - Floating Layout matching provide image */}
+                <div className="absolute bottom-0 left-0 right-0 translate-y-1/2 z-20">
+                    <div className="container mx-auto px-4">
+                        <div className="relative group">
+                            {/* Navigation Arrows */}
+                            <button
+                                onClick={() => scroll('left')}
+                                className="absolute -left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white shadow-xl rounded-full flex items-center justify-center text-gray-400 hover:text-forest-green z-30 transition-all border border-gray-100"
+                            >
+                                <ChevronLeft className="w-4 h-4" />
+                            </button>
+                            <button
+                                onClick={() => scroll('right')}
+                                className="absolute -right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white shadow-xl rounded-full flex items-center justify-center text-gray-400 hover:text-forest-green z-30 transition-all border border-gray-100"
+                            >
+                                <ChevronRight className="w-4 h-4" />
+                            </button>
+
+                            {/* Cards Container */}
+                            <div
+                                ref={scrollContainerRef}
+                                className="flex items-center gap-3 overflow-x-auto pb-6 scrollbar-hide px-2 snap-x snap-mandatory"
+                            >
+                                {/* All Category Card */}
+                                <Link
+                                    to="/shop"
+                                    onClick={() => handleCategorySelect(null)}
+                                    className={`flex-shrink-0 w-[105px] aspect-[4/5] bg-white rounded-2xl p-2 shadow-sm transition-all flex flex-col items-center justify-center text-center border-2 group snap-start ${!selectedCategory ? 'border-neon-green' : 'border-transparent hover:border-neon-green/30'}`}
+                                >
+                                    <div className="w-16 h-16 mb-2 flex items-center justify-center bg-white rounded-xl group-hover:bg-neon-green/5 transition-colors">
+                                        <LayoutGrid className={`w-9 h-9 ${!selectedCategory ? 'text-forest-green' : 'text-gray-300'} group-hover:text-forest-green transition-colors`} />
+                                    </div>
+                                    <h3 className="text-[9px] font-black uppercase tracking-tighter text-gray-900 leading-none">Tous</h3>
+                                </Link>
+
+                                {categories?.map((cat) => (
+                                    <Link
+                                        key={cat.id}
+                                        onClick={() => handleCategorySelect(cat.id)}
+                                        className={`flex-shrink-0 w-[105px] aspect-[4/5] bg-white rounded-2xl p-2 shadow-sm transition-all flex flex-col items-center justify-center text-center border-2 group snap-start ${selectedCategory == cat.id ? 'border-neon-green' : 'border-transparent hover:border-neon-green/30'}`}
+                                    >
+                                        <div className="w-16 h-16 mb-2 flex items-center justify-center relative bg-white rounded-xl overflow-hidden group-hover:bg-neon-green/5 transition-colors">
+                                            {cat.image ? (
+                                                <img
+                                                    src={cat.image.startsWith('http') ? cat.image : `/storage/${cat.image}`}
+                                                    alt={cat.name}
+                                                    className="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-500 mix-blend-multiply"
+                                                />
+                                            ) : (
+                                                <img src={cat.icon || '/images/icons/default.svg'} className="w-8 h-8 text-gray-400 group-hover:text-forest-green transition-colors opacity-90" />
+                                            )}
+                                        </div>
+                                        <h3 className="text-[9px] font-black uppercase tracking-tighter text-gray-900 line-clamp-1 leading-none">{cat.name}</h3>
+                                    </Link>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             {/* Main Catalogue Section */}
             <section className="bg-white py-12">
                 <div className="container mx-auto px-4">
-
-                    {/* Categories Row (Design Cards) */}
-                    <div className="mb-16">
-                        <div className="flex items-center gap-5 overflow-x-auto pb-8 pt-4 scrollbar-hide -mx-4 px-4">
-                            <Link
-                                to="/shop"
-                                className={`flex-shrink-0 w-40 bg-white rounded-xl p-5 shadow-lg border-2 transition-all text-center group ${!selectedCategory ? 'border-neon-green scale-105 shadow-neon-green/5' : 'border-gray-50 hover:border-neon-green/30'}`}
-                            >
-                                <div className="w-16 h-16 bg-gray-50 rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                                    <LayoutGrid className="w-7 h-7 text-gray-400" />
-                                </div>
-                                <h3 className="text-[11px] font-black uppercase tracking-tight text-gray-900 mb-1">Tous</h3>
-                                <div className="text-[9px] font-bold text-gray-400 uppercase">Catalogue Complet</div>
-                            </Link>
-
-                            {categories?.map((category, index) => (
-                                <Link
-                                    key={index}
-                                    to={`/categorie/${category.slug}`}
-                                    className="flex-shrink-0 w-40 bg-white rounded-xl p-5 shadow-lg border-2 border-gray-50 hover:border-neon-green/30 transition-all text-center group"
-                                >
-                                    <div className="w-16 h-16 bg-gray-50 rounded-lg flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform overflow-hidden">
-                                        <img
-                                            src={category.icon || '/images/icons/default.svg'}
-                                            alt={category.name}
-                                            className="w-8 h-8 object-contain"
-                                        />
-                                    </div>
-                                    <h3 className="text-[11px] font-black uppercase tracking-tight text-gray-900 mb-1 line-clamp-1">{category.name}</h3>
-                                    <div className="text-[9px] font-bold text-gray-400 uppercase">{category.products_count || 0} Produits</div>
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
-
                     {/* Filter Header Section */}
                     <div className="space-y-8">
-                        <div className="flex items-center gap-3 border-b-2 border-forest-green pb-2">
-                            <h2 className="text-xl font-black text-gray-900 uppercase tracking-tight">FILTRER PAR</h2>
+                        <div className="flex items-center gap-2 border-b-2 border-forest-green pb-2 w-max">
+                            <SlidersHorizontal className="w-4 h-4 text-forest-green" />
+                            <h2 className="text-sm font-black text-gray-900 uppercase tracking-tight">FILTRER PAR</h2>
                         </div>
 
-                        {/* Top Filters Row */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                            {[
-                                { label: 'Meilleures ventes', options: ['Par défaut'] },
-                                { label: 'Prix', options: ['Par défaut', 'De - à +', 'De + à -'] },
-                                { label: 'Par défaut', options: ['Par défaut', 'Nouveautés', 'Promos'] },
-                                { label: 'Marque', options: ['Toute marque'] }
-                            ].map((f, i) => (
-                                <div key={i} className="relative group">
-                                    <select
-                                        className="w-full bg-gray-50 border-none rounded-lg px-4 py-3.5 text-xs font-black text-gray-700 uppercase tracking-wider appearance-none cursor-pointer focus:ring-1 focus:ring-forest-green transition-all"
-                                        onChange={(e) => i === 1 ? handleSort(e.target.value === 'De - à +' ? 'price-asc' : 'price-desc') : null}
-                                    >
-                                        <option>{f.label}</option>
-                                        {f.options.map(o => <option key={o}>{o}</option>)}
-                                    </select>
-                                    <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none group-hover:text-forest-green transition-colors" />
+                        {/* Top Filters Block - Responsive Grid */}
+                        <div className="relative">
+                            <div className="grid grid-cols-2 md:grid-cols-4 bg-[#f8f8f8] rounded-xl overflow-hidden border border-gray-100 shadow-sm relative z-40">
+                                {/* Categories Filter Column */}
+                                <div
+                                    onClick={() => setOpenFilter(openFilter === 'categories' ? null : 'categories')}
+                                    className={`p-4 md:p-5 border-r border-b md:border-b-0 border-gray-200/50 group hover:bg-white transition-colors cursor-pointer ${openFilter === 'categories' ? 'bg-white' : ''}`}
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[9px] md:text-[10px] font-black text-gray-600 uppercase tracking-widest md:tracking-[0.15em]">Catégories</span>
+                                        <ChevronDown className={`w-3 h-3 md:w-3.5 md:h-3.5 text-gray-400 group-hover:text-forest-green transition-transform ${openFilter === 'categories' ? 'rotate-180 text-forest-green' : ''}`} />
+                                    </div>
                                 </div>
-                            ))}
+
+                                {/* Prix Filter Column */}
+                                <div
+                                    onClick={() => setOpenFilter(openFilter === 'price' ? null : 'price')}
+                                    className={`p-4 md:p-5 border-b md:border-b-0 md:border-r border-gray-200/50 group hover:bg-white transition-colors cursor-pointer ${openFilter === 'price' ? 'bg-white' : ''}`}
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[9px] md:text-[10px] font-black text-gray-600 uppercase tracking-widest md:tracking-[0.15em]">Prix</span>
+                                        <ChevronDown className={`w-3 h-3 md:w-3.5 md:h-3.5 text-gray-400 group-hover:text-forest-green transition-transform ${openFilter === 'price' ? 'rotate-180 text-forest-green' : ''}`} />
+                                    </div>
+                                </div>
+
+                                {/* Marques Filter Column */}
+                                <div
+                                    onClick={() => setOpenFilter(openFilter === 'brands' ? null : 'brands')}
+                                    className={`p-4 md:p-5 border-r border-gray-200/50 group hover:bg-white transition-colors cursor-pointer ${openFilter === 'brands' ? 'bg-white' : ''}`}
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[9px] md:text-[10px] font-black text-gray-600 uppercase tracking-widest md:tracking-[0.15em]">Marques</span>
+                                        <ChevronDown className={`w-3 h-3 md:w-3.5 md:h-3.5 text-gray-400 group-hover:text-forest-green transition-transform ${openFilter === 'brands' ? 'rotate-180 text-forest-green' : ''}`} />
+                                    </div>
+                                </div>
+
+                                {/* Avis Filter Column */}
+                                <div
+                                    onClick={() => setOpenFilter(openFilter === 'rating' ? null : 'rating')}
+                                    className={`p-4 md:p-5 group hover:bg-white transition-colors cursor-pointer ${openFilter === 'rating' ? 'bg-white' : ''}`}
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[9px] md:text-[10px] font-black text-gray-600 uppercase tracking-widest md:tracking-[0.15em]">Avis</span>
+                                        <ChevronDown className={`w-3 h-3 md:w-3.5 md:h-3.5 text-gray-400 group-hover:text-forest-green transition-transform ${openFilter === 'rating' ? 'rotate-180 text-forest-green' : ''}`} />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Dropdown Contents - Responsive Padding */}
+                            {openFilter && (
+                                <div className="absolute top-full left-0 right-0 bg-white border border-gray-100 shadow-2xl rounded-b-2xl z-30 animate-in slide-in-from-top-4 fade-in duration-200 p-4 md:p-8">
+                                    {openFilter === 'categories' && (
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+                                            {categories.map((cat) => (
+                                                <button
+                                                    key={cat.id}
+                                                    onClick={() => {
+                                                        handleCategorySelect(cat.id === selectedCategory ? null : cat.id);
+                                                        setOpenFilter(null);
+                                                    }}
+                                                    className="flex items-center gap-3 group text-left"
+                                                >
+                                                    <div className={`w-5 h-5 rounded-lg border flex items-center justify-center transition-all ${selectedCategory == cat.id ? 'bg-forest-green border-forest-green' : 'border-gray-200 group-hover:border-forest-green'}`}>
+                                                        {selectedCategory == cat.id && <Check className="w-3 h-3 text-white" />}
+                                                    </div>
+                                                    <span className={`text-[11px] font-bold uppercase tracking-wider transition-colors ${selectedCategory == cat.id ? 'text-forest-green' : 'text-gray-500 group-hover:text-gray-900'}`}>
+                                                        {cat.name}
+                                                    </span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {openFilter === 'price' && (
+                                        <div className="max-w-md mx-auto space-y-6">
+                                            <div className="flex items-center gap-4">
+                                                <div className="flex-1 space-y-2">
+                                                    <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Min (CFA)</label>
+                                                    <input
+                                                        type="number"
+                                                        value={minPrice}
+                                                        onChange={(e) => setMinPrice(e.target.value)}
+                                                        placeholder="0"
+                                                        className="w-full bg-gray-50 border-gray-100 rounded-xl px-4 py-3 text-sm font-bold focus:ring-forest-green focus:border-forest-green transition-all"
+                                                    />
+                                                </div>
+                                                <div className="flex-1 space-y-2">
+                                                    <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Max (CFA)</label>
+                                                    <input
+                                                        type="number"
+                                                        value={maxPrice}
+                                                        onChange={(e) => setMaxPrice(e.target.value)}
+                                                        placeholder="5 000 000"
+                                                        className="w-full bg-gray-50 border-gray-100 rounded-xl px-4 py-3 text-sm font-bold focus:ring-forest-green focus:border-forest-green transition-all"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={() => setOpenFilter(null)}
+                                                className="w-full bg-gray-900 text-white py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-forest-green transition-all"
+                                            >
+                                                Appliquer les prix
+                                            </button>
+                                        </div>
+                                    )}
+
+                                    {openFilter === 'brands' && (
+                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                                            {['HP', 'Dell', 'Lenovo', 'Apple', 'Asus', 'Acer'].map((brand) => (
+                                                <label key={brand} className="flex items-center gap-3 group cursor-pointer">
+                                                    <div className="w-5 h-5 rounded-lg border border-gray-200 group-hover:border-forest-green transition-all"></div>
+                                                    <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500 group-hover:text-gray-900">{brand}</span>
+                                                </label>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {openFilter === 'rating' && (
+                                        <div className="flex flex-wrap justify-center gap-8">
+                                            {[5, 4, 3, 2, 1].map((stars) => (
+                                                <button key={stars} className="flex items-center gap-2 group">
+                                                    <div className="flex">
+                                                        {[...Array(5)].map((_, i) => (
+                                                            <Star key={i} className={`w-3.5 h-3.5 ${i < stars ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200'}`} />
+                                                        ))}
+                                                    </div>
+                                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest group-hover:text-forest-green transition-colors mt-0.5">& Plus</span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
 
-                        {/* View Mode Toolbar */}
-                        <div className="flex items-center justify-between py-5 border-t border-b border-gray-100">
-                            <div className="flex items-center gap-6">
-                                <div className="flex p-1 bg-gray-50 rounded-lg shadow-inner">
-                                    <button
-                                        onClick={() => setViewMode('grid')}
-                                        className={`p-2 rounded-md transition-all ${viewMode === 'grid' ? 'bg-white shadow-sm text-forest-green' : 'text-gray-400 hover:text-gray-600'}`}
-                                    >
-                                        <Grid className="w-4 h-4" />
-                                    </button>
-                                    <button
-                                        onClick={() => setViewMode('list')}
-                                        className={`p-2 rounded-md transition-all ${viewMode === 'list' ? 'bg-white shadow-sm text-forest-green' : 'text-gray-400 hover:text-gray-600'}`}
-                                    >
-                                        <List className="w-4 h-4" />
-                                    </button>
+                        {/* View Mode Toolbar - Precise Match & Responsive */}
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-6 py-8">
+                            <div className="flex items-center justify-between w-full sm:w-auto gap-4 md:gap-6">
+                                <div className="flex bg-[#f2f2f2] p-1.5 rounded-xl gap-1">
+                                    {[
+                                        { id: 'grid-compact', icon: LayoutGrid, size: 'w-4 h-4' },
+                                        { id: 'grid', icon: Grid, size: 'w-4 h-4' },
+                                        { id: 'grid-large', icon: LayoutGrid, size: 'w-5 h-5' },
+                                        { id: 'list', icon: List, size: 'w-4 h-4' }
+                                    ].map((mode) => (
+                                        <button
+                                            key={mode.id}
+                                            onClick={() => setViewMode(mode.id)}
+                                            className={`p-2 rounded-lg transition-all flex items-center justify-center ${viewMode === mode.id
+                                                ? 'bg-forest-green shadow-lg text-white'
+                                                : 'text-gray-400 hover:text-gray-600'
+                                                }`}
+                                        >
+                                            <mode.icon className={mode.size} />
+                                        </button>
+                                    ))}
                                 </div>
-                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] flex gap-1">
-                                    <span>Affichage de</span>
-                                    <span>{products.length}</span>
-                                    <span>résultats sur</span>
-                                    <span>{pagination.total || 0}</span>
+                                <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mt-1">
+                                    Affichage de <span>{products.length}</span> sur <span>{pagination.total || 0}</span> résultats
                                 </span>
                             </div>
 
-                            <div className="flex items-center gap-2 text-[10px] font-black text-gray-500 hover:text-forest-green cursor-pointer transition-colors uppercase tracking-[0.15em] px-2">
-                                <span>SORT PAR</span>
-                                <ChevronDown className="w-3.5 h-3.5" />
+                            <div className="relative group w-full sm:w-[180px]">
+                                <select
+                                    className="w-full appearance-none bg-white border border-gray-100 rounded-xl pl-5 pr-12 py-3 md:py-3.5 text-[11px] font-black text-gray-600 uppercase tracking-widest focus:ring-4 focus:ring-forest-green/5 focus:border-forest-green outline-none transition-all cursor-pointer shadow-sm"
+                                    onChange={(e) => handleSort(e.target.value)}
+                                >
+                                    <option value="newest">Tri par défaut</option>
+                                    <option value="price-asc">Prix croissant</option>
+                                    <option value="price-desc">Prix décroissant</option>
+                                    <option value="popular">Les plus populaires</option>
+                                </select>
+                                <ChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none group-hover:text-forest-green transition-colors" />
                             </div>
                         </div>
 
@@ -393,9 +566,13 @@ export default function Shop() {
                             </div>
                         ) : (
                             <div className={
-                                viewMode === 'grid'
-                                    ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16 py-8'
-                                    : 'flex flex-col gap-10 py-8'
+                                viewMode === 'grid-compact'
+                                    ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 py-8'
+                                    : viewMode === 'grid-large'
+                                        ? 'grid grid-cols-1 md:grid-cols-2 gap-12 py-8'
+                                        : viewMode === 'list'
+                                            ? 'flex flex-col gap-10 py-8'
+                                            : 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16 py-8'
                             }>
                                 {products.length > 0 ? (
                                     products.map((product) => (
@@ -421,7 +598,7 @@ export default function Shop() {
                                         ></div>
                                     </div>
                                     <div className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] text-center">
-                                        Affichage de {products.length} sur {pagination.total} produits
+                                        Affichage de <span>{products.length}</span> sur <span>{pagination.total}</span> produits
                                     </div>
                                 </div>
                                 <button

@@ -26,8 +26,9 @@ function ProductCard({ product }) {
         <div className="group relative bg-white flex flex-col h-full transition-all border border-gray-100 rounded-xl overflow-hidden hover:shadow-xl">
             <Link to={`/produit/${product.id}`} className="block relative aspect-square overflow-hidden bg-white mb-2">
                 <img
-                    src={product.primary_image}
+                    src={product.primary_image || '/images/products/default.png'}
                     alt={product.name}
+                    onError={(e) => { e.target.src = '/images/products/default.png'; }}
                     className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-6"
                 />
 
@@ -70,10 +71,13 @@ function ProductCard({ product }) {
             </div>
 
             <button
-                onClick={(e) => {
+                onClick={async (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    toggleWishlist(product);
+                    const result = await toggleWishlist(product);
+                    if (result && !result.success) {
+                        alert(result.message);
+                    }
                 }}
                 className="absolute top-2 right-2 z-20 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
             >
@@ -106,6 +110,7 @@ export default function Category() {
     const [page, setPage] = useState(1);
     const [viewMode, setViewMode] = useState('grid');
     const [priceRange, setPriceRange] = useState({ min: MIN_PRICE, max: MAX_PRICE });
+    const [selectedBrands, setSelectedBrands] = useState([]);
 
     useEffect(() => {
         // Reset filters when category changes
@@ -191,68 +196,68 @@ export default function Category() {
     return (
         <MainLayout>
             {/* Hero Dark Banner with Floating Card */}
-            <section className="relative bg-[#021008] border-b border-white/5 h-[400px] flex items-center justify-center overflow-visible z-10">
-                {/* Background Pattern/Gradient */}
-                <div className="absolute inset-0">
-                    <div className="absolute inset-0 bg-[url('/images/pattern-grid.png')] opacity-[0.03]"></div>
-                    <div className="absolute inset-0 bg-gradient-to-r from-[#021008] via-[#021008] to-transparent"></div>
+            <section className="relative bg-[#021008] border-b border-white/5 h-[340px] md:h-[440px] flex items-center justify-center overflow-visible z-10">
+                {/* Background Image Container */}
+                <div className="absolute inset-0 z-0">
+                    {/* The Image - Full width but masked by gradient */}
+                    <img
+                        src={category?.image || category?.icon || '/images/back.jpg'}
+                        alt=""
+                        className="absolute right-0 top-0 w-full h-full object-cover md:object-contain object-right opacity-90 transition-opacity duration-1000"
+                    />
+
+                    {/* Multi-stop Smooth Gradient: Solid -> Smooth Fade -> Transparent */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-[#021008] via-[#021008] via-[#021008]/90 via-[#021008]/40 to-transparent z-10"></div>
+
+                    {/* Subtle bottom fade to blend with white section below */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#021008]/10 z-10"></div>
                 </div>
 
-                {/* Right Hero Image (Contextual) */}
-                {category?.image && (
-                    <div className="absolute right-0 top-0 h-full w-1/2 md:w-2/5 animate-in slide-in-from-right duration-1000">
-                        <div className="absolute inset-0 bg-gradient-to-r from-[#021008] to-transparent z-10 w-2/3"></div>
-                        <img
-                            src={category.image.startsWith('http') ? category.image : `/storage/${category.image}`}
-                            alt=""
-                            className="w-full h-full object-contain object-right p-8 opacity-40 mix-blend-screen"
-                        />
-                    </div>
-                )}
-
                 {/* Center Content */}
-                <div className="container mx-auto px-4 relative z-20 text-center -mt-10">
-                    <h1 className="text-4xl md:text-6xl font-black text-neon-green uppercase tracking-[0.05em] mb-6 drop-shadow-[0_0_25px_rgba(31,224,96,0.3)]">
+                <div className="container mx-auto px-4 relative z-20 text-center">
+                    <h1 className="text-2xl md:text-4xl font-black text-neon-green uppercase tracking-[0.1em] mb-4 drop-shadow-[0_0_30px_rgba(31,224,96,0.6)]">
                         {category?.name || 'CATÉGORIE'}
                     </h1>
-                    <div className="flex items-center justify-center gap-3 text-white/50 text-[11px] font-black uppercase tracking-widest">
-                        <Link to="/" className="hover:text-white transition-colors">Accueil</Link>
-                        <ChevronRight className="w-3 h-3 text-white/20" />
+
+                    <div className="flex items-center justify-center gap-3 text-white/70 text-[10px] md:text-[11px] font-black uppercase tracking-widest mb-6">
+                        <Link to="/" className="hover:text-neon-green transition-colors">Accueil</Link>
+                        <ChevronRight className="w-3 h-3 text-white/30" />
                         <span className="text-white">{category?.name}</span>
                     </div>
+
                     {category?.description && (
-                        <div className="max-w-2xl mx-auto mt-4 text-gray-400 text-sm font-medium leading-relaxed line-clamp-2">
+                        <div className="max-w-xl mx-auto text-gray-300 text-xs md:text-sm font-medium leading-relaxed line-clamp-2 opacity-80">
                             {category.description}
                         </div>
                     )}
                 </div>
 
-                {/* Floating Card */}
+                {/* Floating Card - Reduced size as requested */}
                 <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 z-30">
-                    <div className="bg-white rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.15)] p-8 w-[240px] aspect-square flex flex-col items-center justify-center text-center border border-gray-100 relative group transition-all hover:-translate-y-2">
-                        {/* Decorative glow */}
-                        <div className="absolute inset-0 bg-forest-green/5 rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="bg-white rounded-3xl shadow-[0_15px_35px_rgba(0,0,0,0.12)] p-6 w-[170px] md:w-[200px] aspect-square flex flex-col items-center justify-center text-center border border-gray-50 relative group transition-all hover:-translate-y-1">
+                        {/* Decorative subtle hover background */}
+                        <div className="absolute inset-0 bg-forest-green/[0.02] rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
-                        {/* Image */}
-                        <div className="w-32 h-32 mb-4 flex items-center justify-center relative z-10">
+                        {/* Image - Smaller and clean */}
+                        <div className="w-24 h-24 md:w-28 md:h-28 mb-3 flex items-center justify-center relative z-10 transition-transform duration-500 group-hover:scale-110">
                             {category?.image ? (
                                 <img
-                                    src={category.image.startsWith('http') ? category.image : `/storage/${category.image}`}
+                                    src={category.image}
                                     alt={category.name}
-                                    className="w-full h-full object-contain filter drop-shadow-xl transform group-hover:scale-110 transition-transform duration-500"
+                                    className="w-full h-full object-contain"
                                 />
                             ) : category?.icon ? (
-                                <img src={category.icon} alt={category.name} className="w-full h-full object-contain" />
+                                <img src={category.icon} alt={category.name} className="w-full h-full object-contain opacity-80" />
                             ) : (
-                                <LayoutGrid className="w-16 h-16 text-gray-200" />
+                                <LayoutGrid className="w-12 h-12 text-gray-100" />
                             )}
                         </div>
 
                         <div className="relative z-10 w-full">
-                            <h2 className="text-sm font-black text-gray-900 leading-tight mb-1 truncate px-2">
+                            <h2 className="text-xs md:text-sm font-black text-gray-900 leading-tight mb-0.5 truncate px-1">
                                 {category?.name}
                             </h2>
-                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider inline-block">
+                            <span className="text-[9px] md:text-[10px] font-bold text-gray-400 uppercase tracking-tighter inline-block">
                                 {meta?.total || 0} Produits
                             </span>
                         </div>
@@ -363,16 +368,28 @@ export default function Category() {
                                 </div>
                             </div>
 
-                            {/* Brand Filter Section (Dummy) */}
+                            {/* Brand Filter Section */}
                             <div>
                                 <h3 className="text-sm font-black text-gray-900 uppercase tracking-tight mb-6">Marque</h3>
                                 <div className="space-y-3">
-                                    {['HP', 'Dell', 'Lenovo', 'Apple', 'Asus'].map((brand, i) => (
-                                        <label key={i} className="flex items-center gap-3 group cursor-pointer">
-                                            <div className="w-4 h-4 rounded border border-gray-200 group-hover:border-forest-green transition-all"></div>
-                                            <span className="text-[12px] font-bold uppercase tracking-wide text-gray-500 group-hover:text-gray-900">{brand}</span>
-                                        </label>
-                                    ))}
+                                    {['HP', 'Dell', 'Lenovo', 'Apple', 'Asus'].map((brand, i) => {
+                                        const isChecked = selectedBrands.includes(brand);
+                                        return (
+                                            <div
+                                                key={i}
+                                                onClick={() => {
+                                                    if (isChecked) setSelectedBrands(selectedBrands.filter(b => b !== brand));
+                                                    else setSelectedBrands([...selectedBrands, brand]);
+                                                }}
+                                                className="flex items-center gap-3 group cursor-pointer"
+                                            >
+                                                <div className={`w-4 h-4 rounded border transition-all flex items-center justify-center ${isChecked ? 'bg-forest-green border-forest-green' : 'border-gray-200 group-hover:border-forest-green'}`}>
+                                                    {isChecked && <div className="w-1.5 h-1.5 bg-white rounded-full"></div>}
+                                                </div>
+                                                <span className={`text-[12px] font-bold uppercase tracking-wide transition-colors ${isChecked ? 'text-gray-900' : 'text-gray-500 group-hover:text-gray-900'}`}>{brand}</span>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         </aside>
@@ -401,9 +418,21 @@ export default function Category() {
                                         Affichage de {products.length} sur {meta?.total} résultats
                                     </span>
                                 </div>
-                                <div className="flex items-center gap-2 text-[10px] font-black text-gray-500 uppercase tracking-widest cursor-pointer group">
-                                    Trier par
-                                    <ChevronDown className="w-3 h-3 group-hover:text-forest-green" />
+                                <div className="relative group">
+                                    <select
+                                        className="appearance-none bg-transparent text-[10px] font-black text-gray-500 uppercase tracking-widest cursor-pointer outline-none pr-6"
+                                        onChange={(e) => {
+                                            const value = e.target.value;
+                                            if (value === 'price-asc') setProducts([...products].sort((a, b) => (a.price || 0) - (b.price || 0)));
+                                            if (value === 'price-desc') setProducts([...products].sort((a, b) => (b.price || 0) - (a.price || 0)));
+                                            if (value === 'new') fetchCategoryData(1, false);
+                                        }}
+                                    >
+                                        <option value="new">Trier par : Défaut</option>
+                                        <option value="price-asc">Prix croissant</option>
+                                        <option value="price-desc">Prix décroissant</option>
+                                    </select>
+                                    <ChevronDown className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 text-gray-400 pointer-events-none group-hover:text-forest-green transition-colors" />
                                 </div>
                             </div>
 

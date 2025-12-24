@@ -1,7 +1,8 @@
 import React from 'react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 import { useForm, Link } from '@inertiajs/react';
-import { ArrowLeft, Save, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Save, AlertCircle, Image as ImageIcon } from 'lucide-react';
+import { useState } from 'react';
 
 export default function Create() {
     const { data, setData, post, processing, errors } = useForm({
@@ -9,14 +10,26 @@ export default function Create() {
         slug: '',
         description: '',
         icon: '',
-        image: '',
+        image: null,
         order: 0,
         is_active: true,
     });
 
+    const [imagePreview, setImagePreview] = useState(null);
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setData('image', file);
+            setImagePreview(URL.createObjectURL(file));
+        }
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        post('/admin/categories');
+        post('/admin/categories', {
+            forceFormData: true,
+        });
     };
 
     return (
@@ -72,6 +85,31 @@ export default function Create() {
                                 className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-neon-green outline-none transition-all"
                                 placeholder="Description de la catégorie..."
                             ></textarea>
+                        </div>
+
+                        {/* Image Upload */}
+                        <div className="space-y-2">
+                            <label className="text-sm font-semibold text-gray-700">Image de couverture</label>
+                            <div className="flex items-center gap-4">
+                                <div className="w-24 h-24 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center overflow-hidden bg-gray-50 relative">
+                                    {imagePreview ? (
+                                        <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                                    ) : (
+                                        <ImageIcon className="text-gray-400" />
+                                    )}
+                                    <input
+                                        type="file"
+                                        onChange={handleImageChange}
+                                        accept="image/*"
+                                        className="absolute inset-0 opacity-0 cursor-pointer"
+                                    />
+                                </div>
+                                <div className="text-sm text-gray-500">
+                                    <p>Cliquez pour ajouter une image</p>
+                                    <p className="text-xs">JPG, PNG, WEBP (Max 2MB)</p>
+                                </div>
+                            </div>
+                            {errors.image && <p className="text-xs text-red-500">{errors.image}</p>}
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

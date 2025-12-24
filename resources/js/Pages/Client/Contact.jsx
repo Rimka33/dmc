@@ -1,16 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import MainLayout from '../../Layouts/MainLayout';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
-import { MapPin, Phone, Mail, Send, Check, Loader } from 'lucide-react';
+import { AuthContext } from '../../contexts/AuthContext';
+import { MapPin, Phone, Mail, Send, Check, Loader, Smartphone, MessageSquare, AtSign, PhoneCall, Globe, ArrowRight } from 'lucide-react';
 
 export default function Contact() {
+    const { user, authenticated } = useContext(AuthContext);
     const [data, setData] = useState({
         name: '',
         email: '',
         subject: '',
         message: ''
     });
+
+    useEffect(() => {
+        if (authenticated && user) {
+            setData(prev => ({
+                ...prev,
+                name: user.name || '',
+                email: user.email || ''
+            }));
+        }
+    }, [authenticated, user]);
+
     const [processing, setProcessing] = useState(false);
     const [errors, setErrors] = useState({});
     const [success, setSuccess] = useState(false);
@@ -27,7 +40,11 @@ export default function Contact() {
 
         try {
             await api.post('/contact', data);
-            setData({ name: '', email: '', subject: '', message: '' });
+            setData(prev => ({
+                ...prev,
+                subject: '',
+                message: ''
+            }));
             setSuccess(true);
         } catch (error) {
             if (error.response?.status === 422) {
@@ -42,19 +59,45 @@ export default function Contact() {
 
     return (
         <MainLayout>
-            {/* Hero Banner */}
-            <div className="py-24 relative overflow-hidden" style={{ background: 'linear-gradient(to bottom, rgba(1, 26, 10, 1), rgba(5, 128, 49, 1)), url(/images/contact-bg.jpg) center/cover' }}>
-                <div className="container mx-auto px-4 text-center relative z-10">
-                    <h1 className="text-5xl md:text-6xl font-black text-neon-green uppercase mb-6 tracking-tighter italic">CONTACTEZ-NOUS</h1>
-                    <div className="flex items-center justify-center gap-3 text-white text-sm font-bold tracking-widest uppercase bg-white/5 py-3 px-6 rounded-full inline-flex border border-white/10">
-                        <Link to="/" className="hover:text-neon-green transition-colors">Accueil</Link>
-                        <span className="text-gray-500">/</span>
-                        <span className="text-neon-green">Contact</span>
+            {/* Hero Banner - Recreated to match image */}
+            <div className="relative h-56 md:h-64 bg-[#004d1a] overflow-hidden flex items-center justify-center">
+                <div className="absolute inset-0 z-0">
+                    <div className="absolute inset-0 bg-gradient-to-br from-forest-green/30 to-transparent"></div>
+
+                    {/* Floating Icons Background Layer */}
+                    <div className="absolute top-1/4 left-[35%] opacity-20 blur-[1px] animate-pulse">
+                        <Smartphone className="w-24 h-24 text-white" />
+                    </div>
+                    <div className="absolute top-[20%] left-[45%] opacity-20">
+                        <MessageSquare className="w-16 h-16 text-white" />
+                    </div>
+                    <div className="absolute top-[35%] right-[20%] opacity-20 blur-[2px] animate-bounce duration-[3000ms]">
+                        <AtSign className="w-24 h-24 text-white" />
+                    </div>
+                    <div className="absolute top-[50%] right-[30%] opacity-20">
+                        <Mail className="w-20 h-20 text-white" />
+                    </div>
+                    <div className="absolute top-[60%] right-[10%] opacity-20 animate-pulse">
+                        <PhoneCall className="w-16 h-16 text-white" />
+                    </div>
+
+                    {/* Phone Image Overlay at the bottom */}
+                    <div className="absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-full max-w-2xl opacity-40">
+                        {/* Placeholder for the hand holding phone image if available, else decorative blur */}
+                        <div className="h-64 bg-gradient-to-t from-dark-green to-transparent blur-2xl"></div>
                     </div>
                 </div>
-                {/* Decorative elements */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-neon-green/10 rounded-full blur-3xl -mr-32 -mt-32"></div>
-                <div className="absolute bottom-0 left-0 w-64 h-64 bg-forest-green/20 rounded-full blur-3xl -ml-32 -mb-32"></div>
+
+                <div className="relative z-10 text-center container mx-auto px-4">
+                    <h1 className="text-3xl md:text-5xl font-black text-neon-green uppercase tracking-tighter mb-4 drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] italic">
+                        CONTACTEZ-NOUS
+                    </h1>
+                    <nav className="flex items-center justify-center gap-2 text-white/90 font-black text-[10px] uppercase tracking-[0.3em]">
+                        <Link to="/" className="hover:text-neon-green transition-colors">Accueil</Link>
+                        <span className="text-neon-green">{'>'}</span>
+                        <span className="text-white opacity-50">Contact</span>
+                    </nav>
+                </div>
             </div>
 
             {/* Contact Section */}
@@ -106,16 +149,7 @@ export default function Contact() {
                                 </div>
                             </div>
 
-                            <div className="p-8 bg-gray-50 rounded-3xl border border-gray-100 mt-12">
-                                <h3 className="font-black text-gray-900 uppercase text-xs tracking-widest mb-6">Suivez l'actualité</h3>
-                                <div className="flex gap-4">
-                                    {['facebook', 'instagram', 'twitter', 'linkedin'].map(social => (
-                                        <a key={social} href="#" className="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center hover:bg-neon-green hover:text-black transition-all group border border-gray-100">
-                                            <i className={`icon-${social} text-gray-400 group-hover:text-black transition-colors`}></i>
-                                        </a>
-                                    ))}
-                                </div>
-                            </div>
+                            {/* Blog Section Removed */}
                         </div>
 
                         {/* Contact Form */}
@@ -125,7 +159,7 @@ export default function Contact() {
                             </h2>
 
                             {success ? (
-                                <div className="bg-neon-green/10 border-2 border-neon-green p-8 rounded-3xl text-center">
+                                <div key="success-view-container" className="bg-neon-green/10 border-2 border-neon-green p-8 rounded-3xl text-center animate-in fade-in zoom-in duration-300">
                                     <div className="w-20 h-20 bg-neon-green rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-neon-green/20">
                                         <Check className="w-10 h-10 text-black" />
                                     </div>
@@ -139,78 +173,103 @@ export default function Contact() {
                                     </button>
                                 </div>
                             ) : (
-                                <form onSubmit={handleSubmit} className="space-y-6">
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div key="form-view-container">
+                                    <form onSubmit={handleSubmit} className="space-y-6">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div>
+                                                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 ml-1">Nom complet</label>
+                                                <input
+                                                    type="text"
+                                                    value={data.name}
+                                                    onChange={(e) => handleDataChange('name', e.target.value)}
+                                                    className={`w-full px-6 py-4 border-2 border-transparent rounded-2xl focus:bg-white focus:border-forest-green focus:outline-none transition-all font-medium text-gray-900 ${authenticated ? 'bg-gray-100 cursor-not-allowed opacity-70' : 'bg-gray-50'}`}
+                                                    placeholder="Jean Dupont"
+                                                    required
+                                                    disabled={authenticated}
+                                                    spellCheck="false"
+                                                    autoComplete="off"
+                                                    data-gramm="false"
+                                                    data-lpignore="true"
+                                                    data-form-type="other"
+                                                />
+                                                {errors.name && <p className="text-red-500 text-[10px] mt-2 font-bold uppercase tracking-wider">{errors.name[0]}</p>}
+                                            </div>
+                                            <div>
+                                                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 ml-1">Email</label>
+                                                <input
+                                                    type="email"
+                                                    value={data.email}
+                                                    onChange={(e) => handleDataChange('email', e.target.value)}
+                                                    className={`w-full px-6 py-4 border-2 border-transparent rounded-2xl focus:bg-white focus:border-forest-green focus:outline-none transition-all font-medium text-gray-900 ${authenticated ? 'bg-gray-100 cursor-not-allowed opacity-70' : 'bg-gray-50'}`}
+                                                    placeholder="jean@exemple.com"
+                                                    required
+                                                    disabled={authenticated}
+                                                    spellCheck="false"
+                                                    autoComplete="off"
+                                                    data-gramm="false"
+                                                    data-lpignore="true"
+                                                    data-form-type="other"
+                                                />
+                                                {errors.email && <p className="text-red-500 text-[10px] mt-2 font-bold uppercase tracking-wider">{errors.email[0]}</p>}
+                                            </div>
+                                        </div>
+
                                         <div>
-                                            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 ml-1">Nom complet</label>
+                                            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 ml-1">Objet du message</label>
                                             <input
                                                 type="text"
-                                                value={data.name}
-                                                onChange={(e) => handleDataChange('name', e.target.value)}
+                                                value={data.subject}
+                                                onChange={(e) => handleDataChange('subject', e.target.value)}
                                                 className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-forest-green focus:outline-none transition-all font-medium text-gray-900"
-                                                placeholder="Jean Dupont"
+                                                placeholder="Demande de devis / renseignement technique"
                                                 required
+                                                spellCheck="false"
+                                                autoComplete="off"
+                                                data-gramm="false"
+                                                data-lpignore="true"
+                                                data-form-type="other"
                                             />
-                                            {errors.name && <p className="text-red-500 text-[10px] mt-2 font-bold uppercase tracking-wider">{errors.name[0]}</p>}
+                                            {errors.subject && <p className="text-red-500 text-[10px] mt-2 font-bold uppercase tracking-wider">{errors.subject[0]}</p>}
                                         </div>
+
                                         <div>
-                                            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 ml-1">Email</label>
-                                            <input
-                                                type="email"
-                                                value={data.email}
-                                                onChange={(e) => handleDataChange('email', e.target.value)}
-                                                className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-forest-green focus:outline-none transition-all font-medium text-gray-900"
-                                                placeholder="jean@exemple.com"
+                                            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 ml-1">Votre message</label>
+                                            <textarea
+                                                value={data.message}
+                                                onChange={(e) => handleDataChange('message', e.target.value)}
+                                                rows="5"
+                                                className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-forest-green focus:outline-none transition-all font-medium text-gray-900 resize-none"
+                                                placeholder="Comment pouvons-nous vous aider ?"
                                                 required
-                                            />
-                                            {errors.email && <p className="text-red-500 text-[10px] mt-2 font-bold uppercase tracking-wider">{errors.email[0]}</p>}
+                                                spellCheck="false"
+                                                autoComplete="off"
+                                                data-gramm="false"
+                                                data-lpignore="true"
+                                                data-form-type="other"
+                                            ></textarea>
+                                            {errors.message && <p className="text-red-500 text-[10px] mt-2 font-bold uppercase tracking-wider">{errors.message[0]}</p>}
                                         </div>
-                                    </div>
 
-                                    <div>
-                                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 ml-1">Objet du message</label>
-                                        <input
-                                            type="text"
-                                            value={data.subject}
-                                            onChange={(e) => handleDataChange('subject', e.target.value)}
-                                            className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-forest-green focus:outline-none transition-all font-medium text-gray-900"
-                                            placeholder="Demande de devis / renseignement technique"
-                                            required
-                                        />
-                                        {errors.subject && <p className="text-red-500 text-[10px] mt-2 font-bold uppercase tracking-wider">{errors.subject[0]}</p>}
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 ml-1">Votre message</label>
-                                        <textarea
-                                            value={data.message}
-                                            onChange={(e) => handleDataChange('message', e.target.value)}
-                                            rows="5"
-                                            className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-forest-green focus:outline-none transition-all font-medium text-gray-900 resize-none"
-                                            placeholder="Comment pouvons-nous vous aider ?"
-                                            required
-                                        ></textarea>
-                                        {errors.message && <p className="text-red-500 text-[10px] mt-2 font-bold uppercase tracking-wider">{errors.message[0]}</p>}
-                                    </div>
-
-                                    <button
-                                        type="submit"
-                                        disabled={processing}
-                                        className="w-full py-5 bg-forest-green text-white font-black uppercase rounded-2xl hover:bg-dark-green transition-all shadow-xl shadow-forest-green/20 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-4 text-sm tracking-widest"
-                                    >
-                                        {processing ? (
-                                            <>
-                                                <Loader className="w-5 h-5 animate-spin" />
-                                                ENVOI EN COURS...
-                                            </>
-                                        ) : (
-                                            <>
-                                                ENVOYER LE MESSAGE
-                                                <Send className="w-4 h-4" />
-                                            </>
-                                        )}
-                                    </button>
-                                </form>
+                                        <button
+                                            type="submit"
+                                            key={processing ? 'processing-btn' : 'idle-btn'}
+                                            disabled={processing}
+                                            className="w-full py-5 bg-forest-green text-white font-black uppercase rounded-2xl hover:bg-dark-green transition-all shadow-xl shadow-forest-green/20 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-4 text-sm tracking-widest"
+                                        >
+                                            {processing ? (
+                                                <span className="flex items-center gap-4">
+                                                    <Loader className="w-5 h-5 animate-spin" />
+                                                    ENVOI EN COURS...
+                                                </span>
+                                            ) : (
+                                                <span className="flex items-center gap-4">
+                                                    ENVOYER LE MESSAGE
+                                                    <Send className="w-4 h-4" />
+                                                </span>
+                                            )}
+                                        </button>
+                                    </form>
+                                </div>
                             )}
                         </div>
                     </div>
@@ -230,6 +289,6 @@ export default function Contact() {
                     className="grayscale hover:grayscale-0 transition-all duration-700"
                 ></iframe>
             </section>
-        </MainLayout>
+        </MainLayout >
     );
 }

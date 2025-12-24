@@ -29,7 +29,11 @@ class CartService
                     'original_price' => (float) $product->price,
                     'quantity' => $quantity,
                     'subtotal' => (float) $product->finalPrice * $quantity,
-                    'image' => asset($product->primaryImage),
+                    'image' => $product->primaryImage 
+                        ? (str_starts_with($product->primaryImage->image_path, '/') || str_starts_with($product->primaryImage->image_path, 'http')
+                            ? asset($product->primaryImage->image_path)
+                            : asset('storage/' . $product->primaryImage->image_path))
+                        : asset('images/products/default.png'),
                     'stock_quantity' => $product->stock_quantity,
                     'in_stock' => $product->stock_quantity >= $quantity,
                 ];

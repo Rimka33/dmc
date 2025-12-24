@@ -14,17 +14,28 @@ class HomeController extends Controller
 {
     public function index()
     {
+        // 1. Catégories actives (7 pour l'affichage ligne)
         $categories = Category::where('is_active', true)
             ->orderBy('sort_order')
             ->limit(7)
             ->get();
 
+        // 2. Produits en vedette (Eager load images + category)
         $featuredProducts = Product::with(['images', 'category'])
             ->where('is_featured', true)
             ->where('is_active', true)
             ->limit(8)
             ->get();
 
+        // 3. Nouveautés (Eager load images + category)
+        $newProducts = Product::with(['images', 'category'])
+            ->where('is_new', true)
+            ->where('is_active', true)
+            ->latest()
+            ->limit(8)
+            ->get();
+
+        // 4. Offres spéciales (Eager load cascade relations)
         $specialOffers = SpecialOffer::with(['product.images', 'product.category', 'product.features'])
             ->where('is_active', true)
             ->where('end_date', '>', now())
@@ -34,22 +45,24 @@ class HomeController extends Controller
         return response()->json([
             'categories' => CategoryResource::collection($categories),
             'featuredProducts' => ProductResource::collection($featuredProducts),
+            'newProducts' => ProductResource::collection($newProducts),
             'specialOffers' => $specialOffers->map(function($offer) {
+                $product = $offer->product;
                 return [
                     'id' => $offer->id,
                     'product_id' => $offer->product_id,
-                    'name' => $offer->product->name,
-                    'slug' => $offer->product->slug,
-                    'sku' => $offer->product->sku,
-                    'price_formatted' => number_format($offer->product->finalPrice, 0, ',', '.') . ' FCFA',
-                    'old_price_formatted' => $offer->product->hasDiscount ? number_format($offer->product->price, 0, ',', '.') . ' FCFA' : null,
-                    'has_discount' => $offer->product->hasDiscount,
-                    'discount_percentage' => $offer->product->discount_percentage,
-                    'primary_image' => $offer->product->primaryImage ? asset($offer->product->primaryImage->image_path) : asset('images/products/default.png'),
-                    'category_name' => $offer->product->category->name,
-                    'stock_quantity' => $offer->product->stock_quantity,
-                    'is_on_sale' => $offer->product->is_on_sale,
-                    'features' => $offer->product->features->pluck('feature')->toArray(),
+                    'name' => $product->name,
+                    'slug' => $product->slug,
+                    'sku' => $product->sku,
+                    'price_formatted' => number_format($product->finalPrice, 0, ',', '.') . ' FCFA',
+                    'old_price_formatted' => $product->hasDiscount ? number_format($product->price, 0, ',', '.') . ' FCFA' : null,
+                    'has_discount' => $product->hasDiscount,
+                    'discount_percentage' => $product->discount_percentage,
+                    'primary_image' => $product->primaryImage ? asset($product->primaryImage->image_path) : asset('images/products/default.png'),
+                    'category_name' => $product->category->name,
+                    'stock_quantity' => $product->stock_quantity,
+                    'is_on_sale' => $product->is_on_sale,
+                    'features' => $product->features->pluck('feature')->toArray(),
                     'end_date' => $offer->end_date->toISOString(),
                     'available_stock' => $offer->available_stock,
                     'total_stock' => $offer->total_stock,

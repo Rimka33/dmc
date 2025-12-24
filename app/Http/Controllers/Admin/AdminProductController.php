@@ -35,21 +35,64 @@ class AdminProductController extends Controller
         ]);
     }
 
+    public function show($id)
+    {
+        $product = Product::with(['category', 'images'])->findOrFail($id);
+        
+        return Inertia::render('Admin/Products/Show', [
+            'product' => $product
+        ]);
+    }
+
     public function store(Request $request)
     {
+        // 1. Validation de base
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'price' => 'required|numeric|min:0',
+            'discount_price' => 'nullable|numeric|min:0',
             'stock_quantity' => 'required|integer|min:0',
             'description' => 'nullable|string',
             'sku' => 'nullable|string|unique:products,sku',
             'is_active' => 'boolean',
+            'tags' => 'nullable|string', // JSON string
+            'images.*' => 'file|mimes:jpeg,png,jpg,webp,mp4,mov,avi,webm|max:51200' // Max 50MB, added video support
         ]);
 
+        // 2. Traitement du slug et SKU
         $validated['slug'] = Str::slug($validated['name']);
+        if (empty($validated['sku'])) {
+            $validated['sku'] = null; // Important pour l'unicité
+        }
 
-        Product::create($validated);
+        // 3. Création du produit
+        $product = Product::create($validated);
+
+        // 4. Gestion des Tags
+        if (!empty($request->tags)) {
+            $tags = json_decode($request->tags, true);
+            if (is_array($tags)) {
+                // Logique simplifiée pour les tags : on les stocke dans une table liée ou JSON column
+                // Pour l'instant, supposons une relation ProductTag ou un champ JSON 'tags' sur le produit
+                // Si la colonne 'tags' existe en JSON sur Product :
+                // $product->update(['tags' => $tags]);
+                
+                // OU création de modèles liés (implémentation future selon vos modèles)
+            }
+        }
+
+        // 5. Gestion des Images
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $index => $image) {
+                $path = $image->store('products', 'public');
+                $product->images()->create([
+                    'image_path' => $path,
+                    'is_primary' => $index === 0,
+                    'sort_order' => $index,
+                ]);
+            }
+        }
 
         return redirect()->route('admin.products.index')->with('success', 'Produit créé avec succès.');
     }

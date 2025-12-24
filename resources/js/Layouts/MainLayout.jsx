@@ -4,7 +4,10 @@ import { CartContext } from '../contexts/CartContext';
 import { AuthContext } from '../contexts/AuthContext';
 import { WishlistContext } from '../contexts/WishlistContext';
 import api from '../services/api';
-import { MapPin, ChevronDown, Heart, ShoppingCart, User, Menu, Search, X, Facebook, Instagram, Twitter, Youtube, Phone, Mail, Package } from 'lucide-react';
+import {
+    ShoppingCart, User, Menu, X, ChevronDown, MapPin, Heart, Package,
+    Twitter, Facebook, Instagram, Youtube, Settings, Search, BookOpen, Mail as MailIcon, Phone
+} from 'lucide-react';
 
 export default function MainLayout({ children }) {
     const navigate = useNavigate();
@@ -22,6 +25,9 @@ export default function MainLayout({ children }) {
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [searchLoading, setSearchLoading] = useState(false);
     const [ordersCount, setOrdersCount] = useState(0);
+    const [newsletterEmail, setNewsletterEmail] = useState('');
+    const [newsletterLoading, setNewsletterLoading] = useState(false);
+    const [newsletterStatus, setNewsletterStatus] = useState({ type: '', message: '' });
 
     useEffect(() => {
         fetchCategories();
@@ -41,12 +47,34 @@ export default function MainLayout({ children }) {
 
     const fetchOrdersCount = async () => {
         try {
-            const response = await api.get('/orders');
+            const response = await api.get('/orders/user/history');
             if (response.data.success) {
                 setOrdersCount(response.data.data ? response.data.data.length : 0);
             }
         } catch (error) {
             console.error('Error fetching orders count:', error);
+        }
+    };
+
+    const handleNewsletterSubmit = async (e) => {
+        e.preventDefault();
+        if (!newsletterEmail) return;
+
+        setNewsletterLoading(true);
+        try {
+            const response = await api.post('/newsletter/subscribe', { email: newsletterEmail });
+            if (response.data.success) {
+                setNewsletterStatus({ type: 'success', message: response.data.message });
+                setNewsletterEmail('');
+            }
+        } catch (error) {
+            setNewsletterStatus({
+                type: 'error',
+                message: error.response?.data?.message || 'Une erreur est survenue.'
+            });
+        } finally {
+            setNewsletterLoading(false);
+            setTimeout(() => setNewsletterStatus({ type: '', message: '' }), 5000);
         }
     };
 
@@ -96,13 +124,10 @@ export default function MainLayout({ children }) {
 
     return (
         <div className="min-h-screen flex flex-col font-sans bg-gray-50">
-            {/* Header */}
             <header className="sticky top-0 z-50 w-full shadow-2xl">
-                {/* Top Bar */}
                 <div className="py-2.5 bg-dark-green border-b border-white/5">
                     <div className="container mx-auto px-4">
                         <div className="flex items-center justify-between">
-                            {/* Left Side */}
                             <div className="flex items-center gap-6">
                                 <div className="hidden lg:flex items-center gap-2">
                                     <span className="text-white/40 font-black uppercase tracking-[0.2em] text-[10px]">Support:</span>
@@ -118,14 +143,12 @@ export default function MainLayout({ children }) {
                                 </div>
                             </div>
 
-                            {/* Middle Logo */}
                             <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 md:static md:translate-x-0 md:translate-y-0">
                                 <Link to="/" className="block">
                                     <img src="/images/logo.png" alt="DMC Logo" className="h-8 md:h-12 w-auto object-contain brightness-110" />
                                 </Link>
                             </div>
 
-                            {/* Right Side Icons */}
                             <div className="flex items-center gap-3 sm:gap-6">
                                 <Link to="/wishlist" className="text-white/80 hover:text-neon-green transition-all relative group hidden sm:block">
                                     <Heart className="w-5 h-5" />
@@ -137,9 +160,8 @@ export default function MainLayout({ children }) {
                                 </Link>
 
                                 <div className="flex items-center gap-4">
-                                    {/* Orders Icon - Only show if user has orders */}
                                     {authenticated && ordersCount > 0 && (
-                                        <Link to="/mon-compte" className="text-white/80 hover:text-neon-green transition-all relative group hidden sm:block">
+                                        <Link to="/mes-commandes" className="text-white/80 hover:text-neon-green transition-all relative group">
                                             <Package className="w-5 h-5" />
                                             <span className="absolute -top-1.5 -right-1.5 bg-blue-500 text-white text-[9px] font-black rounded-full w-4 h-4 flex items-center justify-center border border-dark-green">
                                                 {ordersCount}
@@ -185,6 +207,11 @@ export default function MainLayout({ children }) {
                                                     <Link to="/mon-compte" className="flex items-center gap-3 px-5 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-forest-green font-bold transition-all">
                                                         <User className="w-4 h-4 text-gray-400" /> Mon Profil
                                                     </Link>
+                                                    {user?.role === 'admin' && (
+                                                        <a href="/admin/dashboard" className="flex items-center gap-3 px-5 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-forest-green font-bold transition-all border-t border-gray-50">
+                                                            <Settings className="w-4 h-4 text-gray-400" /> Configuration Admin
+                                                        </a>
+                                                    )}
                                                     <button
                                                         onClick={handleLogout}
                                                         className="w-full flex items-center gap-3 px-5 py-2.5 text-sm text-red-600 hover:bg-red-50 font-bold transition-all"
@@ -208,10 +235,8 @@ export default function MainLayout({ children }) {
                     </div>
                 </div>
 
-                {/* Main Navigation Bar */}
                 <div className="bg-forest-green h-14">
                     <div className="container mx-auto px-4 h-full flex items-center justify-between gap-8">
-                        {/* Categories Dropdown */}
                         <div
                             className="relative h-full flex items-center"
                             onMouseEnter={() => setCategoriesOpen(true)}
@@ -254,14 +279,13 @@ export default function MainLayout({ children }) {
                             )}
                         </div>
 
-                        {/* Main Navigation Menu */}
                         <nav className="hidden lg:flex flex-1 items-center justify-center gap-2">
                             {[
                                 { name: 'Accueil', path: '/' },
                                 { name: 'Boutique', path: '/shop' },
                                 { name: 'Promotions', path: '/shop?on_sale=1' },
-                                { name: 'Nos Services', path: '/services' },
-                                { name: 'Contact', path: '/contact' }
+                                { name: 'Contact', path: '/contact' },
+                                { name: 'Blog', path: '/blog' }
                             ].map(item => (
                                 <Link
                                     key={item.path}
@@ -273,7 +297,6 @@ export default function MainLayout({ children }) {
                             ))}
                         </nav>
 
-                        {/* Search Bar */}
                         <div className="hidden md:flex flex-1 max-w-sm relative">
                             <form onSubmit={handleSearch} className="w-full relative">
                                 <input
@@ -290,7 +313,6 @@ export default function MainLayout({ children }) {
                                 </button>
                             </form>
 
-                            {/* Search Suggestions Dropdown */}
                             {showSuggestions && (
                                 <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-[70] max-h-96 overflow-y-auto">
                                     {searchLoading ? (
@@ -335,7 +357,6 @@ export default function MainLayout({ children }) {
                             )}
                         </div>
 
-                        {/* Mobile Toggle */}
                         <button
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                             className="lg:hidden w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center text-white"
@@ -345,112 +366,106 @@ export default function MainLayout({ children }) {
                     </div>
                 </div>
 
-                {/* Mobile Sidebar Navigation */}
-                {
-                    mobileMenuOpen && (
-                        <div className="lg:hidden fixed inset-0 z-[100] bg-gray-900/90 backdrop-blur-sm animate-in fade-in duration-300">
-                            <div className="absolute right-0 top-0 h-full w-4/5 max-w-sm bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-500">
-                                <div className="p-6 bg-forest-green flex items-center justify-between">
-                                    <img src="/images/logo.png" alt="DMC" className="h-8" />
-                                    <button onClick={() => setMobileMenuOpen(false)} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white">
-                                        <X className="w-5 h-5" />
+                {mobileMenuOpen && (
+                    <div className="lg:hidden fixed inset-0 z-[100] bg-gray-900/90 backdrop-blur-sm animate-in fade-in duration-300">
+                        <div className="absolute right-0 top-0 h-full w-4/5 max-w-sm bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-500">
+                            <div className="p-6 bg-forest-green flex items-center justify-between">
+                                <img src="/images/logo.png" alt="DMC" className="h-8" />
+                                <button onClick={() => setMobileMenuOpen(false)} className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white">
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+
+                            <div className="flex-1 overflow-y-auto py-8">
+                                <nav className="px-6 space-y-6">
+                                    <div className="mb-8">
+                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Navigation</p>
+                                        <div className="flex flex-col gap-3">
+                                            {[
+                                                { name: 'Accueil', path: '/', icon: 'home' },
+                                                { name: 'Boutique', path: '/shop', icon: 'shopping-bag' },
+                                                { name: 'Panier', path: '/panier', icon: 'shopping-cart' },
+                                                { name: 'Blog', path: '/blog', icon: 'book-open' },
+                                                { name: 'Contact', path: '/contact', icon: 'mail' }
+                                            ].map(item => (
+                                                <Link
+                                                    key={item.path}
+                                                    to={item.path}
+                                                    onClick={() => setMobileMenuOpen(false)}
+                                                    className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl font-black text-xs uppercase tracking-wider text-gray-700"
+                                                >
+                                                    {item.icon === 'home' && <Menu className="w-5 h-5 text-forest-green" />}
+                                                    {item.icon === 'shopping-bag' && <ShoppingCart className="w-5 h-5 text-forest-green" />}
+                                                    {item.icon === 'shopping-cart' && <ShoppingCart className="w-5 h-5 text-forest-green" />}
+                                                    {item.icon === 'book-open' && <BookOpen className="w-5 h-5 text-forest-green" />}
+                                                    {item.icon === 'mail' && <MailIcon className="w-5 h-5 text-forest-green" />}
+                                                    {item.name}
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Catégories</p>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            {categories.map(cat => (
+                                                <Link
+                                                    key={cat.id}
+                                                    to={`/categorie/${cat.slug}`}
+                                                    onClick={() => setMobileMenuOpen(false)}
+                                                    className="flex flex-col items-center justify-center p-4 border border-gray-100 rounded-2xl bg-white hover:border-neon-green transition-all"
+                                                >
+                                                    <img src={cat.icon || '/images/icons/default.svg'} alt="" className="w-8 h-8 mb-2" />
+                                                    <span className="text-[9px] font-bold text-center text-gray-600 line-clamp-1 truncate">{cat.name}</span>
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </nav>
+                            </div>
+
+                            <div className="p-8 border-t border-gray-100">
+                                {authenticated ? (
+                                    <button
+                                        onClick={handleLogout}
+                                        className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest"
+                                    >
+                                        Déconnexion
                                     </button>
-                                </div>
-
-                                <div className="flex-1 overflow-y-auto py-8">
-                                    <nav className="px-6 space-y-6">
-                                        <div className="mb-8">
-                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Navigation</p>
-                                            <div className="flex flex-col gap-3">
-                                                {[
-                                                    { name: 'Accueil', path: '/', icon: 'home' },
-                                                    { name: 'Boutique', path: '/shop', icon: 'shopping-bag' },
-                                                    { name: 'Panier', path: '/panier', icon: 'shopping-cart' },
-                                                    { name: 'Contact', path: '/contact', icon: 'mail' }
-                                                ].map(item => (
-                                                    <Link
-                                                        key={item.path}
-                                                        to={item.path}
-                                                        onClick={() => setMobileMenuOpen(false)}
-                                                        className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl font-black text-xs uppercase tracking-wider text-gray-700"
-                                                    >
-                                                        {item.icon === 'home' && <Menu className="w-5 h-5 text-forest-green" />}
-                                                        {item.icon === 'shopping-bag' && <ShoppingCart className="w-5 h-5 text-forest-green" />}
-                                                        {item.icon === 'shopping-cart' && <ShoppingCart className="w-5 h-5 text-forest-green" />}
-                                                        {item.icon === 'mail' && <Search className="w-5 h-5 text-forest-green" />}
-                                                        {item.name}
-                                                    </Link>
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Catégories</p>
-                                            <div className="grid grid-cols-2 gap-3">
-                                                {categories.map(cat => (
-                                                    <Link
-                                                        key={cat.id}
-                                                        to={`/categorie/${cat.slug}`}
-                                                        onClick={() => setMobileMenuOpen(false)}
-                                                        className="flex flex-col items-center justify-center p-4 border border-gray-100 rounded-2xl bg-white hover:border-neon-green transition-all"
-                                                    >
-                                                        <img src={cat.icon || '/images/icons/default.svg'} alt="" className="w-8 h-8 mb-2" />
-                                                        <span className="text-[9px] font-bold text-center text-gray-600 line-clamp-1 truncate">{cat.name}</span>
-                                                    </Link>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </nav>
-                                </div>
-
-                                <div className="p-8 border-t border-gray-100">
-                                    {authenticated ? (
-                                        <button
-                                            onClick={handleLogout}
-                                            className="w-full py-4 bg-red-600 text-white rounded-2xl font-black text-xs uppercase tracking-widest"
-                                        >
-                                            Déconnexion
-                                        </button>
-                                    ) : (
-                                        <Link
-                                            to="/mon-compte"
-                                            onClick={() => setMobileMenuOpen(false)}
-                                            className="block w-full py-4 bg-gray-900 text-white text-center rounded-2xl font-black text-xs uppercase tracking-widest"
-                                        >
-                                            Se Connecter
-                                        </Link>
-                                    )}
-                                </div>
+                                ) : (
+                                    <Link
+                                        to="/mon-compte"
+                                        onClick={() => setMobileMenuOpen(false)}
+                                        className="block w-full py-4 bg-gray-900 text-white text-center rounded-2xl font-black text-xs uppercase tracking-widest"
+                                    >
+                                        Se Connecter
+                                    </Link>
+                                )}
                             </div>
                         </div>
-                    )
-                }
+                    </div>
+                )}
             </header>
 
-            {/* Main Content */}
             <main className="flex-1 relative z-10">
                 {children}
             </main>
 
-            {/* Footer */}
-            <footer className="relative pt-24 pb-12 overflow-hidden bg-forest-green text-white">
-                {/* Background Image Overlay */}
-                <div className="absolute inset-0 z-0 opacity-30">
+            <footer className="relative pt-10 pb-6 overflow-hidden bg-dark-green text-white">
+                <div className="absolute inset-0 z-0">
                     <img
                         src="/images/footer-bg.png"
                         alt="Footer Background"
-                        className="w-full h-full object-cover filter grayscale contrast-125 brightness-75 mix-blend-luminosity"
+                        className="w-full h-full object-cover opacity-30 grayscale"
                     />
-                    <div className="absolute inset-0 bg-forest-green/60 mix-blend-multiply"></div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-forest-green via-forest-green/40 to-transparent"></div>
+                    <div className="absolute inset-0 bg-[#058031]/60 mix-blend-multiply"></div>
                 </div>
 
                 <div className="container mx-auto px-4 relative z-10">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-20 text-[11px] font-bold">
-                        {/* Column 1: BOUTIQUE */}
-                        <div className="space-y-6">
-                            <h3 className="text-sm font-black uppercase tracking-tighter italic border-b border-white/10 pb-2 mb-4">BOUTIQUE</h3>
-                            <ul className="space-y-3 opacity-70">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-6 gap-y-12 mb-16 text-[11px] font-bold">
+                        <div className="space-y-3">
+                            <h3 className="text-[12px] font-black uppercase tracking-tight mb-4 border-b border-white/10 pb-1">BOUTIQUE</h3>
+                            <ul className="space-y-1.5 opacity-80">
                                 <li><Link to="/shop?cat=accessoires" className="hover:text-neon-green transition-colors">Accessoires Informatique</Link></li>
                                 <li><Link to="/shop?cat=portables" className="hover:text-neon-green transition-colors">Ordinateurs Portables</Link></li>
                                 <li><Link to="/shop?cat=bureau" className="hover:text-neon-green transition-colors">Ordinateurs Bureau</Link></li>
@@ -461,20 +476,27 @@ export default function MainLayout({ children }) {
                             </ul>
                         </div>
 
-                        {/* Column 2: A PROPOS */}
-                        <div className="space-y-6">
-                            <h3 className="text-sm font-black uppercase tracking-tighter italic border-b border-white/10 pb-2 mb-4">A PROPOS</h3>
-                            <ul className="space-y-3 opacity-70 mb-6">
+                        <div className="space-y-3">
+                            <h3 className="text-[12px] font-black uppercase tracking-tight mb-4 border-b border-white/10 pb-1">A PROPOS</h3>
+                            <ul className="space-y-1.5 opacity-80 mb-4">
                                 <li><Link to="/a-propos" className="hover:text-neon-green transition-colors">Qui sommes-Nous</Link></li>
                                 <li><Link to="/temoignages" className="hover:text-neon-green transition-colors">Témoignages</Link></li>
                                 <li><Link to="/contact" className="hover:text-neon-green transition-colors">Nos Contacts</Link></li>
+                                <li><Link to="#" className="hover:text-neon-green transition-colors">Notre App</Link></li>
                             </ul>
+                            <div className="flex flex-col gap-2">
+                                <a href="#" className="block w-28">
+                                    <img src="/images/icons/app-store.svg" alt="App Store" className="h-8 w-auto hover:brightness-110 transition-all shadow-sm" />
+                                </a>
+                                <a href="#" className="block w-28">
+                                    <img src="/images/icons/play-store.svg" alt="Google Play" className="h-8 w-auto hover:brightness-110 transition-all shadow-sm" />
+                                </a>
+                            </div>
                         </div>
 
-                        {/* Column 3: MON COMPTE */}
-                        <div className="space-y-6">
-                            <h3 className="text-sm font-black uppercase tracking-tighter italic border-b border-white/10 pb-2 mb-4">MON COMPTE</h3>
-                            <ul className="space-y-3 opacity-70">
+                        <div className="space-y-3">
+                            <h3 className="text-[12px] font-black uppercase tracking-tight mb-4 border-b border-white/10 pb-1">MON COMPTE</h3>
+                            <ul className="space-y-1.5 opacity-80">
                                 <li><Link to="/mon-compte" className="hover:text-neon-green transition-colors">Se connecter</Link></li>
                                 <li><Link to="/mon-compte" className="hover:text-neon-green transition-colors">S'inscrire</Link></li>
                                 <li><Link to="/wishlist" className="hover:text-neon-green transition-colors">Liste de souhaits</Link></li>
@@ -483,73 +505,87 @@ export default function MainLayout({ children }) {
                             </ul>
                         </div>
 
-                        {/* Column 4: SERVICE CLIENTÈLE */}
-                        <div className="space-y-6">
-                            <h3 className="text-sm font-black uppercase tracking-tighter italic border-b border-white/10 pb-2 mb-4">SERVICE CLIENTÈLE</h3>
-                            <ul className="space-y-3 opacity-70 mb-8">
+                        <div className="space-y-3">
+                            <h3 className="text-[12px] font-black uppercase tracking-tight mb-4 border-b border-white/10 pb-1">SERVICE CLIENTÈLE</h3>
+                            <ul className="space-y-1.5 opacity-80 mb-4">
                                 <li><Link to="/retours" className="hover:text-neon-green transition-colors">Retours & Remboursement</Link></li>
                                 <li><Link to="/politique-de-confidentialite" className="hover:text-neon-green transition-colors">Politique de Confidentialité</Link></li>
-                                <li><Link to="/termes-et-conditions" className="hover:text-neon-green transition-colors">Termes & Conditions</Link></li>
+                                <li><Link to="/termes" className="hover:text-neon-green transition-colors">Termes & Conditions</Link></li>
                             </ul>
                             <div className="flex gap-2">
-                                <a href="#" className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center hover:bg-neon-green hover:text-black transition-all">
-                                    <Facebook className="w-4 h-4" />
+                                <a href="#" className="w-7 h-7 bg-white rounded flex items-center justify-center text-dark-green hover:bg-neon-green transition-all shadow-sm">
+                                    <Facebook className="w-3.5 h-3.5" />
                                 </a>
-                                <a href="#" className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center hover:bg-neon-green hover:text-black transition-all">
-                                    <Instagram className="w-4 h-4" />
+                                <a href="#" className="w-7 h-7 bg-white rounded flex items-center justify-center text-dark-green hover:bg-neon-green transition-all shadow-sm">
+                                    <Instagram className="w-3.5 h-3.5" />
                                 </a>
-                                <a href="#" className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center hover:bg-neon-green hover:text-black transition-all">
-                                    <Twitter className="w-4 h-4" />
+                                <a href="#" className="w-7 h-7 bg-white rounded flex items-center justify-center text-dark-green hover:bg-neon-green transition-all shadow-sm">
+                                    <Youtube className="w-3.5 h-3.5" />
                                 </a>
-                                <a href="#" className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center hover:bg-neon-green hover:text-black transition-all">
-                                    <Youtube className="w-4 h-4" />
+                                <a href="#" className="w-7 h-7 bg-white rounded flex items-center justify-center text-dark-green hover:bg-neon-green transition-all shadow-sm">
+                                    <Twitter className="w-3.5 h-3.5" />
+                                </a>
+                                <a href="#" className="w-7 h-7 bg-white rounded flex items-center justify-center text-dark-green hover:bg-neon-green transition-all shadow-sm">
+                                    <X className="w-3.5 h-3.5" />
                                 </a>
                             </div>
                         </div>
 
-                        {/* Column 5: NEWSLETTER */}
-                        <div className="space-y-6">
-                            <h3 className="text-sm font-black uppercase tracking-tighter italic border-b border-white/10 pb-2 mb-4">NEWSLETTER</h3>
-                            <div className="opacity-60 leading-relaxed mb-6">
-                                Bénéficiez de 15% de réduction sur votre premier achat ! Soyez également informé(e) en avant-première des promotions, des lancements de nouveaux produits et des offres exclusives !
-                            </div>
-                            <form className="relative mb-8">
+                        <div className="col-span-2 md:col-span-3 lg:col-span-1 space-y-4">
+                            <h3 className="text-[12px] font-black uppercase tracking-tight mb-4 border-b border-white/10 pb-1">NEWSLETTER</h3>
+                            <p className="opacity-70 leading-relaxed text-[10px]">
+                                Bénéficiez de 15 % de réduction sur votre premier achat !
+                            </p>
+
+                            {newsletterStatus.message && (
+                                <div className={`text-[10px] font-bold p-2 rounded animate-in fade-in slide-in-from-top-1 duration-300 ${newsletterStatus.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
+                                    }`}>
+                                    {newsletterStatus.message}
+                                </div>
+                            )}
+
+                            <form onSubmit={handleNewsletterSubmit} className="bg-white rounded-lg flex items-center overflow-hidden p-1 shadow-sm max-w-sm">
                                 <input
                                     type="email"
+                                    value={newsletterEmail}
+                                    onChange={(e) => setNewsletterEmail(e.target.value)}
                                     placeholder="VOTRE EMAIL"
-                                    className="w-full bg-white text-gray-900 px-4 py-3 rounded-lg text-[10px] font-black focus:outline-none"
+                                    className="flex-1 min-w-0 bg-transparent text-gray-900 px-3 py-2.5 text-[10px] font-black focus:outline-none placeholder-gray-400"
+                                    required
                                 />
-                                <button className="absolute right-1 top-1 bottom-1 px-4 bg-gray-900 text-white rounded-md text-[9px] font-black uppercase hover:bg-black transition-colors">
-                                    S'inscrire
+                                <button
+                                    type="submit"
+                                    disabled={newsletterLoading}
+                                    className="bg-forest-green text-white px-4 py-2 text-[10px] font-black uppercase hover:bg-dark-green transition-colors whitespace-nowrap rounded disabled:opacity-50"
+                                >
+                                    {newsletterLoading ? '...' : 'OK'}
                                 </button>
                             </form>
-                            <div className="space-y-4 pt-4 border-t border-white/5">
-                                <div className="flex items-center gap-3">
-                                    <Phone className="w-4 h-4 text-neon-green" />
-                                    <span className="text-neon-green font-black">Nous Joindre :</span>
-                                    <span className="font-black">+221 77 236 77 77</span>
+
+                            <div className="space-y-3 pt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-2">
+                                <p className="text-[11px] font-black whitespace-nowrap">
+                                    Service: <span className="text-neon-green">+221 77 236 77 77</span>
+                                </p>
+                                <div className="flex items-start gap-2 opacity-90 text-[10px]">
+                                    <MapPin className="w-3.5 h-3.5 text-neon-green flex-shrink-0" />
+                                    <span className="leading-tight">345 Rue FA 22, Dakar</span>
                                 </div>
-                                <div className="flex items-start gap-3 opacity-80">
-                                    <MapPin className="w-4 h-4 text-neon-green mt-0.5 flex-shrink-0" />
-                                    <span><span className="text-neon-green">DMC BOUTIQUE :</span> 345 Rue FA 22, Dakar - Sénégal</span>
-                                </div>
-                                <div className="flex items-center gap-3 opacity-80">
-                                    <Mail className="w-4 h-4 text-neon-green" />
-                                    <span>Email: <a href="mailto:contact@dmcomputer.sn" className="hover:text-neon-green transition-colors">contact@dmcomputer.sn</a></span>
+                                <div className="flex items-center gap-2 opacity-90 text-[10px]">
+                                    <MailIcon className="w-3.5 h-3.5 text-neon-green flex-shrink-0" />
+                                    <span className="truncate">contact@dmcomputer.sn</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Bottom Footer */}
-                    <div className="pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-black tracking-widest text-white/40">
-                        <p>© 2025 DAROUL MOUHTY COMPUTER. TOUS DROITS RÉSERVÉS.</p>
-                        <div className="flex items-center gap-4 grayscale brightness-50 opacity-50">
-                            <img src="/images/payment/visa.png" alt="Visa" className="h-4" />
-                            <img src="/images/payment/mastercard.png" alt="Mastercard" className="h-4" />
-                            <img src="/images/payment/wave.png" alt="Wave" className="h-4" />
+                    <div className="flex justify-center mb-6">
+                        <div className="bg-white/95 backdrop-blur-sm px-5 py-2 rounded-full flex items-center gap-6 shadow-md">
+                            <img src="/images/payment-methods.png" alt="Moyens de paiement" className="h-5 object-contain" />
                         </div>
-                        <p>CONÇU PAR <span className="text-neon-green opacity-100">ITEA</span></p>
+                    </div>
+
+                    <div className="pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-3 text-[9px] font-bold tracking-wider text-white/50">
+                        <p>© 2025 DAROUL MOUHTY COMPUTER. TOUS DROITS RÉSERVÉS. CONÇU PAR <span className="text-white">ITEA</span></p>
                     </div>
                 </div>
             </footer>

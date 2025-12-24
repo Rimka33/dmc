@@ -11,7 +11,7 @@ export default {
       colors: {
         'neon-green': '#4BE584',
         'forest-green': '#2B6147',
-        'dark-green': '#1E4433',
+        'dark-green': '#058031',
         'light-gray-bg': '#F5F5F5',
       },
       fontFamily: {

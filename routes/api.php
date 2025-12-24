@@ -153,6 +153,7 @@ Route::middleware('auth:sanctum')->prefix('notifications')->group(function () {
 // ============================================================================
 
 Route::post('/contact', [ContactController::class, 'submit']);
+Route::post('/newsletter/subscribe', [\App\Http\Controllers\Api\NewsletterController::class, 'subscribe']);
 
 // ============================================================================
 // ROUTES ADMIN - Authentification + Role Admin requis

@@ -24,52 +24,60 @@
     --dmc-black: #011a0a;
 }
 
+/* Admin specific styles */
+[data-admin="true"] {
+    --primary-color: #058031;
+    --primary-dark: #011a0a;
+    --accent-color: #00ff24;
+}
+
 @layer components {
+
     /* Custom color utilities */
     .bg-forest-green {
         background-color: #058031;
     }
-    
+
     .bg-dark-green {
         background-color: #011a0a;
     }
-    
+
     .bg-neon-green {
         background-color: #00ff24;
     }
-    
+
     .bg-light-gray-bg {
         background-color: #f5f5f7;
     }
-    
+
     .text-forest-green {
         color: #058031;
     }
-    
+
     .text-dark-green {
         color: #011a0a;
     }
-    
+
     .text-neon-green {
         color: #00ff24;
     }
-    
+
     .border-neon-green {
         border-color: #00ff24;
     }
-    
+
     .hover\:bg-dark-green:hover {
         background-color: #011a0a;
     }
-    
+
     .hover\:text-neon-green:hover {
         color: #00ff24;
     }
-    
+
     .hover\:border-neon-green:hover {
         border-color: #00ff24;
     }
-    
+
     /* Gradient backgrounds */
     .bg-gradient-dark-green {
         background: linear-gradient(to bottom, #011a0a, #058031);
@@ -226,11 +234,21 @@ textarea:-webkit-autofill:focus {
     }
 
     @keyframes float {
-        0%, 100% {
+
+        0%,
+        100% {
             transform: translateY(0px);
         }
+
         50% {
             transform: translateY(-20px);
         }
     }
+}
+
+.footer-with-image {
+    background-image: url('/images/footer-bg.png');
+    background: linear-gradient(#058031, #058031), url('/images/footer-bg.png');
+    background-size: cover;
+    background-blend-mode: multiply;
 }

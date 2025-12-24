@@ -59,11 +59,14 @@ export default function CheckoutReceived() {
     return (
         <MainLayout>
             {/* Hero Banner */}
-            <div className="relative h-56 bg-gradient-to-br from-green-900 via-green-800 to-forest-green overflow-hidden">
-                <div className="absolute inset-0 opacity-20">
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-96 h-96">
-                        <Check className="w-full h-full text-white opacity-10" />
-                    </div>
+            <div className="relative h-56 bg-black overflow-hidden">
+                <div className="absolute inset-0">
+                    <img
+                        src="/images/back.jpg"
+                        alt="confirmation banner"
+                        className="w-full h-full object-cover opacity-60"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
                 </div>
                 <div className="container mx-auto px-4 h-full flex flex-col items-center justify-center relative z-10">
                     <div className="w-20 h-20 bg-neon-green rounded-full flex items-center justify-center mb-4 shadow-2xl">
@@ -137,7 +140,7 @@ export default function CheckoutReceived() {
 
                                 <div className="divide-y divide-gray-100">
                                     {order.items && order.items.map((item, index) => (
-                                        <div key={`item-${item.id || index}`} className="flex items-center justify-between p-6 hover:bg-gray-50/50 transition-colors">
+                                        <div key={`order-item-${item.id || index}-${item.product_id || ''}`} className="flex items-center justify-between p-6 hover:bg-gray-50/50 transition-colors">
                                             <div className="flex items-center gap-4">
                                                 <div className="w-16 h-16 bg-gray-50 rounded-lg p-2 border border-gray-100 flex-shrink-0">
                                                     <img
@@ -227,7 +230,7 @@ export default function CheckoutReceived() {
                         </Link>
                         {authenticated && (
                             <Link
-                                to="/mon-compte"
+                                to="/mes-commandes"
                                 className="w-full sm:w-auto px-10 py-4 border-2 border-forest-green text-forest-green font-bold uppercase rounded-lg hover:bg-forest-green hover:text-white transition-all text-center"
                             >
                                 Mes commandes

@@ -21,8 +21,17 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->name('admin.
     Route::resource('orders', \App\Http\Controllers\Admin\AdminOrderController::class);
     Route::resource('users', \App\Http\Controllers\Admin\AdminUserController::class);
     Route::get('/settings', [\App\Http\Controllers\Admin\AdminSettingController::class, 'index'])->name('settings.index');
-    
-    // Les autres routes admin seront ajoutées dans les phases suivantes
+
+    // Routes additionnelles complètes
+    Route::resource('customers', \App\Http\Controllers\Admin\AdminCustomerController::class);
+    Route::resource('reviews', \App\Http\Controllers\Admin\AdminReviewController::class);
+    Route::resource('questions', \App\Http\Controllers\Admin\AdminQuestionController::class);
+    Route::resource('messages', \App\Http\Controllers\Admin\AdminMessageController::class);
+    Route::resource('blog', \App\Http\Controllers\Admin\AdminBlogController::class);
+    Route::resource('newsletter', \App\Http\Controllers\Admin\AdminNewsletterController::class);
+    Route::resource('collections', \App\Http\Controllers\Admin\AdminCollectionController::class);
+    Route::resource('pages', \App\Http\Controllers\Admin\AdminPageController::class);
+    Route::resource('banners', \App\Http\Controllers\Admin\AdminBannerController::class);
 });
 
 // Redirection pour le middleware auth

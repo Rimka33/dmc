@@ -12,7 +12,6 @@ export default function Wishlist() {
     const handleAddToCart = async (product) => {
         const result = await addToCart(product.id, 1);
         if (result.success) {
-            alert('Produit ajouté au panier !');
             removeFromWishlist(product.id);
         } else {
             alert(result.message);
@@ -59,7 +58,12 @@ export default function Wishlist() {
                                                     <td className="px-8 py-6">
                                                         <div className="flex items-center gap-6">
                                                             <div className="w-20 h-20 bg-gray-50 rounded-2xl p-2 flex-shrink-0">
-                                                                <img src={product.primary_image} alt={product.name} className="w-full h-full object-contain" />
+                                                                <img
+                                                                    src={product.primary_image || '/images/products/default.png'}
+                                                                    alt={product.name}
+                                                                    onError={(e) => { e.target.src = '/images/products/default.png'; }}
+                                                                    className="w-full h-full object-contain"
+                                                                />
                                                             </div>
                                                             <div>
                                                                 <Link to={`/produit/${product.id}`} className="font-black text-gray-900 hover:text-forest-green transition-colors text-lg uppercase tracking-tight">

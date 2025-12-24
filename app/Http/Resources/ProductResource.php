@@ -46,14 +46,21 @@ class ProductResource extends JsonResource
                     return $this->images->map(function ($image) {
                         return [
                             'id' => $image->id,
-                            'path' => asset($image->image_path),
+                            'path' => str_starts_with($image->image_path, '/') || str_starts_with($image->image_path, 'http') 
+                                ? asset($image->image_path) 
+                                : asset('storage/' . $image->image_path),
                             'is_primary' => $image->is_primary,
-                            'order' => $image->sort_order, // Correction: sort_order au lieu de order
+                            'type' => preg_match('/\.(mp4|webm|avi|mov)$/i', $image->image_path) ? 'video' : 'image',
+                            'order' => $image->sort_order,
                         ];
                     });
                 }
             ),
-            'primary_image' => $this->primaryImage ? asset($this->primaryImage->image_path) : asset('images/products/default.png'),
+            'primary_image' => $this->primaryImage 
+                ? (str_starts_with($this->primaryImage->image_path, '/') || str_starts_with($this->primaryImage->image_path, 'http')
+                    ? asset($this->primaryImage->image_path)
+                    : asset('storage/' . $this->primaryImage->image_path))
+                : asset('images/products/default.png'),
             'features' => $this->when(
                 $this->relationLoaded('features'),
                 function () {

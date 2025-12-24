@@ -53,15 +53,20 @@ export const WishlistProvider = ({ children }) => {
         }
     };
 
-    const isInWishlist = (productId) => {
-        return wishlist.some(item => (item.product_id === productId || item.id === productId));
+    const isInWishlist = (param) => {
+        if (!param) return false;
+        const id = typeof param === 'object' ? (param.id || param.product_id) : param;
+        return wishlist.some(item => (Number(item.product_id) === Number(id) || Number(item.id) === Number(id)));
     };
 
-    const toggleWishlist = async (productId) => {
-        if (isInWishlist(productId)) {
-            return await removeFromWishlist(productId);
+    const toggleWishlist = async (param) => {
+        if (!param) return;
+        const id = typeof param === 'object' ? (param.id || param.product_id) : param;
+
+        if (isInWishlist(id)) {
+            return await removeFromWishlist(id);
         } else {
-            return await addToWishlist(productId);
+            return await addToWishlist(id);
         }
     };
 

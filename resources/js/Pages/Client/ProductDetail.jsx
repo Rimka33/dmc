@@ -130,8 +130,13 @@ export default function ProductDetail() {
         setWishlistLoading(true);
         const result = await toggleWishlist(product.id);
         setWishlistLoading(false);
-        if (!result.success && !authenticated) {
-            navigate('/mon-compte');
+        if (!result.success) {
+            if (!authenticated) {
+                alert(result.message);
+                navigate('/mon-compte');
+            } else {
+                alert(result.message);
+            }
         }
     };
 
@@ -160,9 +165,7 @@ export default function ProductDetail() {
         setAddingToCart(true);
         const result = await addToCart(product.id, quantity);
         setAddingToCart(false);
-        if (result.success) {
-            alert('Produit ajouté au panier !');
-        } else {
+        if (!result.success) {
             alert(result.message);
         }
     };
@@ -223,32 +226,64 @@ export default function ProductDetail() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-6xl mx-auto mb-16">
                         {/* Product Images */}
                         <div>
-                            {/* Main Image */}
-                            <div className="bg-gray-50 rounded-lg p-8 mb-4 flex items-center justify-center aspect-square overflow-hidden">
-                                <img
-                                    src={product.images && product.images.length > 0 ? product.images[selectedImage].path : product.primary_image}
-                                    alt={product.name}
-                                    className="w-full h-full object-contain"
-                                />
+                            {/* Main Image/Video */}
+                            <div className="bg-gray-50 rounded-lg p-8 mb-4 flex items-center justify-center aspect-square overflow-hidden relative">
+                                {product.images && product.images.length > 0 ? (
+                                    product.images[selectedImage].type === 'video' ? (
+                                        <video
+                                            src={product.images[selectedImage].path}
+                                            controls
+                                            className="w-full h-full object-contain"
+                                        />
+                                    ) : (
+                                        <img
+                                            src={product.images[selectedImage].path}
+                                            alt={product.name}
+                                            onError={(e) => { e.target.src = '/images/products/default.png'; }}
+                                            className="w-full h-full object-contain"
+                                        />
+                                    )
+                                ) : (
+                                    <img
+                                        src={product.primary_image || '/images/products/default.png'}
+                                        alt={product.name}
+                                        onError={(e) => { e.target.src = '/images/products/default.png'; }}
+                                        className="w-full h-full object-contain"
+                                    />
+                                )}
                             </div>
 
                             {/* Thumbnail Images */}
                             {product.images && product.images.length > 1 && (
                                 <div className="grid grid-cols-4 gap-4">
-                                    {product.images.map((image, index) => (
+                                    {product.images.map((media, index) => (
                                         <button
                                             key={index}
                                             onClick={() => setSelectedImage(index)}
-                                            className={`bg-gray-50 rounded-lg p-2 border-2 transition-colors ${selectedImage === index
+                                            className={`bg-gray-50 rounded-lg p-2 border-2 transition-colors relative ${selectedImage === index
                                                 ? 'border-forest-green'
                                                 : 'border-transparent hover:border-gray-300'
                                                 }`}
                                         >
-                                            <img
-                                                src={image.path}
-                                                alt={`${product.name} ${index + 1}`}
-                                                className="w-full h-20 object-contain"
-                                            />
+                                            {media.type === 'video' ? (
+                                                <div className="relative w-full h-20 bg-black/10 flex items-center justify-center">
+                                                    <video
+                                                        src={media.path}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                    <div className="absolute inset-0 flex items-center justify-center">
+                                                        <div className="bg-black/50 rounded-full p-1">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <img
+                                                    src={media.path}
+                                                    alt={`${product.name} ${index + 1}`}
+                                                    className="w-full h-20 object-contain"
+                                                />
+                                            )}
                                         </button>
                                     ))}
                                 </div>
@@ -258,9 +293,9 @@ export default function ProductDetail() {
                         {/* Product Info */}
                         <div className="flex flex-col h-full">
                             <div className="border-b border-gray-100 pb-6 mb-6">
-                                <h1 className="text-3xl font-black text-gray-900 mb-2 leading-tight uppercase tracking-tight">{product.name}</h1>
+                                <h1 className="text-2xl font-black text-gray-900 mb-2 leading-tight uppercase tracking-tight">{product.name}</h1>
                                 <div className="flex items-baseline gap-4 mb-4">
-                                    <span className="text-3xl font-black text-forest-green">
+                                    <span className="text-2xl font-black text-forest-green">
                                         {product.price_formatted}
                                     </span>
                                     {product.has_discount && (
@@ -349,12 +384,12 @@ export default function ProductDetail() {
                                     <ShieldCheck className="w-4 h-4" />
                                     Garantie de paiement sécurisé
                                 </div>
-                                <div className="flex items-center justify-center gap-3">
-                                    <img src="/images/payment/visa.png" alt="Visa" className="h-6 opacity-60 hover:opacity-100 transition-opacity" />
-                                    <img src="/images/payment/mastercard.png" alt="Mastercard" className="h-6 opacity-60 hover:opacity-100 transition-opacity" />
-                                    <img src="/images/payment/wave.png" alt="Wave" className="h-6 opacity-60 hover:opacity-100 transition-opacity" />
-                                    <img src="/images/payment/orange-money.png" alt="Orange Money" className="h-6 opacity-60 hover:opacity-100 transition-opacity" />
-                                    <img src="/images/payment/free-money.png" alt="Free Money" className="h-6 opacity-60 hover:opacity-100 transition-opacity" />
+                                <div className="flex items-center justify-center">
+                                    <img
+                                        src="/images/payment-methods.png"
+                                        alt="Moyens de paiement sécurisés"
+                                        className="h-7 md:h-8 object-contain opacity-80"
+                                    />
                                 </div>
                             </div>
 
