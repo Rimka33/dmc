@@ -28,21 +28,24 @@ export default function PageHeader({
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <h1 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight truncate">{title}</h1>
-          {subtitle && <p className="text-gray-600 mt-1.5 text-sm sm:text-base font-medium line-clamp-2">{subtitle}</p>}
+          <h1 className="text-2xl sm:text-4xl font-bold text-dark-green tracking-tight truncate" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            {title}
+          </h1>
+          {subtitle && <p className="text-dark-green/60 mt-2 text-sm sm:text-base font-medium line-clamp-2">{subtitle}</p>}
         </div>
 
         {action || actionText ? (
-          <div className="flex-shrink-0 w-full sm:w-auto">
+          <div className="flex-shrink-0 w-full sm:w-auto relative group">
             {action}
             {!action && actionText && (
               <button
                 onClick={onAction}
-                className="w-full sm:w-auto px-5 py-2.5 bg-forest-green text-white rounded-lg hover:bg-dark-green transition-all font-bold shadow-md shadow-forest-green/20 flex items-center justify-center gap-2 text-sm whitespace-nowrap"
+                className="w-full sm:w-auto px-8 py-3 bg-forest-green text-white rounded-xl hover:bg-dark-green transition-all font-bold shadow-lg shadow-forest-green/20 flex items-center justify-center gap-2 text-sm whitespace-nowrap relative z-10"
               >
                 {actionText}
               </button>
             )}
+            <div className="absolute -inset-1 bg-neon-green blur-lg opacity-0 group-hover:opacity-20 rounded-xl transition-opacity"></div>
           </div>
         ) : null}
       </div>

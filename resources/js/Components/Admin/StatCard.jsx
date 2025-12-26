@@ -7,43 +7,50 @@ export default function StatCard({
   trend = null,
   trendValue = null,
   trendLabel = null,
-  color = "blue",
+  color = "green",
   description = null,
   loading = false,
 }) {
-  const colorMap = {
-    blue: "from-blue-500 to-blue-600",
-    green: "from-forest-green to-[#046b29]",
-    purple: "from-purple-500 to-purple-600",
-    amber: "from-amber-500 to-amber-600",
-    red: "from-red-500 to-red-600",
-  }
-
-  const bgGradient = colorMap[color] || colorMap.blue
+  const isPositive = trend === null || trend >= 0;
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all">
-      <div className="flex items-center justify-between mb-4">
-        <div className={`bg-gradient-to-br ${bgGradient} p-3 rounded-xl text-white shadow-lg`}>
-          {Icon && <Icon size={22} />}
+    <div className="relative group h-full">
+      {/* Card with glassmorphism */}
+      <div className="h-full p-6 rounded-2xl backdrop-blur-xl border border-forest-green/15 transition-all duration-300 hover:border-forest-green/50 shadow-sm hover:shadow-md bg-white/80">
+
+        {/* Icon & Trend */}
+        <div className="flex items-start justify-between mb-4">
+          <div className="w-12 h-12 rounded-xl bg-forest-green/10 border border-forest-green/20 flex items-center justify-center relative">
+            {Icon && <Icon className="w-6 h-6 text-forest-green" strokeWidth={2} />}
+          </div>
+
+          {(trend !== null || trendValue) && (
+            <div className={`px-2.5 py-1 rounded-lg flex items-center gap-1.5 ${isPositive ? 'bg-neon-green/10 border border-neon-green/20' : 'bg-red-500/10 border border-red-500/20'
+              }`}>
+              {trend !== null && (trend > 0 ? <ArrowUpRight size={12} className="text-forest-green" /> : <ArrowDownLeft size={12} className="text-red-600" />)}
+              <span className={`text-xs font-semibold ${isPositive ? 'text-forest-green' : 'text-red-600'
+                }`}>
+                {trendValue || (trend !== null ? `${Math.abs(trend)}%` : '')}
+              </span>
+            </div>
+          )}
         </div>
-        {trend !== null && (
-          <span
-            className={`text-xs font-black px-2.5 py-1 rounded-full flex items-center gap-1 ${
-              trend > 0
-                ? "text-emerald-600 bg-emerald-50 border border-emerald-200"
-                : "text-red-600 bg-red-50 border border-red-200"
-            }`}
-          >
-            {trend > 0 ? <ArrowUpRight size={12} /> : <ArrowDownLeft size={12} />}
-            {trendValue || Math.abs(trend) + "%"}
-          </span>
-        )}
+
+        {/* Stats */}
+        <div>
+          <p className="text-sm text-dark-green/60 mb-1">{title}</p>
+          <h3 className="text-3xl font-bold text-dark-green" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+            {loading ? "..." : value}
+          </h3>
+          {description && <p className="text-[10px] text-dark-green/40 mt-2 font-bold uppercase tracking-wider">{description}</p>}
+          {trendLabel && <p className="text-[10px] text-dark-green/40 mt-1 font-bold uppercase tracking-wider">{trendLabel}</p>}
+        </div>
       </div>
-      <h3 className="text-gray-600 text-sm font-bold uppercase tracking-wider">{title}</h3>
-      <p className="text-3xl font-black text-gray-900 mt-1">{loading ? "..." : value}</p>
-      {description && <p className="text-xs text-gray-500 mt-2 font-medium">{description}</p>}
-      {trendLabel && <p className="text-xs text-gray-500 mt-2 font-medium">{trendLabel}</p>}
+
+      {/* Glow effect on hover */}
+      {isPositive && (
+        <div className="absolute -inset-0.5 bg-gradient-to-r from-forest-green to-neon-green rounded-2xl blur-xl opacity-0 group-hover:opacity-10 transition-opacity -z-10"></div>
+      )}
     </div>
   )
 }

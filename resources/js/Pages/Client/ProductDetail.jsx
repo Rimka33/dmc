@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { Head } from '@inertiajs/react';
 import MainLayout from '../../Layouts/MainLayout';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
@@ -201,6 +202,15 @@ export default function ProductDetail() {
 
     return (
         <MainLayout>
+            <Head>
+                <title>{product.name}</title>
+                <meta name="description" content={product.short_description || product.description?.replace(/<[^>]+>/g, '').substring(0, 160)} />
+                <meta property="og:title" content={product.name} />
+                <meta property="og:description" content={product.short_description} />
+                <meta property="og:image" content={product.primary_image} />
+                <meta property="og:type" content="product" />
+                <meta name="twitter:card" content="summary_large_image" />
+            </Head>
             <div className="bg-gray-50 py-4 border-b">
                 <div className="container mx-auto px-4">
                     <div className="flex items-center gap-2 text-sm text-gray-600">

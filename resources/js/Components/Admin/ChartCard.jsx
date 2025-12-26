@@ -7,16 +7,18 @@ export default function ChartCard({
   className = "",
 }) {
   return (
-    <div className={`bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden ${className}`}>
-      <div className="p-5 border-b border-gray-100">
-        <h3 className="font-bold text-gray-900 text-base">{title}</h3>
-        {subtitle && <p className="text-xs text-gray-500 mt-1 font-medium">{subtitle}</p>}
+    <div className={`p-6 rounded-2xl backdrop-blur-xl border border-forest-green/15 shadow-sm bg-white/80 ${className}`}>
+      <div className="mb-6">
+        <h3 className="text-xl font-bold text-dark-green" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          {title}
+        </h3>
+        {subtitle && <p className="text-sm text-dark-green/60 mt-1">{subtitle}</p>}
       </div>
-      <div className={`${height} p-5 flex items-center justify-center overflow-hidden`}>
+      <div className={`${height} flex items-center justify-center overflow-hidden`}>
         {loading ? (
-          <div className="flex items-center gap-2 text-gray-400">
-            <div className="w-5 h-5 border-2 border-forest-green border-t-transparent rounded-full animate-spin"></div>
-            <span className="text-sm">Chargement des données...</span>
+          <div className="flex items-center gap-3">
+            <div className="w-6 h-6 border-2 border-forest-green border-t-transparent rounded-full animate-spin"></div>
+            <span className="text-sm font-medium text-dark-green/60">Analyse des données...</span>
           </div>
         ) : (
           children

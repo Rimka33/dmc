@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { Head } from '@inertiajs/react';
 import MainLayout from '../../Layouts/MainLayout';
 import { Link, useParams } from 'react-router-dom';
 import api from '../../services/api';
@@ -197,6 +198,10 @@ export default function Category() {
 
     return (
         <MainLayout>
+            <Head>
+                <title>{category?.name || 'Chargement...'}</title>
+                <meta name="description" content={category?.description || `Découvrez notre sélection de produits dans la catégorie ${category?.name} chez DMC.`} />
+            </Head>
             {/* Hero Dark Banner with Floating Card */}
             <section className="relative bg-[#021008] border-b border-white/5 h-[340px] md:h-[440px] flex items-center justify-center overflow-visible z-10">
                 {/* Background Image Container */}

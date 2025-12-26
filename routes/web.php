@@ -40,9 +40,11 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->name('admin.
     Route::post('messages/{message}/archive', [\App\Http\Controllers\Admin\AdminMessageController::class, 'archive'])->name('messages.archive');
     
     Route::resource('blog', \App\Http\Controllers\Admin\AdminBlogController::class);
-    Route::resource('newsletter', \App\Http\Controllers\Admin\AdminNewsletterController::class);
-    Route::post('newsletter/{newsletter}/toggle-status', [\App\Http\Controllers\Admin\AdminNewsletterController::class, 'toggleStatus'])->name('newsletter.toggle-status');
+    
+    // Routes spécifiques avant la ressource pour éviter les conflits
     Route::get('newsletter/export', [\App\Http\Controllers\Admin\AdminNewsletterController::class, 'export'])->name('newsletter.export');
+    Route::post('newsletter/{newsletter}/toggle-status', [\App\Http\Controllers\Admin\AdminNewsletterController::class, 'toggleStatus'])->name('newsletter.toggle-status');
+    Route::resource('newsletter', \App\Http\Controllers\Admin\AdminNewsletterController::class);
     Route::resource('collections', \App\Http\Controllers\Admin\AdminCollectionController::class);
     Route::resource('pages', \App\Http\Controllers\Admin\AdminPageController::class);
     Route::resource('banners', \App\Http\Controllers\Admin\AdminBannerController::class);
@@ -59,6 +61,9 @@ Route::post('/logout', function (Illuminate\Http\Request $request) {
     $request->session()->regenerateToken();
     return redirect('/');
 })->name('logout');
+
+// SEO Tools
+Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index']);
 
 /*
 |--------------------------------------------------------------------------

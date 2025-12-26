@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Head } from '@inertiajs/react';
 import MainLayout from '../../Layouts/MainLayout';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
@@ -52,6 +53,10 @@ export default function Blog() {
 
     return (
         <MainLayout>
+            <Head>
+                <title>Blog Informatique & Tech - DMC</title>
+                <meta name="description" content="Découvrez les dernières actualités technologiques, conseils informatiques et guides d'achat sur le blog de DMC SARL à Dakar." />
+            </Head>
             {/* Hero Section */}
             <div className="relative h-56 md:h-64 bg-black overflow-hidden flex items-center justify-center">
                 <div className="absolute inset-0 z-0">

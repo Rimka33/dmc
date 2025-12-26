@@ -21,13 +21,22 @@ export default function Wishlist() {
 
     return (
         <MainLayout>
-            <div className="py-24 relative overflow-hidden" style={{ background: 'linear-gradient(to bottom, rgba(1, 26, 10, 1), rgba(5, 128, 49, 1)), url(/images/wishlist-bg.jpg) center/cover' }}>
-                <div className="container mx-auto px-4 text-center relative z-10">
-                    <h1 className="text-5xl md:text-6xl font-black text-neon-green uppercase mb-6 tracking-tighter italic">MA LISTE DE SOUHAITS</h1>
-                    <div className="flex items-center justify-center gap-3 text-white text-sm font-bold tracking-widest uppercase bg-white/5 py-3 px-6 rounded-full inline-flex border border-white/10">
+            {/* Hero Banner */}
+            <div className="relative h-56 bg-black overflow-hidden">
+                <div className="absolute inset-0">
+                    <img
+                        src="/images/back.jpg"
+                        alt="wishlist banner"
+                        className="w-full h-full object-cover opacity-60"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
+                </div>
+                <div className="container mx-auto px-4 h-full flex flex-col items-center justify-center relative z-10">
+                    <h1 className="text-5xl font-black text-neon-green uppercase mb-3 tracking-tight">WISHLIST</h1>
+                    <div className="flex items-center gap-2 text-white/70 text-sm">
                         <Link to="/" className="hover:text-neon-green transition-colors">Accueil</Link>
-                        <span className="text-gray-500">/</span>
-                        <span className="text-neon-green">Wishlist</span>
+                        <span>/</span>
+                        <span className="text-neon-green font-bold">Ma Liste de Souhaits</span>
                     </div>
                 </div>
             </div>

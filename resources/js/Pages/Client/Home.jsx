@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { Head } from '@inertiajs/react';
 import MainLayout from '../../Layouts/MainLayout';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
@@ -406,6 +407,13 @@ export default function Home() {
 
     return (
         <MainLayout>
+            <Head>
+                <title>DMC - Boutique Informatique Premium à Dakar, Sénégal</title>
+                <meta name="description" content="DMC SARL : Votre expert informatique à Dakar. Vente d'ordinateurs (HP, Dell, Apple), accessoires, maintenance et solutions tech premium au Sénégal." />
+                <meta property="og:title" content="DMC - Boutique Informatique Premium" />
+                <meta property="og:description" content="Expert informatique à Dakar : Vente, Entretien et Conseil premium." />
+                <meta property="og:image" content="/images/logo.png" />
+            </Head>
             {/* Hero and Featured Products with Gradient Background */}
             <div className="bg-gradient-dark-green" style={{ marginTop: '-7%' }}>
                 {/* Hero Section */}

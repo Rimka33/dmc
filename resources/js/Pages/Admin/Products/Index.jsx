@@ -73,24 +73,25 @@ export default function Index({ products, filters = {} }) {
         {
             key: 'name',
             label: 'Produit',
-            width: '30%',
+            width: '40%',
             render: (value, row) => (
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden border border-gray-100 flex-shrink-0">
+                <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-forest-green/5 rounded-xl flex items-center justify-center overflow-hidden border border-forest-green/10 flex-shrink-0 relative group/img">
                         {row.images?.length > 0 ? (
                             <img
                                 src={resolveSrc(row.images[0].image_path)}
                                 alt={row.name}
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-cover transition-transform group-hover/img:scale-110"
                                 onError={(e) => { e.target.src = '/images/placeholder.png'; }}
                             />
                         ) : (
-                            <ShoppingBag size={18} className="text-gray-400" />
+                            <ShoppingBag size={20} className="text-forest-green/30" />
                         )}
+                        <div className="absolute inset-0 bg-forest-green/5 opacity-0 group-hover/img:opacity-100 transition-opacity"></div>
                     </div>
                     <div className="flex-1 min-w-0">
-                        <p className="font-bold text-gray-900 truncate">{row.name}</p>
-                        <p className="text-xs text-gray-400 font-mono">SKU: {row.sku || 'N/A'}</p>
+                        <p className="font-bold text-dark-green truncate text-sm uppercase tracking-tight" style={{ fontFamily: 'Montserrat, sans-serif' }}>{row.name}</p>
+                        <p className="text-[10px] text-dark-green/40 font-black tracking-widest uppercase mt-0.5">SKU: {row.sku || 'N/A'}</p>
                     </div>
                 </div>
             )
@@ -98,14 +99,18 @@ export default function Index({ products, filters = {} }) {
         {
             key: 'category',
             label: 'Catégorie',
-            render: (value, row) => <span className="text-gray-600 text-sm">{row.category?.name || 'Non classé'}</span>
+            render: (value, row) => (
+                <span className="text-dark-green/60 text-xs font-bold uppercase tracking-wider">
+                    {row.category?.name || 'Non classé'}
+                </span>
+            )
         },
         {
             key: 'price',
             label: 'Prix',
             render: (value) => (
-                <p className="font-bold text-gray-900">
-                    {new Intl.NumberFormat('fr-FR').format(value)} F
+                <p className="font-black text-forest-green text-sm">
+                    {new Intl.NumberFormat('fr-FR').format(value)} FCFA
                 </p>
             )
         },
@@ -114,12 +119,12 @@ export default function Index({ products, filters = {} }) {
             label: 'Stock',
             align: 'center',
             render: (value) => (
-                <div className="flex items-center justify-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${value > 10 ? 'bg-green-500' :
-                        value > 0 ? 'bg-amber-500' :
-                            'bg-red-500'
+                <div className="flex items-center justify-center gap-2.5">
+                    <div className={`w-1.5 h-1.5 rounded-full shadow-sm animate-pulse ${value > 10 ? 'bg-forest-green shadow-forest-green/50' :
+                        value > 0 ? 'bg-amber-500 shadow-amber-500/50' :
+                            'bg-red-500 shadow-red-500/50'
                         }`} />
-                    <span className="font-semibold text-gray-700 text-sm">{value}</span>
+                    <span className="font-black text-dark-green text-xs">{value}</span>
                 </div>
             )
         },
@@ -135,7 +140,7 @@ export default function Index({ products, filters = {} }) {
             render: (value) => (
                 <ActionButtons
                     actions={[
-                        { key: 'view', icon: 'view', label: 'Voir sur le site', color: 'info' },
+                        { key: 'view', icon: 'view', label: 'Détails', color: 'info' },
                         { key: 'edit', icon: 'edit', label: 'Modifier', color: 'info' },
                         { key: 'delete', icon: 'delete', label: 'Supprimer', color: 'danger' },
                     ]}
@@ -156,7 +161,7 @@ export default function Index({ products, filters = {} }) {
     const createButton = (
         <Link
             href="/admin/products/create"
-            className="flex items-center gap-2 px-4 py-2 bg-forest-green text-white rounded-lg hover:bg-dark-green transition-colors font-bold shadow-lg shadow-forest-green/20"
+            className="flex items-center gap-2 px-6 py-3 bg-forest-green text-white rounded-xl hover:bg-dark-green transition-all font-bold shadow-lg shadow-forest-green/20"
         >
             <Plus size={18} />
             Nouveau Produit

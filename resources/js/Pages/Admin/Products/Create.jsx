@@ -281,18 +281,21 @@ export default function Create({ categories = [] }) {
                     </Section>
 
                     {/* Actions */}
-                    <div className="flex items-center gap-3 pt-6">
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="flex items-center gap-2 px-6 py-3 bg-forest-green text-white rounded-lg hover:bg-dark-green transition-colors font-bold shadow-lg shadow-forest-green/20 disabled:opacity-50"
-                        >
-                            <Save size={18} />
-                            {loading ? 'Création...' : 'Créer le Produit'}
-                        </button>
+                    <div className="flex items-center gap-3 pt-6 sticky bottom-0 bg-white/50 backdrop-blur-md p-4 -mx-4 lg:-mx-8 border-t border-forest-green/10 z-20">
+                        <div className="relative group">
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className="flex items-center gap-2 px-8 py-3 bg-forest-green text-white rounded-xl hover:bg-dark-green transition-all font-bold shadow-lg shadow-forest-green/20 disabled:opacity-50 relative z-10"
+                            >
+                                <Save size={18} />
+                                {loading ? 'Analyse...' : 'Créer le Produit'}
+                            </button>
+                            <div className="absolute -inset-1 bg-neon-green blur-lg opacity-0 group-hover:opacity-20 rounded-xl transition-opacity"></div>
+                        </div>
                         <Link
                             href="/admin/products"
-                            className="flex items-center gap-2 px-6 py-3 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-bold"
+                            className="flex items-center gap-2 px-8 py-3 bg-white/80 border border-forest-green/10 text-dark-green rounded-xl hover:bg-forest-green/5 transition-all font-bold"
                         >
                             <ArrowLeft size={18} />
                             Annuler

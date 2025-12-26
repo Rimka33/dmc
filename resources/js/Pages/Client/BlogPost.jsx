@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Head } from '@inertiajs/react';
 import MainLayout from '../../Layouts/MainLayout';
 import { Link, useParams } from 'react-router-dom';
 import api from '../../services/api';
@@ -66,6 +67,16 @@ export default function BlogPost() {
 
     return (
         <MainLayout>
+            {post && (
+                <Head>
+                    <title>{post.title}</title>
+                    <meta name="description" content={post.excerpt || post.content?.replace(/<[^>]+>/g, '').substring(0, 160)} />
+                    <meta property="og:title" content={post.title} />
+                    <meta property="og:description" content={post.excerpt} />
+                    <meta property="og:image" content={post.image} />
+                    <meta property="og:type" content="article" />
+                </Head>
+            )}
             {/* Hero Section */}
             <div className="relative h-64 md:h-96 bg-black overflow-hidden flex items-center justify-center">
                 <div className="absolute inset-0 z-0">

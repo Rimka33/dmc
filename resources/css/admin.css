@@ -1,150 +1,95 @@
-/* Admin Dashboard - Modern Design System */
+/* Admin Dashboard - Premium Design System */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&family=Bai+Jamjuree:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --forest-green: #058031;
+  --neon-green: #00ff24;
+  --dark-green: #011a0a;
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(5, 128, 49, 0.15);
+  --glass-blur: blur(20px);
+}
+
+body {
+  font-family: 'Bai Jamjuree', sans-serif;
+  color: var(--dark-green);
+}
 
 /* ============================================
    ANIMATIONS & TRANSITIONS
    ============================================ */
-
 @keyframes slideInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes shimmer {
-  0% {
-    background-position: -1000px 0;
-  }
-  100% {
-    background-position: 1000px 0;
-  }
+  0% { background-position: -1000px 0; }
+  100% { background-position: 1000px 0; }
 }
 
-@keyframes pulse-subtle {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.8;
-  }
-}
-
-@keyframes spin-slow {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Animation utilities */
-.animate-slide-in-up {
-  animation: slideInUp 0.4s ease-out;
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.3s ease-in;
-}
-
-.animate-shimmer {
-  animation: shimmer 2s infinite linear;
-  background: linear-gradient(to right, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%);
-  background-size: 1000px 100%;
-}
-
-.animate-pulse-subtle {
-  animation: pulse-subtle 2s ease-in-out infinite;
-}
-
-.animate-spin-slow {
-  animation: spin-slow 3s linear infinite;
-}
+.animate-slide-in-up { animation: slideInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1); }
+.animate-fade-in { animation: fadeIn 0.4s ease-out; }
 
 /* ============================================
    ADMIN LAYOUT SYSTEM
    ============================================ */
-
 .admin-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e9ecef 100%);
+  background: #fff;
+  position: relative;
 }
 
 .admin-content-wrapper {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 1.5rem;
-}
-
-@media (min-width: 768px) {
-  .admin-content-wrapper {
-    padding: 2rem;
-  }
+  padding: 2rem;
 }
 
 /* ============================================
-   CARD SYSTEM
+   CARD SYSTEM (GLASSMORPHISM)
    ============================================ */
-
 .admin-card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  box-shadow: 0 4px 20px -5px rgba(1, 26, 10, 0.05);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .admin-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: rgba(5, 128, 49, 0.3);
+  box-shadow: 0 10px 30px -10px rgba(1, 26, 10, 0.1);
   transform: translateY(-2px);
-}
-
-.admin-card-header {
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
-  font-weight: 600;
-  font-size: 1.125rem;
-  color: #1a202c;
-}
-
-.admin-card-body {
-  padding: 1.5rem;
 }
 
 /* Stat cards */
 .stat-card {
   position: relative;
   overflow: hidden;
+  padding: 1.5rem;
 }
 
-.stat-card::before {
-  content: "";
+.stat-card-glow {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #058031, #00ff24);
+  inset: -2px;
+  background: linear-gradient(90deg, var(--forest-green), var(--neon-green));
+  border-radius: 20px;
+  filter: blur(15px);
   opacity: 0;
+  z-index: -1;
   transition: opacity 0.3s;
 }
 
-.stat-card:hover::before {
-  opacity: 1;
+.stat-card:hover .stat-card-glow {
+  opacity: 0.15;
 }
 
 /* ============================================

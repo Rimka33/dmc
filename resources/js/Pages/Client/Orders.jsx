@@ -43,21 +43,23 @@ export default function Orders() {
     return (
         <MainLayout>
             {/* Hero Section */}
-            <div className="relative h-56 md:h-64 bg-dark-green overflow-hidden flex items-center justify-center">
-                <div className="absolute inset-0 z-0">
-                    <img src="/images/footer-bg.png" className="w-full h-full object-cover opacity-20 grayscale" alt="" />
-                    <div className="absolute inset-0 bg-gradient-to-br from-forest-green/40 to-black/60"></div>
+            {/* Hero Banner */}
+            <div className="relative h-56 bg-black overflow-hidden">
+                <div className="absolute inset-0">
+                    <img
+                        src="/images/back.jpg"
+                        alt="orders banner"
+                        className="w-full h-full object-cover opacity-60"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
                 </div>
-
-                <div className="relative z-10 text-center container mx-auto px-4">
-                    <h1 className="text-3xl md:text-5xl font-black text-neon-green uppercase tracking-tighter mb-4 italic drop-shadow-2xl">
-                        MES COMMANDES
-                    </h1>
-                    <nav className="flex items-center justify-center gap-2 text-white/90 font-black text-[10px] uppercase tracking-[0.3em]">
+                <div className="container mx-auto px-4 h-full flex flex-col items-center justify-center relative z-10">
+                    <h1 className="text-5xl font-black text-neon-green uppercase mb-3 tracking-tight">MES COMMANDES</h1>
+                    <div className="flex items-center gap-2 text-white/70 text-sm">
                         <Link to="/" className="hover:text-neon-green transition-colors">Accueil</Link>
-                        <span className="text-neon-green">/</span>
-                        <span className="text-white opacity-50">Historique</span>
-                    </nav>
+                        <span>/</span>
+                        <span className="text-neon-green font-bold">Historique</span>
+                    </div>
                 </div>
             </div>
 
@@ -80,7 +82,7 @@ export default function Orders() {
 
                                     {/* Status Badge */}
                                     <span className={`absolute top-3 right-3 px-2 py-1 rounded-lg text-[9px] font-bold uppercase z-10 ${order.status === 'delivered' ? 'bg-green-100 text-green-700' :
-                                            order.status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'
+                                        order.status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'
                                         }`}>
                                         {order.status_label || order.status}
                                     </span>

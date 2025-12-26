@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Link, router, usePage } from "@inertiajs/react"
+import { motion, AnimatePresence } from "framer-motion"
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -17,12 +18,16 @@ import {
   Mail,
   MessageSquare,
   ChevronDown,
+  Search,
+  User,
+  Leaf,
 } from "lucide-react"
 
 export default function AdminLayout({ children }) {
+  const { url } = usePage()
   const { auth } = usePage().props
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
-  const [expandedMenu, setExpandedMenu] = useState(null)
+  const [hoveredItem, setHoveredItem] = useState(null)
 
   const navigations = [
     {
@@ -87,259 +92,181 @@ export default function AdminLayout({ children }) {
   }
 
   const isMenuActive = (item) => {
-    const path = window.location.pathname
-    if (item.href) return path === item.href
+    if (item.href) return url === item.href
     if (item.submenu) {
-      return item.submenu.some((sub) => path === sub.href)
+      return item.submenu.some((sub) => url === sub.href)
     }
     return false
   }
 
-  const toggleSubmenu = (name) => {
-    setExpandedMenu(expandedMenu === name ? null : name)
-  }
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex overflow-hidden">
-      {/* Overlay for mobile */}
-      {isSidebarOpen && (
-        <div className="fixed inset-0 bg-black/50 lg:hidden z-40" onClick={() => setIsSidebarOpen(false)} />
-      )}
-
-      {/* Sidebar - Fixed height with internal scroll */}
+    <div className="h-screen bg-white flex overflow-hidden font-bai-jamjuree">
+      {/* Sidebar */}
       <aside
-        className={`${isSidebarOpen ? "translate-x-0 w-64" : "-translate-x-full lg:translate-x-0 lg:w-20"
-          } bg-white border-r border-gray-200 transition-all duration-300 flex flex-col fixed lg:sticky top-0 h-screen z-50 shadow-2xl`}
+        className={`fixed left-0 top-0 h-screen w-20 backdrop-blur-xl border-r border-forest-green/20 z-50 transition-all duration-300 flex flex-col ${isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
+        style={{ background: 'rgba(255, 255, 255, 0.98)' }}
       >
-        {/* Logo - Added flex-shrink-0 to prevent crushing */}
-        <div className="p-5 flex items-center gap-3 border-b border-gray-100 flex-shrink-0">
-          <div className="w-10 h-10 bg-gradient-to-br from-forest-green to-dark-green rounded-xl flex items-center justify-center font-black text-white shadow-lg">
-            D
-          </div>
-          {isSidebarOpen && (
-            <div className="min-w-0">
-              <span className="font-black text-lg tracking-tight text-gray-900 block truncate">DMC</span>
-              <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Admin Panel</span>
-            </div>
-          )}
+        {/* Logo - Fixed Top */}
+        <div className="flex-shrink-0 flex items-center justify-center h-20 bg-dark-green relative overflow-hidden">
+          <Link href="/admin/dashboard" className="relative z-10 transition-transform hover:scale-110">
+            <img src="/images/logo.png" alt="DMC" className="w-12 h-12 object-contain filter drop-shadow-[0_0_8px_rgba(0,255,36,0.3)]" />
+          </Link>
+          <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-neon-green/30 to-transparent"></div>
         </div>
 
-        {/* Navigation - Added overflow-y-auto with custom scrollbar */}
-        <nav className="flex-1 mt-4 px-3 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-          {navigations.map((item) => {
-            const Icon = item.icon
-            const isActive = isMenuActive(item)
-            const isExpanded = expandedMenu === item.name
+        {/* Navigation Area - Calculated height to prevent overflow */}
+        <div className="flex-1 min-h-0 py-4">
+          <div className="h-full overflow-y-auto no-scrollbar px-2">
+            <nav className="flex flex-col items-center gap-1">
+              {navigations.map((item) => {
+                const Icon = item.icon
+                const isActive = isMenuActive(item)
+                const isHovered = hoveredItem === item.name
 
-            return (
-              <div key={item.name}>
-                {item.submenu ? (
-                  <button
-                    onClick={() => toggleSubmenu(item.name)}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all font-semibold text-sm group ${isActive || isExpanded
-                      ? "bg-forest-green/5 text-forest-green"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                      }`}
-                    title={!isSidebarOpen ? item.name : ""}
+                return (
+                  <div
+                    key={item.name}
+                    className="relative flex justify-center w-full flex-shrink-0"
+                    onMouseEnter={() => setHoveredItem(item.name)}
+                    onMouseLeave={() => setHoveredItem(null)}
+                    data-nav-item={item.name}
                   >
-                    <Icon size={20} className="flex-shrink-0" />
-                    {isSidebarOpen && (
-                      <>
-                        <span className="flex-1 text-left truncate">{item.name}</span>
-                        <ChevronDown
-                          size={16}
-                          className={`transition-transform flex-shrink-0 ${isExpanded ? "rotate-180" : ""}`}
-                        />
-                      </>
-                    )}
-                  </button>
-                ) : (
-                  <Link
-                    href={item.href}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all font-semibold text-sm group ${isActive
-                      ? "bg-forest-green text-white shadow-lg shadow-forest-green/20"
-                      : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                      }`}
-                    title={!isSidebarOpen ? item.name : ""}
-                  >
-                    <Icon size={20} className="flex-shrink-0" />
-                    {isSidebarOpen && <span className="truncate">{item.name}</span>}
-                    {item.badge && isSidebarOpen && (
-                      <span className="ml-auto bg-red-500 text-white text-xs font-black rounded-full w-5 h-5 flex items-center justify-center shadow flex-shrink-0">
-                        {item.badge}
-                      </span>
-                    )}
-                  </Link>
-                )}
-
-                {/* Submenu items */}
-                {item.submenu && isSidebarOpen && isExpanded && (
-                  <div className="pl-9 space-y-1 mt-1 border-l-2 border-gray-100 ml-3 mb-2">
-                    {item.submenu.map((subitem) => (
+                    <div className="py-2">
                       <Link
-                        key={subitem.name}
-                        href={subitem.href}
-                        className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-all font-medium truncate ${window.location.pathname === subitem.href
-                          ? "bg-forest-green/10 text-forest-green font-bold"
-                          : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                        href={item.href || (item.submenu ? item.submenu[0].href : "#")}
+                        className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 relative z-10 ${isActive
+                          ? "bg-forest-green shadow-lg shadow-forest-green/30"
+                          : "hover:bg-forest-green/10"
                           }`}
                       >
-                        <span className="w-1.5 h-1.5 bg-current rounded-full flex-shrink-0"></span>
-                        <span className="truncate">{subitem.name}</span>
+                        <Icon
+                          size={20}
+                          className={`transition-colors ${isActive ? "text-neon-green" : "text-dark-green/60 group-hover:text-forest-green"}`}
+                        />
+                        {isActive && (
+                          <motion.div layoutId="activeGlow" className="absolute -inset-1 bg-neon-green blur-md opacity-20 rounded-2xl" />
+                        )}
                       </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )
-          })}
-        </nav>
+                    </div>
 
-        {/* Footer actions - Added flex-shrink-0 */}
-        <div className="p-3 border-t border-gray-100 space-y-1 flex-shrink-0 bg-gray-50/50">
-          <Link
-            href="/"
-            className="flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:text-forest-green hover:bg-white rounded-xl transition-all text-sm font-semibold"
-            title={!isSidebarOpen ? "Voir le site" : ""}
-          >
-            <ExternalLink size={18} className="flex-shrink-0" />
-            {isSidebarOpen && <span className="truncate">Voir le site</span>}
-          </Link>
+                    {/* Submenu Flyout - Fixed positioning to escape overflow */}
+                    <AnimatePresence>
+                      {isHovered && (
+                        <motion.div
+                          initial={{ opacity: 0, x: -10, scale: 0.95 }}
+                          animate={{ opacity: 1, x: 0, scale: 1 }}
+                          exit={{ opacity: 0, x: -10, scale: 0.95 }}
+                          transition={{ duration: 0.2 }}
+                          className="fixed left-20 z-[100]"
+                          style={{
+                            top: `${document.querySelector(`[data-nav-item="${item.name}"]`)?.getBoundingClientRect().top || 0}px`
+                          }}
+                          data-submenu={item.name}
+                        >
+                          <div className="flex items-center pl-2">
+                            <div className="w-0 h-0 border-y-[6px] border-y-transparent border-r-[6px] border-r-forest-green/10"></div>
+
+                            {item.submenu ? (
+                              <div className="bg-white/95 backdrop-blur-xl border border-forest-green/15 rounded-[2rem] shadow-2xl min-w-[220px] py-4 px-2 border-l-[4px] border-l-forest-green">
+                                <div className="px-5 py-2 mb-2 border-b border-forest-green/5">
+                                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-dark-green/30">{item.name}</span>
+                                </div>
+                                <div className="space-y-1 px-1">
+                                  {item.submenu.map((sub) => (
+                                    <Link
+                                      key={sub.name}
+                                      href={sub.href}
+                                      className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${url === sub.href ? "bg-forest-green/10 text-forest-green" : "text-dark-green/60 hover:text-dark-green hover:bg-forest-green/5"}`}
+                                    >
+                                      <div className={`w-1.5 h-1.5 rounded-full ${url === sub.href ? "bg-forest-green shadow-[0_0_8px_rgba(5,128,49,0.5)]" : "bg-dark-green/10"}`}></div>
+                                      {sub.name}
+                                    </Link>
+                                  ))}
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="px-4 py-2 bg-dark-green text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl whitespace-nowrap">
+                                {item.name}
+                              </div>
+                            )}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                )
+              })}
+            </nav>
+          </div>
+        </div>
+
+        {/* Logout - Safe fixed bottom */}
+        <div className="flex-shrink-0 p-4 border-t border-forest-green/10 flex flex-col items-center gap-2 bg-white/50 backdrop-blur-md">
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all text-sm font-semibold"
-            title={!isSidebarOpen ? "Déconnexion" : ""}
+            className="w-12 h-12 rounded-xl flex items-center justify-center text-dark-green/30 hover:text-red-600 hover:bg-red-50 transition-all"
           >
-            <LogOut size={18} className="flex-shrink-0" />
-            {isSidebarOpen && <span className="truncate">Déconnexion</span>}
+            <LogOut size={20} />
           </button>
+          <span className="text-[8px] font-black text-dark-green/20 uppercase tracking-tighter">V1.0.4</span>
         </div>
       </aside>
 
-      {/* Main Content - Better responsive structure */}
-      <div className="flex-1 flex flex-col min-w-0 w-full lg:w-auto">
-        {/* Top Header - Made it sticky with better z-index */}
-        <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 h-16 flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30 shadow-sm flex-shrink-0">
-          <button
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="p-2.5 text-gray-600 hover:bg-gray-100 rounded-lg transition-all"
-          >
-            {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col min-w-0 lg:ml-20">
+        <header className="h-20 border-b border-forest-green/10 flex items-center justify-between px-8 bg-white/80 backdrop-blur-xl sticky top-0 z-40">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className="lg:hidden p-2 text-dark-green/60"
+            >
+              <Menu size={20} />
+            </button>
+            <h1 className="text-xl font-bold font-montserrat uppercase tracking-tight text-dark-green">
+              DMC <span className="text-forest-green font-medium ml-1">Admin</span>
+            </h1>
+          </div>
 
-          <div className="flex-1"></div>
-
-          <div className="flex items-center gap-3">
-            <div className="relative group">
-              <button className="p-2.5 text-gray-600 hover:bg-gray-100 rounded-lg relative transition-all">
-                <Bell size={20} />
-                {(usePage().props.admin_notifications?.pending_orders > 0 ||
-                  usePage().props.admin_notifications?.new_messages > 0 ||
-                  usePage().props.admin_notifications?.pending_reviews > 0 ||
-                  usePage().props.admin_notifications?.pending_questions > 0) && (
-                    <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full ring-2 ring-white animate-pulse"></span>
-                  )}
-              </button>
-
-              {/* Notification Dropdown */}
-              <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-[60] overflow-hidden">
-                <div className="p-4 border-b border-gray-50 bg-gray-50/50">
-                  <h3 className="font-black text-sm uppercase tracking-wider text-gray-900">Notifications prioritaires</h3>
-                </div>
-                <div className="p-2 max-h-[400px] overflow-y-auto">
-                  {usePage().props.admin_notifications?.pending_orders > 0 && (
-                    <Link href="/admin/orders?status=pending" className="flex items-center gap-4 p-3 hover:bg-forest-green/5 rounded-xl transition-colors group/item">
-                      <div className="w-10 h-10 bg-amber-50 rounded-full flex items-center justify-center text-amber-600">
-                        <ShoppingCart size={18} />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-bold text-gray-900">{usePage().props.admin_notifications.pending_orders} commandes en attente</p>
-                        <p className="text-[10px] text-gray-500 font-medium">À traiter rapidement</p>
-                      </div>
-                      <span className="w-2 h-2 bg-amber-500 rounded-full"></span>
-                    </Link>
-                  )}
-                  {usePage().props.admin_notifications?.new_messages > 0 && (
-                    <Link href="/admin/messages" className="flex items-center gap-4 p-3 hover:bg-forest-green/5 rounded-xl transition-colors">
-                      <div className="w-10 h-10 bg-blue-50 rounded-full flex items-center justify-center text-blue-600">
-                        <Mail size={18} />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-bold text-gray-900">{usePage().props.admin_notifications.new_messages} nouveaux messages</p>
-                        <p className="text-[10px] text-gray-500 font-medium">Contact clients</p>
-                      </div>
-                      <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                    </Link>
-                  )}
-                  {usePage().props.admin_notifications?.pending_reviews > 0 && (
-                    <Link href="/admin/reviews" className="flex items-center gap-4 p-3 hover:bg-forest-green/5 rounded-xl transition-colors">
-                      <div className="w-10 h-10 bg-purple-50 rounded-full flex items-center justify-center text-purple-600">
-                        <Star size={18} />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-bold text-gray-900">{usePage().props.admin_notifications.pending_reviews} avis à modérer</p>
-                        <p className="text-[10px] text-gray-500 font-medium">Gestion e-réputation</p>
-                      </div>
-                      <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
-                    </Link>
-                  )}
-                  {usePage().props.admin_notifications?.pending_questions > 0 && (
-                    <Link href="/admin/questions" className="flex items-center gap-4 p-3 hover:bg-forest-green/5 rounded-xl transition-colors">
-                      <div className="w-10 h-10 bg-green-50 rounded-full flex items-center justify-center text-green-600">
-                        <MessageSquare size={18} />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-bold text-gray-900">{usePage().props.admin_notifications.pending_questions} questions en attente</p>
-                        <p className="text-[10px] text-gray-500 font-medium">Conseil produit</p>
-                      </div>
-                      <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                    </Link>
-                  )}
-                  {!(usePage().props.admin_notifications?.pending_orders > 0 ||
-                    usePage().props.admin_notifications?.new_messages > 0 ||
-                    usePage().props.admin_notifications?.pending_reviews > 0 ||
-                    usePage().props.admin_notifications?.pending_questions > 0) && (
-                      <div className="p-8 text-center">
-                        <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3 text-gray-300">
-                          <Bell size={24} />
-                        </div>
-                        <p className="text-sm font-bold text-gray-900">Aucune notification</p>
-                        <p className="text-xs text-gray-500">Tout est à jour !</p>
-                      </div>
-                    )}
-                </div>
-                <div className="p-4 border-t border-gray-50 text-center">
-                  <Link href="/admin/orders" className="text-[10px] font-black uppercase tracking-widest text-forest-green hover:text-dark-green transition-colors">
-                    Voir toutes les activités
-                  </Link>
-                </div>
-              </div>
+          <div className="flex items-center gap-6">
+            <div className="hidden md:flex relative group">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-green/30" />
+              <input
+                type="text"
+                placeholder="Recherche..."
+                className="h-10 pl-10 pr-4 bg-gray-50 border border-forest-green/5 rounded-xl text-sm focus:outline-none focus:border-forest-green/20 w-64 transition-all"
+              />
             </div>
 
-            <div className="hidden sm:flex items-center gap-3 pl-3 border-l border-gray-200">
-              <div className="text-right min-w-0">
-                <p className="text-sm font-bold text-gray-900 truncate">{auth?.user?.name || "Admin"}</p>
-                <p className="text-xs text-gray-500 capitalize font-medium truncate">
-                  {auth?.user?.role || "administrator"}
-                </p>
+            <div className="flex items-center gap-3 pl-6 border-l border-forest-green/10">
+              <div className="text-right hidden sm:block">
+                <p className="text-sm font-bold text-dark-green font-montserrat">{auth?.user?.name || "Admin"}</p>
+                <p className="text-[10px] font-bold text-dark-green/40 uppercase tracking-widest">Gérant</p>
               </div>
-              <div className="w-10 h-10 bg-gradient-to-br from-forest-green to-dark-green rounded-full flex items-center justify-center font-black text-white shadow-lg flex-shrink-0">
-                {auth?.user?.name?.charAt(0)?.toUpperCase() || "A"}
+              <div className="w-10 h-10 rounded-xl bg-forest-green/10 flex items-center justify-center text-forest-green">
+                <User size={20} />
               </div>
             </div>
           </div>
         </header>
 
-        {/* Page Content - Added proper scrolling container */}
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
-          <div className="max-w-7xl mx-auto w-full">{children}</div>
+        <main className="flex-1 overflow-y-auto p-8 relative z-10">
+          <div className="max-w-7xl mx-auto">
+            {children}
+          </div>
         </main>
 
-        {/* Footer - Made it flex-shrink-0 */}
-        <footer className="border-t border-gray-200 bg-white py-3 px-6 text-center text-xs text-gray-500 font-medium flex-shrink-0">
-          <p>&copy; 2025 DMC Admin. Tous droits réservés.</p>
+        <footer className="py-4 text-center text-[10px] font-bold text-dark-green/20 uppercase tracking-[0.3em] border-t border-forest-green/5">
+          &copy; 2025 DMC Boutique - Excellence Excellence
         </footer>
       </div>
+
+      {/* Background Grid */}
+      <div className="fixed inset-0 pointer-events-none -z-10 opacity-[0.02]"
+        style={{
+          backgroundImage: `linear-gradient(#058031 1px, transparent 1px), linear-gradient(90deg, #058031 1px, transparent 1px)`,
+          backgroundSize: '40px 40px'
+        }}
+      ></div>
     </div>
   )
 }

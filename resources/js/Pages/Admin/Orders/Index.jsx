@@ -12,8 +12,8 @@ export default function Index({ orders, filters = {} }) {
     const [search, setSearch] = useState(filters.search || '');
 
     const filterOptions = [
-        { 
-            key: 'status', 
+        {
+            key: 'status',
             label: 'Statut',
             type: 'select',
             options: [
@@ -25,8 +25,8 @@ export default function Index({ orders, filters = {} }) {
                 { label: 'Annulée', value: 'cancelled' },
             ]
         },
-        { 
-            key: 'date', 
+        {
+            key: 'date',
             label: 'Date',
             type: 'date',
         },
@@ -36,11 +36,11 @@ export default function Index({ orders, filters = {} }) {
         {
             key: 'order_number',
             label: 'Commande',
-            width: '15%',
+            width: '20%',
             render: (value, row) => (
-                <div>
-                    <p className="font-bold text-gray-900">#{value || row.id}</p>
-                    <p className="text-xs text-gray-500">{new Date(row.created_at).toLocaleDateString('fr-FR')}</p>
+                <div className="flex flex-col">
+                    <p className="font-black text-dark-green text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>#{value || row.id}</p>
+                    <p className="text-[10px] text-dark-green/40 font-black tracking-widest uppercase mt-0.5">{new Date(row.created_at).toLocaleDateString('fr-FR')}</p>
                 </div>
             )
         },
@@ -48,15 +48,22 @@ export default function Index({ orders, filters = {} }) {
             key: 'customer_name',
             label: 'Client',
             width: '25%',
-            render: (value) => <span className="text-gray-700">{value || 'Client'}</span>
+            render: (value) => (
+                <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-forest-green/10 flex items-center justify-center">
+                        <span className="text-xs font-black text-forest-green">{(value || 'C')[0].toUpperCase()}</span>
+                    </div>
+                    <span className="text-dark-green font-bold text-sm" style={{ fontFamily: 'Montserrat, sans-serif' }}>{value || 'Client'}</span>
+                </div>
+            )
         },
         {
             key: 'total',
             label: 'Montant',
             width: '15%',
             render: (value) => (
-                <p className="font-bold text-gray-900">
-                    {new Intl.NumberFormat('fr-FR').format(value)} F
+                <p className="font-black text-forest-green text-sm">
+                    {new Intl.NumberFormat('fr-FR').format(value)} FCFA
                 </p>
             )
         },
@@ -64,7 +71,11 @@ export default function Index({ orders, filters = {} }) {
             key: 'items_count',
             label: 'Articles',
             align: 'center',
-            render: (value) => <span className="text-sm">{value}</span>
+            render: (value) => (
+                <span className="px-2 py-1 bg-dark-green/5 rounded-lg text-xs font-bold text-dark-green">
+                    {value} {value > 1 ? 'articles' : 'article'}
+                </span>
+            )
         },
         {
             key: 'status',
@@ -76,7 +87,7 @@ export default function Index({ orders, filters = {} }) {
             label: 'Actions',
             align: 'right',
             render: (value) => (
-                <ActionButtons 
+                <ActionButtons
                     actions={[
                         { key: 'view', icon: 'view', label: 'Détails', color: 'info' },
                         { key: 'download', icon: 'download', label: 'Facture', color: 'info' },
@@ -94,19 +105,19 @@ export default function Index({ orders, filters = {} }) {
     return (
         <AdminLayout>
             <div className="space-y-6">
-                <PageHeader 
+                <PageHeader
                     title="Gestion des Commandes"
                     subtitle="Suivez et gérez toutes les commandes de votre boutique"
                 />
 
-                <SearchFilter 
+                <SearchFilter
                     placeholder="Rechercher par numéro de commande ou client..."
                     filters={filterOptions}
                     currentFilters={filters}
                     endpoint="/admin/orders"
                 />
 
-                <DataTable 
+                <DataTable
                     columns={columns}
                     data={orders?.data || []}
                     pagination={{

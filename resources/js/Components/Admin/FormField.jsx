@@ -18,15 +18,15 @@ export default function FormField({
   className = "",
 }) {
   const baseClass =
-    "w-full px-4 py-2.5 bg-gray-50 border rounded-xl focus:ring-2 focus:ring-forest-green focus:border-forest-green focus:bg-white outline-none transition-all text-sm text-gray-900 placeholder:text-gray-400 font-medium"
-  const inputClass = `${baseClass} ${error ? "border-red-500 bg-red-50" : "border-gray-200"} ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className}`
+    "w-full px-5 py-3 bg-white/50 border rounded-2xl focus:ring-2 focus:ring-forest-green/20 focus:border-forest-green focus:bg-white outline-none transition-all text-sm text-dark-green placeholder:text-dark-green/30 font-bold"
+  const inputClass = `${baseClass} ${error ? "border-red-500 bg-red-50/50" : "border-forest-green/10"} ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className}`
 
   return (
-    <div className="space-y-2">
-      {label && (
-        <label className="block text-sm font-black text-gray-700 uppercase tracking-wide">
+    <div className="space-y-3">
+      {label && type !== "checkbox" && (
+        <label className="block text-[10px] font-black text-dark-green/40 uppercase tracking-[0.2em] ml-1">
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required && <span className="text-red-500 ml-1 font-bold">*</span>}
         </label>
       )}
 
@@ -58,16 +58,18 @@ export default function FormField({
           ))}
         </select>
       ) : type === "checkbox" ? (
-        <label className="flex items-center gap-2 cursor-pointer">
-          <input
-            type="checkbox"
-            name={name}
-            checked={value}
-            onChange={onChange}
-            disabled={disabled}
-            className="w-4 h-4 border-gray-300 rounded accent-forest-green cursor-pointer bg-gray-50"
-          />
-          <span className="text-sm text-gray-700 font-medium">{label}</span>
+        <label className="flex items-center gap-3 cursor-pointer group">
+          <div className="relative flex items-center">
+            <input
+              type="checkbox"
+              name={name}
+              checked={value}
+              onChange={onChange}
+              disabled={disabled}
+              className="w-5 h-5 border-forest-green/20 rounded-lg accent-forest-green cursor-pointer bg-white transition-all focus:ring-2 focus:ring-forest-green/20"
+            />
+          </div>
+          <span className="text-xs text-dark-green font-bold uppercase tracking-wider group-hover:text-forest-green transition-colors">{label}</span>
         </label>
       ) : (
         <input

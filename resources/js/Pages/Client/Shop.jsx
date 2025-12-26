@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
+import { Head } from '@inertiajs/react';
 import MainLayout from '../../Layouts/MainLayout';
 import { Link, useSearchParams } from 'react-router-dom';
 import api from '../../services/api';
@@ -288,6 +289,10 @@ export default function Shop() {
 
     return (
         <MainLayout>
+            <Head>
+                <title>{onSale ? "Promotions" : (selectedCategoryData?.name || "Boutique Informatique Dakar")}</title>
+                <meta name="description" content="Boutique d'informatique DMC à Dakar. Large choix d'ordinateurs, accessoires et maintenance informatique premium au Sénégal." />
+            </Head>
             {/* Banner Section matching design - Dynamic Background */}
             <div className="relative h-[300px] md:h-[340px] bg-[#021008] overflow-visible flex items-center justify-center mb-20">
                 <div className="absolute inset-0 z-0">

@@ -1,23 +1,23 @@
 const statusStyles = {
   // Order statuses
-  pending: "bg-yellow-50 text-yellow-700 border-yellow-200",
-  paid: "bg-blue-50 text-blue-700 border-blue-200",
-  preparing: "bg-orange-50 text-orange-700 border-orange-200",
-  shipped: "bg-purple-50 text-purple-700 border-purple-200",
-  delivered: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  cancelled: "bg-red-50 text-red-700 border-red-200",
-  refunded: "bg-gray-100 text-gray-700 border-gray-200",
+  pending: "bg-amber-500/10 text-amber-700 border-amber-500/20",
+  paid: "bg-blue-500/10 text-blue-700 border-blue-500/20",
+  preparing: "bg-orange-500/10 text-orange-700 border-orange-500/20",
+  shipped: "bg-purple-500/10 text-purple-700 border-purple-500/20",
+  delivered: "bg-forest-green/10 text-forest-green border-forest-green/20",
+  cancelled: "bg-red-500/10 text-red-700 border-red-500/20",
+  refunded: "bg-gray-500/10 text-gray-700 border-gray-500/20",
 
   // Product statuses
-  active: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  inactive: "bg-red-50 text-red-700 border-red-200",
-  draft: "bg-gray-100 text-gray-700 border-gray-200",
-  published: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  active: "bg-forest-green/10 text-forest-green border-forest-green/20",
+  inactive: "bg-red-500/10 text-red-700 border-red-500/20",
+  draft: "bg-gray-500/10 text-gray-700 border-gray-500/20",
+  published: "bg-forest-green/10 text-forest-green border-forest-green/20",
 
   // Payment statuses
-  successful: "bg-emerald-50 text-emerald-700 border-emerald-200",
-  failed: "bg-red-50 text-red-700 border-red-200",
-  pending_payment: "bg-yellow-50 text-yellow-700 border-yellow-200",
+  successful: "bg-forest-green/10 text-forest-green border-forest-green/20",
+  failed: "bg-red-500/10 text-red-700 border-red-500/20",
+  pending_payment: "bg-amber-500/10 text-amber-700 border-amber-500/20",
 }
 
 const labelMap = {
@@ -38,15 +38,15 @@ const labelMap = {
 }
 
 export default function StatusBadge({ status, size = "sm", className = "" }) {
-  const style = statusStyles[status] || "bg-gray-100 text-gray-700 border-gray-200"
+  const style = statusStyles[status] || "bg-gray-500/10 text-gray-700 border-gray-500/20"
   const label = labelMap[status] || status
 
   const sizeClass =
-    size === "lg" ? "px-3 py-2 text-sm" : size === "md" ? "px-2.5 py-1.5 text-xs" : "px-2 py-1 text-[10px]"
+    size === "lg" ? "px-4 py-2 text-xs" : size === "md" ? "px-3 py-1.5 text-[10px]" : "px-2.5 py-1 text-[9px]"
 
   return (
     <span
-      className={`inline-flex items-center font-black uppercase rounded-lg border ${style} ${sizeClass} ${className}`}
+      className={`inline-flex items-center font-black uppercase tracking-widest rounded-lg border focus:ring-2 focus:ring-offset-2 transition-all ${style} ${sizeClass} ${className}`}
     >
       {label}
     </span>
