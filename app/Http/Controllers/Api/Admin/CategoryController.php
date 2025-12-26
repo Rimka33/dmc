@@ -22,7 +22,9 @@ class CategoryController extends Controller
             $query->where('name', 'like', '%' . $request->search . '%');
         }
 
-        $categories = $query->orderBy('sort_order')->get();
+        $categories = $query->orderByRaw('CASE WHEN sort_order = 0 OR sort_order IS NULL THEN 1 ELSE 0 END, sort_order ASC')
+            ->orderBy('name', 'asc')
+            ->get();
 
         return response()->json([
             'success' => true,

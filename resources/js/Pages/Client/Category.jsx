@@ -17,6 +17,8 @@ import {
     List,
     Check
 } from 'lucide-react';
+import ShimmerImage from '../../Components/ShimmerImage';
+import { resolveCategoryImage } from '../../utils/imageUtils';
 
 // Product Card Component
 function ProductCard({ product }) {
@@ -25,11 +27,11 @@ function ProductCard({ product }) {
     return (
         <div className="group relative bg-white flex flex-col h-full transition-all border border-gray-100 rounded-xl overflow-hidden hover:shadow-xl">
             <Link to={`/produit/${product.id}`} className="block relative aspect-square overflow-hidden bg-white mb-2">
-                <img
+                <ShimmerImage
                     src={product.primary_image || '/images/products/default.png'}
                     alt={product.name}
-                    onError={(e) => { e.target.src = '/images/products/default.png'; }}
                     className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-6"
+                    fallback={'/images/products/default.png'}
                 />
 
                 {product.is_on_sale && (
@@ -199,9 +201,9 @@ export default function Category() {
             <section className="relative bg-[#021008] border-b border-white/5 h-[340px] md:h-[440px] flex items-center justify-center overflow-visible z-10">
                 {/* Background Image Container */}
                 <div className="absolute inset-0 z-0">
-                    {/* The Image - Full width but masked by gradient */}
+                    {/* The Image - Masked by gradient */}
                     <img
-                        src={category?.image || category?.icon || '/images/back.jpg'}
+                        src={category?.image || category?.icon ? resolveCategoryImage(category) : '/images/back.jpg'}
                         alt=""
                         className="absolute right-0 top-0 w-full h-full object-cover md:object-contain object-right opacity-90 transition-opacity duration-1000"
                     />
@@ -240,14 +242,13 @@ export default function Category() {
 
                         {/* Image - Smaller and clean */}
                         <div className="w-24 h-24 md:w-28 md:h-28 mb-3 flex items-center justify-center relative z-10 transition-transform duration-500 group-hover:scale-110">
-                            {category?.image ? (
-                                <img
-                                    src={category.image}
+                            {category?.image || category?.icon ? (
+                                <ShimmerImage
+                                    src={resolveCategoryImage(category)}
                                     alt={category.name}
                                     className="w-full h-full object-contain"
+                                    fallback={'/images/back.jpg'}
                                 />
-                            ) : category?.icon ? (
-                                <img src={category.icon} alt={category.name} className="w-full h-full object-contain opacity-80" />
                             ) : (
                                 <LayoutGrid className="w-12 h-12 text-gray-100" />
                             )}

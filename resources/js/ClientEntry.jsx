@@ -23,6 +23,7 @@ import Terms from './Pages/Client/Terms';
 import Returns from './Pages/Client/Returns';
 import PrivacyPolicy from './Pages/Client/PrivacyPolicy';
 import Blog from './Pages/Client/Blog';
+import BlogPost from './Pages/Client/BlogPost';
 
 export default function ClientEntry() {
     return (
@@ -38,6 +39,7 @@ export default function ClientEntry() {
 
                             <Route path="/contact" element={<Contact />} />
                             <Route path="/blog" element={<Blog />} />
+                            <Route path="/blog/:slug" element={<BlogPost />} />
                             <Route path="/panier" element={<Cart />} />
                             <Route path="/wishlist" element={<Wishlist />} />
                             <Route path="/checkout" element={<Checkout />} />

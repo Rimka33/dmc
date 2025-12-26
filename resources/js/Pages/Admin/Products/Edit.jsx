@@ -9,6 +9,7 @@ export default function Edit({ product, categories }) {
         sku: product.sku || '',
         category_id: product.category_id || '',
         price: product.price || '',
+        discount_price: product.discount_price || '',
         stock_quantity: product.stock_quantity || '',
         description: product.description || '',
         is_active: Boolean(product.is_active),
@@ -106,6 +107,19 @@ export default function Edit({ product, categories }) {
                                 </div>
 
                                 <div className="space-y-2">
+                                    <label className="text-sm font-bold text-gray-700">Prix Promotionnel (FCFA)</label>
+                                    <input
+                                        type="number"
+                                        value={data.discount_price}
+                                        onChange={e => setData('discount_price', e.target.value)}
+                                        placeholder="0.00"
+                                        className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-forest-green focus:border-forest-green outline-none transition-all"
+                                    />
+                                    <p className="text-xs text-gray-500">Laisser vide si pas de promotion</p>
+                                    {errors.discount_price && <p className="text-red-500 text-xs">{errors.discount_price}</p>}
+                                </div>
+
+                                <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-700">Quantité en stock</label>
                                     <input
                                         type="number"
@@ -115,7 +129,9 @@ export default function Edit({ product, categories }) {
                                     />
                                     {errors.stock_quantity && <p className="text-red-500 text-xs">{errors.stock_quantity}</p>}
                                 </div>
+                            </div>
 
+                            <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-gray-700">Catégorie</label>
                                     <select

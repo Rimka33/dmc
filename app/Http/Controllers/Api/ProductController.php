@@ -43,6 +43,10 @@ class ProductController extends Controller
             $query->inStock();
         }
 
+        if ($request->has('on_sale')) {
+            $query->where('is_on_sale', true);
+        }
+
         // Tri
         $sortBy = $request->get('sort_by', 'created_at');
         $sortOrder = $request->get('sort_order', 'desc');

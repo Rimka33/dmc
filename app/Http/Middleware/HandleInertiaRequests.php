@@ -42,6 +42,13 @@ class HandleInertiaRequests extends InertiaMiddleware
                     'role' => $request->user()->role,
                 ] : null,
             ],
+            'admin_notifications' => $request->user() && $request->user()->role === 'admin' ? [
+                'pending_orders' => \App\Models\Order::where('status', 'pending')->count(),
+                'new_messages' => \App\Models\Message::where('status', 'new')->count(),
+                'pending_reviews' => \App\Models\ProductReview::where('is_approved', false)->count(),
+                'pending_questions' => \App\Models\Question::whereNull('answer')->count(),
+                'low_stock' => \App\Models\Product::where('stock_quantity', '<=', 5)->count(),
+            ] : null,
             'flash' => [
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),

@@ -17,7 +17,8 @@ class CategoryController extends Controller
     {
         $categories = Category::where('is_active', true)
             ->withCount('products')
-            ->orderBy('sort_order')
+            ->orderByRaw('CASE WHEN sort_order = 0 OR sort_order IS NULL THEN 1 ELSE 0 END, sort_order ASC')
+            ->orderBy('name', 'asc')
             ->get();
 
         return CategoryResource::collection($categories);

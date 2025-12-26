@@ -30,13 +30,22 @@ export default function Show({ product }) {
                         product.name
                     ]}
                     action={
-                        <Link
-                            href={`/admin/products/${product.id}/edit`}
-                            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-bold shadow-md"
-                        >
-                            <Edit size={18} />
-                            Modifier
-                        </Link>
+                        <div className="flex items-center gap-3">
+                            <Link
+                                href="/admin/products"
+                                className="flex items-center gap-2 px-4 py-2 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-bold shadow-sm"
+                            >
+                                <ArrowLeft size={18} />
+                                Retour
+                            </Link>
+                            <Link
+                                href={`/admin/products/${product.id}/edit`}
+                                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-bold shadow-md"
+                            >
+                                <Edit size={18} />
+                                Modifier
+                            </Link>
+                        </div>
                     }
                 />
 
@@ -91,32 +100,32 @@ export default function Show({ product }) {
                             {product.images && product.images.length > 0 ? (
                                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                     {product.images.map((media) => {
-                                            const src = resolveSrc(media.image_path);
-                                            const isVideo = typeof src === 'string' && (src.endsWith('.mp4') || src.endsWith('.webm'));
-                                            return (
-                                                <div key={media.id} className="relative group rounded-lg overflow-hidden border border-gray-200 aspect-square">
-                                                    {isVideo ? (
-                                                        <video
-                                                            src={src}
-                                                            className="w-full h-full object-cover"
-                                                            controls
-                                                        />
-                                                    ) : (
-                                                        <img
-                                                            src={src}
-                                                            alt={product.name}
-                                                            className="w-full h-full object-cover"
-                                                            onError={(e) => { e.target.src = '/images/placeholder.png'; }}
-                                                        />
-                                                    )}
-                                                    {media.is_primary && (
-                                                        <div className="absolute top-2 left-2 bg-forest-green text-white text-[10px] px-2 py-1 rounded-full uppercase font-bold shadow-sm">
-                                                            Principal
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            );
-                                        })}
+                                        const src = resolveSrc(media.image_path);
+                                        const isVideo = typeof src === 'string' && (src.endsWith('.mp4') || src.endsWith('.webm'));
+                                        return (
+                                            <div key={media.id} className="relative group rounded-lg overflow-hidden border border-gray-200 aspect-square">
+                                                {isVideo ? (
+                                                    <video
+                                                        src={src}
+                                                        className="w-full h-full object-cover"
+                                                        controls
+                                                    />
+                                                ) : (
+                                                    <img
+                                                        src={src}
+                                                        alt={product.name}
+                                                        className="w-full h-full object-cover"
+                                                        onError={(e) => { e.target.src = '/images/placeholder.png'; }}
+                                                    />
+                                                )}
+                                                {media.is_primary && (
+                                                    <div className="absolute top-2 left-2 bg-forest-green text-white text-[10px] px-2 py-1 rounded-full uppercase font-bold shadow-sm">
+                                                        Principal
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             ) : (
                                 <div className="text-center py-8 text-gray-500 italic">

@@ -66,6 +66,15 @@ export default function Blog({ articles = {}, filters = {} }) {
                         { key: 'edit', icon: 'edit', label: 'Modifier', color: 'info' },
                         { key: 'delete', icon: 'delete', label: 'Supprimer', color: 'danger' },
                     ]}
+                    onAction={(action) => {
+                        if (action === 'edit') {
+                            router.get(`/admin/blog/${value}/edit`);
+                        } else if (action === 'delete') {
+                            if (confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) {
+                                router.delete(`/admin/blog/${value}`);
+                            }
+                        }
+                    }}
                 />
             )
         },

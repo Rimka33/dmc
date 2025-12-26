@@ -29,8 +29,13 @@ class AdminOrderController extends Controller
 
     public function show(Order $order)
     {
+        $order->load([
+            'items.product.images',
+            'user'
+        ]);
+        
         return Inertia::render('Admin/Orders/Show', [
-            'order' => $order->load('items.product', 'user')
+            'order' => $order
         ]);
     }
     
@@ -44,5 +49,13 @@ class AdminOrderController extends Controller
         $order->update($request->only('status', 'payment_status'));
 
         return back()->with('success', 'Commande mise à jour.');
+    }
+    public function downloadInvoice(Order $order)
+    {
+        $order->load(['items.product', 'user']);
+        
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('invoices.order', compact('order'));
+        
+        return $pdf->download("facture-{$order->order_number}.pdf");
     }
 }

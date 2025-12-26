@@ -14,6 +14,10 @@ class Question extends Model
         'is_visible',
     ];
 
+    protected $casts = [
+        'is_visible' => 'boolean',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

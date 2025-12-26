@@ -4,10 +4,11 @@ import { Link } from 'react-router-dom';
 import api from '../../services/api';
 import { WishlistContext } from '../../contexts/WishlistContext';
 import { CartContext } from '../../contexts/CartContext';
-import { Heart, Star, ChevronLeft, ChevronRight, Check, Plus, X, Camera, LayoutGrid, ChevronDown } from 'lucide-react';
+import { Heart, Star, ChevronLeft, ChevronRight, Check, Plus, X, Camera, LayoutGrid, ChevronDown, User } from 'lucide-react';
 import ShimmerImage from '../../Components/ShimmerImage';
 import { AuthContext } from '../../contexts/AuthContext';
 import { useRef } from 'react';
+import { resolveCategoryImage } from '../../utils/imageUtils';
 
 // Countdown Component
 function Countdown({ endDate }) {
@@ -214,12 +215,21 @@ function ReviewModal({ isOpen, onClose, user }) {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmitting(true);
-        // Simulate API call
-        setTimeout(() => {
+        try {
+            await api.post('/reviews/shop', {
+                rating,
+                comment,
+                title: 'Avis Boutique',
+            });
             alert('Merci pour votre avis ! Il sera visible après modération.');
             onClose();
+        } catch (error) {
+            console.error('Error submitting review:', error);
+            const msg = error.response?.data?.message || 'Erreur lors de l\'envoi de l\'avis.';
+            alert(msg);
+        } finally {
             setSubmitting(false);
-        }, 1500);
+        }
     };
 
     return (
@@ -304,17 +314,34 @@ export default function Home() {
     const offersRef = useRef(null);
     const newProductsRef = useRef(null);
     const bestSellersRef = useRef(null);
+    const categoriesRef = useRef(null);
 
     const [data, setData] = useState({
         featuredProducts: [],
         categories: [],
         specialOffers: [],
-        newProducts: []
+        newProducts: [],
+        bestSellers: [],
+        banners: [],
+        reviews: [],
+        reviewStats: { average: 4.2, total: 100, counts: { 5: 95, 4: 5, 3: 0, 2: 0, 1: 0 } }
     });
 
     const [activeBestSellerCat, setActiveBestSellerCat] = useState('Ordinateurs Portables');
     const [activeNewProductCat, setActiveNewProductCat] = useState('Ordinateurs Portables');
     const [isNewProductDropdownOpen, setIsNewProductDropdownOpen] = useState(false);
+    const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
+
+    // Auto-slide for hero banners
+    useEffect(() => {
+        if (!data.banners || data.banners.length <= 1) return;
+
+        const interval = setInterval(() => {
+            setCurrentHeroSlide(prev => (prev === data.banners.length - 1 ? 0 : prev + 1));
+        }, 5000);
+
+        return () => clearInterval(interval);
+    }, [data.banners]);
 
     const scroll = (ref, direction) => {
         if (ref.current) {
@@ -346,7 +373,11 @@ export default function Home() {
                     featuredProducts: response.data.featuredProducts?.data || response.data.featuredProducts || [],
                     categories: response.data.categories?.data || response.data.categories || [],
                     specialOffers: response.data.specialOffers || [],
-                    newProducts: response.data.newProducts?.data || response.data.newProducts || []
+                    newProducts: response.data.newProducts?.data || response.data.newProducts || [],
+                    bestSellers: response.data.bestSellers?.data || response.data.bestSellers || [],
+                    banners: response.data.banners || [],
+                    reviews: response.data.reviews || [],
+                    reviewStats: response.data.reviewStats || { average: 4.2, total: 100, counts: { 5: 95, 4: 5, 3: 0, 2: 0, 1: 0 } }
                 });
             } catch (error) {
                 console.error("Erreur lors du chargement de la home", error);
@@ -378,45 +409,118 @@ export default function Home() {
             {/* Hero and Featured Products with Gradient Background */}
             <div className="bg-gradient-dark-green" style={{ marginTop: '-7%' }}>
                 {/* Hero Section */}
-                <section className="header py-16 relative overflow-hidden">
-                    <div className="container mx-auto px-4">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                            {/* Hero Text */}
-                            <div className="space-y-6 z-10">
-                                <p className="text-neon-green text-lg font-bold uppercase">
-                                    Chez DAROUL Mouhty COMPUTER - SARL
-                                </p>
+                <section className="header py-16 relative overflow-hidden min-h-[500px] flex items-center">
+                    <div className="container mx-auto px-4 z-10">
+                        {data.banners.length > 0 ? (
+                            <div className="relative">
+                                {data.banners.map((banner, index) => (
+                                    <div
+                                        key={banner.id}
+                                        className={`transition-opacity duration-700 ease-in-out absolute inset-0 ${index === currentHeroSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
+                                        style={{ position: index === currentHeroSlide ? 'relative' : 'absolute', top: 0, left: 0, width: '100%' }}
+                                    >
+                                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                                            {/* Hero Text */}
+                                            <div className="space-y-6">
+                                                <p className="text-neon-green text-lg font-bold uppercase animate-in slide-in-from-left duration-700 delay-100">
+                                                    Chez DAROUL Mouhty COMPUTER - SARL
+                                                </p>
 
-                                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white uppercase leading-tight">
-                                    Retrouver le Meilleur matériels informatiques
-                                </h1>
+                                                <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white uppercase leading-tight animate-in slide-in-from-left duration-700 delay-200">
+                                                    {banner.title}
+                                                </h1>
 
-                                <p className="text-neon-green text-2xl font-bold">
-                                    À PARTIR DE 75.000 FCFA
-                                </p>
+                                                {banner.description && (
+                                                    <p className="text-neon-green text-xl md:text-2xl font-bold animate-in slide-in-from-left duration-700 delay-300">
+                                                        {banner.description}
+                                                    </p>
+                                                )}
 
-                                <Link to="/shop" className="inline-block px-8 py-4 text-base bg-neon-green text-black font-bold uppercase rounded hover:bg-white transition-colors">
-                                    Acheter Maintenant
-                                </Link>
+                                                <Link
+                                                    to={banner.link || banner.button_link || '/shop'}
+                                                    className="inline-block px-8 py-4 text-base bg-neon-green text-black font-bold uppercase rounded hover:bg-white transition-colors animate-in zoom-in duration-500 delay-500"
+                                                >
+                                                    {banner.button_text || 'Acheter Maintenant'}
+                                                </Link>
+                                            </div>
+
+                                            {/* Hero Images */}
+                                            <div className="relative h-96 lg:h-[500px] flex items-center justify-center">
+                                                <img
+                                                    src={banner.image || "/images/placeholder.png"}
+                                                    alt={banner.title}
+                                                    className="w-full h-full object-contain animate-in fade-in zoom-in duration-1000"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+
+                                {/* Slider Navigation Arrows */}
+                                {data.banners.length > 1 && (
+                                    <>
+                                        <button
+                                            onClick={() => setCurrentHeroSlide(prev => (prev === 0 ? data.banners.length - 1 : prev - 1))}
+                                            className="absolute left-0 top-1/2 -translate-y-1/2 -ml-4 w-10 h-10 rounded-full bg-white/10 hover:bg-neon-green hover:text-black text-white flex items-center justify-center z-20 backdrop-blur-sm transition-all"
+                                        >
+                                            <ChevronLeft className="w-6 h-6" />
+                                        </button>
+                                        <button
+                                            onClick={() => setCurrentHeroSlide(prev => (prev === data.banners.length - 1 ? 0 : prev + 1))}
+                                            className="absolute right-0 top-1/2 -translate-y-1/2 -mr-4 w-10 h-10 rounded-full bg-white/10 hover:bg-neon-green hover:text-black text-white flex items-center justify-center z-20 backdrop-blur-sm transition-all"
+                                        >
+                                            <ChevronRight className="w-6 h-6" />
+                                        </button>
+
+                                        {/* Dots */}
+                                        <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+                                            {data.banners.map((_, i) => (
+                                                <button
+                                                    key={i}
+                                                    onClick={() => setCurrentHeroSlide(i)}
+                                                    className={`w-2 h-2 rounded-full transition-all ${i === currentHeroSlide ? 'bg-neon-green w-6' : 'bg-white/30'}`}
+                                                />
+                                            ))}
+                                        </div>
+                                    </>
+                                )}
                             </div>
+                        ) : (
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                                {/* Hero Text (Fallback) */}
+                                <div className="space-y-6 z-10">
+                                    <p className="text-neon-green text-lg font-bold uppercase">
+                                        Chez DAROUL Mouhty COMPUTER - SARL
+                                    </p>
 
-                            {/* Hero Images */}
-                            <div className="relative h-96 lg:h-[500px]">
-                                <img
-                                    src="/images/hero-slider-1.png"
-                                    alt="Gaming Setup"
-                                    className="absolute inset-0 w-full h-full object-contain"
-                                />
-                                <img
-                                    src="/images/hero-slider-2.png"
-                                    alt="Laptop"
-                                    className="absolute top-10 -right-20 w-48 h-48 object-contain rotate-12"
-                                />
+                                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white uppercase leading-tight">
+                                        Retrouver le Meilleur matériels informatiques
+                                    </h1>
+
+                                    <p className="text-neon-green text-2xl font-bold">
+                                        À PARTIR DE 75.000 FCFA
+                                    </p>
+
+                                    <Link to="/shop" className="inline-block px-8 py-4 text-base bg-neon-green text-black font-bold uppercase rounded hover:bg-white transition-colors">
+                                        Acheter Maintenant
+                                    </Link>
+                                </div>
+
+                                {/* Hero Images (Fallback) */}
+                                <div className="relative h-96 lg:h-[500px]">
+                                    <img
+                                        src="/images/hero-slider-1.png"
+                                        alt="Gaming Setup"
+                                        className="absolute inset-0 w-full h-full object-contain"
+                                    />
+                                    <img
+                                        src="/images/hero-slider-2.png"
+                                        alt="Laptop"
+                                        className="absolute top-10 -right-20 w-48 h-48 object-contain rotate-12"
+                                    />
+                                </div>
                             </div>
-                        </div>
-
-                        {/* Slider Navigation */}
-
+                        )}
                     </div>
                 </section>
 
@@ -501,29 +605,56 @@ export default function Home() {
             {/* Categories Section */}
             <section className="py-16 bg-gray-50">
                 <div className="container mx-auto px-4">
-                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
-                        {loading ? (
-                            [...Array(7)].map((_, i) => (
-                                <Skeleton key={i} className="h-40 w-full" />
-                            ))
-                        ) : (
-                            data.categories?.map((category, index) => (
-                                <Link
-                                    key={index}
-                                    to={`/categorie/${category.slug}`}
-                                    className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow p-6 flex flex-col items-center text-center group"
+                    <div className="relative">
+                        {/* Navigation Arrows - Only show if more than 8 categories */}
+                        {data.categories && data.categories.length > 8 && (
+                            <>
+                                <button
+                                    onClick={() => scroll(categoriesRef, 'left')}
+                                    className="absolute -left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white shadow-lg rounded-full flex items-center justify-center text-gray-400 hover:text-forest-green z-30 transition-all border border-gray-100 hidden md:flex"
                                 >
-                                    <img
-                                        src={category.icon}
-                                        alt={category.name}
-                                        className="w-20 h-20 mx-auto mb-4 object-contain group-hover:scale-110 transition-transform"
-                                    />
-                                    <h3 className="text-sm font-semibold text-gray-900 leading-tight">
-                                        {category.name}
-                                    </h3>
-                                </Link>
-                            ))
+                                    <ChevronLeft className="w-5 h-5" />
+                                </button>
+                                <button
+                                    onClick={() => scroll(categoriesRef, 'right')}
+                                    className="absolute -right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white shadow-lg rounded-full flex items-center justify-center text-gray-400 hover:text-forest-green z-30 transition-all border border-gray-100 hidden md:flex"
+                                >
+                                    <ChevronRight className="w-5 h-5" />
+                                </button>
+                            </>
                         )}
+
+                        {/* Categories Horizontal Scroll */}
+                        <div
+                            ref={categoriesRef}
+                            className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory"
+                        >
+                            {loading ? (
+                                [...Array(8)].map((_, i) => (
+                                    <div key={i} className="flex-shrink-0 w-[calc(12.5%-0.5rem)] min-w-[120px] snap-start">
+                                        <Skeleton className="h-32 w-full" />
+                                    </div>
+                                ))
+                            ) : (
+                                data.categories?.map((category, index) => (
+                                    <Link
+                                        key={index}
+                                        to={`/categorie/${category.slug}`}
+                                        className="flex-shrink-0 w-[calc(12.5%-0.5rem)] min-w-[120px] bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow px-3 py-4 flex flex-col items-center text-center group snap-start"
+                                    >
+                                        <img
+                                            src={resolveCategoryImage(category)}
+                                            alt={category.name}
+                                            className="w-14 h-14 mx-auto mb-2 object-contain group-hover:scale-110 transition-transform"
+                                            onError={(e) => { e.target.src = '/images/placeholder.png'; }}
+                                        />
+                                        <h3 className="text-xs font-semibold text-gray-900 leading-tight line-clamp-2">
+                                            {category.name}
+                                        </h3>
+                                    </Link>
+                                ))
+                            )}
+                        </div>
                     </div>
                 </div>
             </section>
@@ -903,28 +1034,26 @@ export default function Home() {
                             {/* Rating Summary Card */}
                             <div className="lg:col-span-3 bg-black rounded-[1.5rem] p-4 flex flex-col items-center justify-center text-white h-fit self-center">
                                 <div className="text-center">
-                                    <h4 className="text-4xl font-black mb-0.5">4.2</h4>
-                                    <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest mb-3">Basé sur 100 avis</p>
+                                    <h4 className="text-4xl font-black mb-0.5">{data.reviewStats.average}</h4>
+                                    <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest mb-3">Basé sur {data.reviewStats.total} avis</p>
                                     <div className="space-y-1 w-full px-2 mb-4">
-                                        {[
-                                            { stars: 5, perc: 95 },
-                                            { stars: 4, perc: 5 },
-                                            { stars: 3, perc: 0 },
-                                            { stars: 2, perc: 0 },
-                                            { stars: 1, perc: 0 }
-                                        ].map((row, i) => (
-                                            <div key={i} className="flex items-center gap-2">
-                                                <div className="flex gap-0.5 w-10">
-                                                    {[...Array(5)].map((_, si) => (
-                                                        <Star key={si} className={`w-1 h-1 ${si < row.stars ? 'text-neon-green fill-neon-green' : 'text-gray-900'}`} />
-                                                    ))}
+                                        {[5, 4, 3, 2, 1].map((star) => {
+                                            const count = data.reviewStats.counts[star] || 0;
+                                            const perc = data.reviewStats.total > 0 ? (count / data.reviewStats.total) * 100 : 0;
+                                            return (
+                                                <div key={star} className="flex items-center gap-2">
+                                                    <div className="flex gap-0.5 w-10">
+                                                        {[...Array(5)].map((_, si) => (
+                                                            <Star key={si} className={`w-1 h-1 ${si < star ? 'text-neon-green fill-neon-green' : 'text-gray-900'}`} />
+                                                        ))}
+                                                    </div>
+                                                    <div className="flex-1 h-0.5 bg-gray-900 rounded-full overflow-hidden">
+                                                        <div className="h-full bg-neon-green" style={{ width: `${perc}%` }}></div>
+                                                    </div>
+                                                    <span className="text-[6px] font-bold text-gray-600 w-4">{Math.round(perc)}%</span>
                                                 </div>
-                                                <div className="flex-1 h-0.5 bg-gray-900 rounded-full overflow-hidden">
-                                                    <div className="h-full bg-neon-green" style={{ width: `${row.perc}%` }}></div>
-                                                </div>
-                                                <span className="text-[6px] font-bold text-gray-600 w-4">{row.perc}%</span>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 </div>
 
@@ -945,45 +1074,64 @@ export default function Home() {
 
                             {/* Testimonial Cards */}
                             <div className="lg:col-span-9 grid grid-cols-1 md:grid-cols-3 gap-4 h-fit">
-                                {[
-                                    {
-                                        name: 'Ali Traoré',
-                                        role: 'Étudiant',
-                                        img: 'https://i.pravatar.cc/150?u=ali',
-                                        text: "Un endroit parfait surtout pour étudiants ou jeunes professionnels. Bon prix pour une très bonne qualité d'ordinateurs... Je recommande vivement"
-                                    },
-                                    {
-                                        name: 'Kayzo Offishal (Zo)',
-                                        role: 'Client Fidéle',
-                                        img: 'https://i.pravatar.cc/150?u=kayzo',
-                                        text: "Cadre propre, climatisé, accueil chaleureux, on y sert même du café et de l'eau. Ils vendent de bon ordinateurs, fiables et avec garantie."
-                                    },
-                                    {
-                                        name: 'Anta Fall',
-                                        role: 'Designer',
-                                        img: 'https://i.pravatar.cc/150?u=anta',
-                                        text: "Pour ceux qui cherchent des ordis faites y un tour vous n'allez pas le regretter. Prix défiant toute concurrence"
-                                    }
-                                ].map((testi, i) => (
-                                    <div key={i} className="bg-white rounded-[1.5rem] p-4 shadow-sm border border-gray-50 flex flex-col items-center text-center group hover:shadow-lg transition-all duration-300">
-                                        <div className="relative mb-2">
-                                            <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-50 shadow-sm">
-                                                <img src={testi.img} alt={testi.name} className="w-full h-full object-cover" />
+                                {data.reviews.length > 0 ? (
+                                    data.reviews.map((testi, i) => (
+                                        <div key={testi.id || i} className="bg-white rounded-[1.5rem] p-4 shadow-sm border border-gray-50 flex flex-col items-center text-center group hover:shadow-lg transition-all duration-300">
+                                            <div className="relative mb-2">
+                                                <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-50 shadow-sm flex items-center justify-center bg-gray-50">
+                                                    {testi.avatar ? (
+                                                        <img src={testi.avatar} alt={testi.name} className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <User className="w-6 h-6 text-gray-300" />
+                                                    )}
+                                                </div>
+                                                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-white shadow-xs rounded-full p-1 z-10">
+                                                    <svg className="w-2 h-2 text-forest-green" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21L14.017 18C14.017 16.8954 14.9125 16 16.0171 16H19.0171V14.5C19.0171 13.1193 17.8978 12 16.5171 12H15.5171V10H16.5171C19.0023 10 21.0171 12.0147 21.0171 14.5V21H14.017ZM3 21L3 18C3 16.8954 3.89543 16 5 16H8V14.5C8 13.1193 6.88071 12 5.5 12H4.5V10H5.5C7.98528 10 10 12.0147 10 14.5V21H3Z" /></svg>
+                                                </div>
                                             </div>
-                                            <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-white shadow-xs rounded-full p-1 z-10">
-                                                <svg className="w-2 h-2 text-forest-green" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21L14.017 18C14.017 16.8954 14.9125 16 16.0171 16H19.0171V14.5C19.0171 13.1193 17.8978 12 16.5171 12H15.5171V10H16.5171C19.0023 10 21.0171 12.0147 21.0171 14.5V21H14.017ZM3 21L3 18C3 16.8954 3.89543 16 5 16H8V14.5C8 13.1193 6.88071 12 5.5 12H4.5V10H5.5C7.98528 10 10 12.0147 10 14.5V21H3Z" /></svg>
+                                            <div className="flex gap-0.5 mb-2">
+                                                {[...Array(5)].map((_, si) => (
+                                                    <Star key={si} className={`w-2 h-2 ${si < testi.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200 fill-gray-200'}`} />
+                                                ))}
+                                            </div>
+                                            <p className="text-[10px] text-gray-400 font-medium italic leading-[1.4] mb-3 line-clamp-4">"{testi.comment}"</p>
+                                            <div className="mt-auto">
+                                                <h5 className="text-[9px] font-black text-gray-900 uppercase tracking-widest mb-0.5">{testi.name}</h5>
+                                                <p className="text-[7px] font-bold text-gray-400 uppercase tracking-tighter">{testi.date}</p>
                                             </div>
                                         </div>
-                                        <div className="flex gap-0.5 mb-2">
-                                            {[...Array(5)].map((_, si) => <Star key={si} className="w-2 h-2 text-yellow-400 fill-yellow-400" />)}
+                                    ))
+                                ) : (
+                                    // Fallback text if no real reviews yet
+                                    [
+                                        {
+                                            name: 'Ali Traoré',
+                                            role: 'Étudiant',
+                                            text: "Un endroit parfait surtout pour étudiants ou jeunes professionnels. Bon prix pour une très bonne qualité d'ordinateurs... Je recommande vivement"
+                                        },
+                                        {
+                                            name: 'Kayzo Offishal (Zo)',
+                                            role: 'Client Fidéle',
+                                            text: "Cadre propre, climatisé, accueil chaleureux, on y sert même du café et de l'eau. Ils vendent de bon ordinateurs, fiables et avec garantie."
+                                        },
+                                        {
+                                            name: 'Anta Fall',
+                                            role: 'Designer',
+                                            text: "Pour ceux qui cherchent des ordis faites y un tour vous n'allez pas le regretter. Prix défiant toute concurrence"
+                                        }
+                                    ].map((testi, i) => (
+                                        <div key={i} className="bg-white rounded-[1.5rem] p-4 shadow-sm border border-gray-50 flex flex-col items-center text-center group hover:shadow-lg transition-all duration-300 opacity-60">
+                                            <div className="flex gap-0.5 mb-2">
+                                                {[...Array(5)].map((_, si) => <Star key={si} className="w-2 h-2 text-yellow-400 fill-yellow-400" />)}
+                                            </div>
+                                            <p className="text-[10px] text-gray-400 font-medium italic leading-[1.4] mb-3">"{testi.text}"</p>
+                                            <div className="mt-auto">
+                                                <h5 className="text-[9px] font-black text-gray-900 uppercase tracking-widest mb-0.5">{testi.name}</h5>
+                                                <p className="text-[7px] font-bold text-gray-400 uppercase tracking-tighter">{testi.role}</p>
+                                            </div>
                                         </div>
-                                        <p className="text-[10px] text-gray-400 font-medium italic leading-[1.4] mb-3">"{testi.text}"</p>
-                                        <div className="mt-auto">
-                                            <h5 className="text-[9px] font-black text-gray-900 uppercase tracking-widest mb-0.5">{testi.name}</h5>
-                                            <p className="text-[7px] font-bold text-gray-400 uppercase tracking-tighter">{testi.role}</p>
-                                        </div>
-                                    </div>
-                                ))}
+                                    ))
+                                )}
                             </div>
                         </div>
                     </div>
@@ -1025,7 +1173,13 @@ export default function Home() {
                             ref={bestSellersRef}
                             className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x pt-2"
                         >
-                            {(data.featuredProducts || []).map((product, index) => (
+                            {loading ? (
+                                [...Array(5)].map((_, i) => (
+                                    <div key={i} className="min-w-[45%] md:min-w-[19%] snap-start">
+                                        <Skeleton className="aspect-square w-full" />
+                                    </div>
+                                ))
+                            ) : (data.bestSellers && data.bestSellers.length > 0 ? data.bestSellers : data.featuredProducts || []).map((product, index) => (
                                 <div key={index} className="min-w-[45%] md:min-w-[19%] snap-start">
                                     <ProductCard product={product} />
                                 </div>

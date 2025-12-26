@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import MainLayout from '../../Layouts/MainLayout';
 import { Link } from 'react-router-dom';
 import { RefreshCw, Package, CheckCircle, CreditCard, Clock, ChevronRight } from 'lucide-react';
+import ShimmerImage from '../../Components/ShimmerImage';
 
 export default function Returns() {
     useEffect(() => {
@@ -35,7 +36,7 @@ export default function Returns() {
         <MainLayout>
             <div className="relative h-[300px] bg-[#021008] overflow-hidden flex items-center">
                 <div className="absolute inset-0 opacity-20">
-                    <img src="/images/back.jpg" alt="background" className="w-full h-full object-cover" />
+                    <ShimmerImage src="/images/back.jpg" alt="background" className="w-full h-full object-cover" fallback={'/images/back.jpg'} />
                 </div>
                 <div className="container mx-auto px-4 relative z-10">
                     <h1 className="text-5xl md:text-6xl font-black text-white uppercase mb-4 leading-tight">

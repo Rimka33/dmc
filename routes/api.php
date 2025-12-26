@@ -62,6 +62,14 @@ Route::get('/products/search', [ProductController::class, 'search']);
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/categories/{slug}', [CategoryController::class, 'show']);
 
+// Blog
+Route::get('/blog', [\App\Http\Controllers\Api\BlogController::class, 'index']);
+Route::get('/blog/categories', [\App\Http\Controllers\Api\BlogController::class, 'categories']);
+Route::get('/blog/{slug}', [\App\Http\Controllers\Api\BlogController::class, 'show']);
+
+// Banners
+Route::get('/banners', [\App\Http\Controllers\Api\BannerController::class, 'index']);
+
 // Special Offers
 Route::get('/special-offers', [HomeController::class, 'specialOffers']);
 
@@ -116,6 +124,7 @@ Route::get('/products/{productId}/questions', [QuestionController::class, 'index
 
 // Authentifié - Gérer ses avis et questions
 Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/reviews/shop', [ReviewController::class, 'storeShopReview']);
     Route::post('/products/{productId}/reviews', [ReviewController::class, 'store']);
     Route::post('/products/{productId}/questions', [QuestionController::class, 'store']);
     Route::put('/reviews/{id}', [ReviewController::class, 'update']);
@@ -153,6 +162,7 @@ Route::middleware('auth:sanctum')->prefix('notifications')->group(function () {
 // ============================================================================
 
 Route::post('/contact', [ContactController::class, 'submit']);
+Route::middleware('auth:sanctum')->get('/contact/my-messages', [ContactController::class, 'userMessages']);
 Route::post('/newsletter/subscribe', [\App\Http\Controllers\Api\NewsletterController::class, 'subscribe']);
 
 // ============================================================================

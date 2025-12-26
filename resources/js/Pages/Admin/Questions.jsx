@@ -1,10 +1,10 @@
 import React from 'react';
 import AdminLayout from '../../Layouts/AdminLayout';
+import { router } from '@inertiajs/react';
 import PageHeader from '../../Components/Admin/PageHeader';
 import SearchFilter from '../../Components/Admin/SearchFilter';
 import DataTable from '../../Components/Admin/DataTable';
-import ActionButtons from '../../Components/Admin/ActionButtons';
-import { MessageSquare } from 'lucide-react';
+import { Eye, MessageSquare, CheckCircle } from 'lucide-react';
 
 export default function Questions({ questions = {}, filters = {} }) {
     const filterOptions = [
@@ -13,9 +13,11 @@ export default function Questions({ questions = {}, filters = {} }) {
             label: 'Statut',
             type: 'select',
             options: [
+                { label: 'Tous', value: '' },
                 { label: 'Sans réponse', value: 'unanswered' },
                 { label: 'Répondues', value: 'answered' },
-                { label: 'Archivées', value: 'archived' },
+                { label: 'Visibles', value: 'visible' },
+                { label: 'Masquées', value: 'hidden' },
             ]
         },
     ];
@@ -24,23 +26,25 @@ export default function Questions({ questions = {}, filters = {} }) {
         {
             key: 'product_name',
             label: 'Produit',
-            width: '30%',
-            render: (value) => <p className="font-bold text-gray-900 truncate">{value}</p>
+            width: '25%',
+            render: (value) => <p className="font-bold text-gray-900 truncate">{value || 'N/A'}</p>
         },
         {
             key: 'question',
             label: 'Question',
-            width: '35%',
-            render: (value) => <p className="text-gray-700 truncate">{value}</p>
+            width: '30%',
+            render: (value) => <p className="text-gray-700 truncate">{value ? (value.length > 60 ? value.substring(0, 60) + '...' : value) : '-'}</p>
         },
         {
-            key: 'author',
+            key: 'user_name',
             label: 'Auteur',
-            render: (value) => <span className="text-gray-600">{value}</span>
+            width: '15%',
+            render: (value) => <span className="text-gray-600">{value || 'Anonyme'}</span>
         },
         {
             key: 'has_answer',
             label: 'Réponse',
+            width: '10%',
             align: 'center',
             render: (value) => (
                 <span className={`px-2 py-1 rounded-full text-xs font-bold ${
@@ -51,8 +55,9 @@ export default function Questions({ questions = {}, filters = {} }) {
             )
         },
         {
-            key: 'published',
+            key: 'is_visible',
             label: 'Visibilité',
+            width: '10%',
             render: (value) => (
                 <span className={`px-2 py-1 rounded-full text-xs font-bold ${
                     value ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-600'
@@ -65,16 +70,37 @@ export default function Questions({ questions = {}, filters = {} }) {
             key: 'id',
             label: 'Actions',
             align: 'right',
-            render: (value) => (
-                <ActionButtons 
-                    actions={[
-                        { key: 'view', icon: 'view', label: 'Détails', color: 'info' },
-                        { key: 'reply', icon: 'edit', label: 'Répondre', color: 'success' },
-                    ]}
-                />
+            render: (value, row) => (
+                <div className="flex items-center gap-2 justify-end">
+                    <button
+                        onClick={() => router.get(`/admin/questions/${value}`)}
+                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="Voir/Répondre"
+                    >
+                        <Eye size={16} />
+                    </button>
+                    {!row.answer && (
+                        <button
+                            onClick={() => router.get(`/admin/questions/${value}`)}
+                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                            title="Répondre"
+                        >
+                            <MessageSquare size={16} />
+                        </button>
+                    )}
+                </div>
             )
         },
     ];
+
+    const formatData = (questions) => {
+        return questions?.data?.map(question => ({
+            ...question,
+            product_name: question.product?.name || 'N/A',
+            user_name: question.user?.name || 'Anonyme',
+            has_answer: !!question.answer,
+        })) || [];
+    };
 
     return (
         <AdminLayout>
@@ -85,7 +111,7 @@ export default function Questions({ questions = {}, filters = {} }) {
                 />
 
                 <SearchFilter 
-                    placeholder="Rechercher par question ou auteur..."
+                    placeholder="Rechercher par question, produit ou auteur..."
                     filters={filterOptions}
                     currentFilters={filters}
                     endpoint="/admin/questions"
@@ -93,7 +119,7 @@ export default function Questions({ questions = {}, filters = {} }) {
 
                 <DataTable 
                     columns={columns}
-                    data={questions?.data || []}
+                    data={formatData(questions)}
                     pagination={{
                         from: questions?.from || 1,
                         to: questions?.to || 0,

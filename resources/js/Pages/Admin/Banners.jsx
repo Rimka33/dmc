@@ -1,6 +1,6 @@
 import React from 'react';
 import AdminLayout from '../../Layouts/AdminLayout';
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import PageHeader from '../../Components/Admin/PageHeader';
 import DataTable from '../../Components/Admin/DataTable';
 import StatusBadge from '../../Components/Admin/StatusBadge';
@@ -40,11 +40,20 @@ export default function Banners({ banners = {} }) {
             label: 'Actions',
             align: 'right',
             render: (value) => (
-                <ActionButtons 
+                <ActionButtons
                     actions={[
                         { key: 'edit', icon: 'edit', label: 'Modifier', color: 'info' },
                         { key: 'delete', icon: 'delete', label: 'Supprimer', color: 'danger' },
                     ]}
+                    onAction={(action) => {
+                        if (action === 'edit') {
+                            router.get(`/admin/banners/${value}/edit`);
+                        } else if (action === 'delete') {
+                            if (confirm('Êtes-vous sûr de vouloir supprimer cette bannière ?')) {
+                                router.delete(`/admin/banners/${value}`);
+                            }
+                        }
+                    }}
                 />
             )
         },
@@ -63,13 +72,13 @@ export default function Banners({ banners = {} }) {
     return (
         <AdminLayout>
             <div className="space-y-6">
-                <PageHeader 
+                <PageHeader
                     title="Bannières & Sliders"
                     subtitle="Créez des bannières promotionnelles pour votre page d'accueil"
                     action={createButton}
                 />
 
-                <DataTable 
+                <DataTable
                     columns={columns}
                     data={banners?.data || []}
                     pagination={{

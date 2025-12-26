@@ -9,6 +9,9 @@ import { Star, DollarSign, ShoppingCart } from 'lucide-react';
 import Section from '../../Components/Admin/Section';
 
 export default function Customers({ customers = {}, filters = {} }) {
+    const handleView = (id) => {
+        router.get(`/admin/customers/${id}`);
+    };
     const filterOptions = [
         { 
             key: 'status', 
@@ -46,7 +49,7 @@ export default function Customers({ customers = {}, filters = {} }) {
             render: (value) => (
                 <span className="inline-flex items-center px-2 py-1 bg-blue-50 text-blue-600 rounded-full text-xs font-bold">
                     <ShoppingCart size={14} className="mr-1" />
-                    {value}
+                    {value || 0}
                 </span>
             )
         },
@@ -55,20 +58,18 @@ export default function Customers({ customers = {}, filters = {} }) {
             label: 'Dépensé',
             render: (value) => (
                 <p className="font-bold text-gray-900">
-                    {new Intl.NumberFormat('fr-FR').format(value)} F
+                    {new Intl.NumberFormat('fr-FR').format(value || 0)} FCFA
                 </p>
             )
         },
         {
-            key: 'is_vip',
+            key: 'is_active',
             label: 'Statut',
-            render: (value, row) => (
+            render: (value) => (
                 <span className={`px-2 py-1 rounded-full text-xs font-bold ${
-                    value ? 'bg-purple-50 text-purple-600' : 
-                    row.is_fraud_risk ? 'bg-red-50 text-red-600' :
-                    'bg-gray-50 text-gray-600'
+                    value ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-600'
                 }`}>
-                    {value ? '⭐ VIP' : row.is_fraud_risk ? '⚠️ À risque' : 'Normal'}
+                    {value ? 'Actif' : 'Inactif'}
                 </span>
             )
         },
@@ -81,6 +82,11 @@ export default function Customers({ customers = {}, filters = {} }) {
                     actions={[
                         { key: 'view', icon: 'view', label: 'Fiche', color: 'info' },
                     ]}
+                    onAction={(action) => {
+                        if (action === 'view') {
+                            handleView(value);
+                        }
+                    }}
                 />
             )
         },

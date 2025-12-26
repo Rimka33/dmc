@@ -125,6 +125,47 @@ class ReviewController extends Controller
     }
 
     /**
+     * Créer un avis pour la boutique (sans produit spécifique)
+     */
+    public function storeShopReview(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'rating' => 'required|integer|min:1|max:5',
+            'title' => 'nullable|string|max:255',
+            'comment' => 'nullable|string|max:1000',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Données invalides',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
+
+        $user = $request->user();
+
+        // Vérifier si l'utilisateur a déjà laissé un avis "boutique" récent (optionnel, pour éviter le spam)
+        // Ici on autorise plusieurs avis boutique pour l'instant
+
+        $review = ProductReview::create([
+            'product_id' => null,
+            'user_id' => $user->id,
+            'rating' => $request->rating,
+            'title' => $request->title ?? 'Avis Boutique',
+            'comment' => $request->comment,
+            'is_verified_purchase' => true, // On considère qu'un user connecté peut laisser un avis
+            'is_approved' => true, 
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Merci pour votre avis sur notre boutique !',
+            'data' => $review,
+        ], 201);
+    }
+
+    /**
      * Modifier un avis
      */
     public function update(Request $request, $reviewId)
@@ -218,6 +259,8 @@ class ReviewController extends Controller
      */
     private function updateProductRating($productId)
     {
+        if (!$productId) return;
+
         $product = Product::findOrFail($productId);
         
         $avgRating = ProductReview::where('product_id', $productId)

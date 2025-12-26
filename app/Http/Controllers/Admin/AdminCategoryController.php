@@ -13,7 +13,8 @@ class AdminCategoryController extends Controller
     public function index()
     {
         $categories = Category::withCount('products')
-            ->orderBy('sort_order')
+            ->orderByRaw('CASE WHEN sort_order = 0 OR sort_order IS NULL THEN 1 ELSE 0 END, sort_order ASC')
+            ->orderBy('name', 'asc')
             ->paginate(10);
 
         return Inertia::render('Admin/Categories/Index', [

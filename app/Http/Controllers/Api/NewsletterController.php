@@ -25,13 +25,21 @@ class NewsletterController extends Controller
             ], 422);
         }
 
-        // Note: Dans un projet réel, on enregistrerait l'email en base de données
-        // ou on l'enverrait vers un service comme Mailchimp.
-        // Pour cette démo, on simule une réussite.
+        try {
+            \App\Models\Newsletter::firstOrCreate(
+                ['email' => $request->email],
+                ['is_active' => true]
+            );
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Merci ! Vous êtes maintenant inscrit à notre newsletter.',
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Merci ! Vous êtes maintenant inscrit à notre newsletter.',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Une erreur est survenue lors de l\'inscription.',
+            ], 500);
+        }
     }
 }

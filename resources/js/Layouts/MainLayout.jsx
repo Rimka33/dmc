@@ -6,8 +6,11 @@ import { WishlistContext } from '../contexts/WishlistContext';
 import api from '../services/api';
 import {
     ShoppingCart, User, Menu, X, ChevronDown, MapPin, Heart, Package,
-    Twitter, Facebook, Instagram, Youtube, Settings, Search, BookOpen, Mail as MailIcon, Phone
+    Twitter, Facebook, Instagram, Youtube, Settings, Search, BookOpen, Mail as MailIcon, Phone,
+    Zap
 } from 'lucide-react';
+import { resolveCategoryImage } from '../utils/imageUtils';
+import BannerPopup from '../Components/BannerPopup';
 
 export default function MainLayout({ children }) {
     const navigate = useNavigate();
@@ -251,7 +254,7 @@ export default function MainLayout({ children }) {
                             </button>
 
                             {categoriesOpen && (
-                                <div className="absolute top-full left-0 mt-0 w-72 bg-white shadow-2xl rounded-b-2xl overflow-hidden z-50 border border-t-0 border-gray-100 py-2 animate-in fade-in slide-in-from-top-2 duration-200">
+                                <div className="absolute top-full left-0 mt-0 w-80 bg-white shadow-2xl rounded-b-2xl overflow-hidden z-50 border border-t-0 border-gray-100 py-2 animate-in fade-in slide-in-from-top-2 duration-200 max-h-[80vh] overflow-y-auto">
                                     {categories.length > 0 ? (
                                         categories.map(cat => (
                                             <Link
@@ -260,17 +263,17 @@ export default function MainLayout({ children }) {
                                                 onClick={() => setCategoriesOpen(false)}
                                                 className="flex items-center gap-4 px-6 py-3.5 hover:bg-forest-green hover:text-white text-gray-700 transition-all font-bold text-sm group"
                                             >
-                                                <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-white/20">
-                                                    <img src={cat.icon || '/images/icons/default.svg'} alt="" className="w-5 h-5 object-contain" />
+                                                <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-white/10 transition-colors">
+                                                    <img src={resolveCategoryImage(cat)} alt="" className="w-5 h-5 object-contain group-hover:brightness-0 group-hover:invert transition-all" onError={(e) => { e.target.src = '/images/icons/default.svg'; }} />
                                                 </div>
-                                                <span>{cat.name}</span>
+                                                <span className="flex-1">{cat.name}</span>
                                                 <ChevronDown className="ml-auto w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity -rotate-90" />
                                             </Link>
                                         ))
                                     ) : (
                                         <div className="px-6 py-4 text-gray-400 text-sm italic">Chargement...</div>
                                     )}
-                                    <div className="mt-4 px-6 pt-4 border-t border-gray-100">
+                                    <div className="mt-4 px-6 pt-4 border-t border-gray-100 sticky bottom-0 bg-white">
                                         <Link to="/shop" className="block w-full py-3 bg-gray-900 text-white text-center rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all">
                                             Voir tout le catalogue
                                         </Link>
@@ -384,6 +387,7 @@ export default function MainLayout({ children }) {
                                             {[
                                                 { name: 'Accueil', path: '/', icon: 'home' },
                                                 { name: 'Boutique', path: '/shop', icon: 'shopping-bag' },
+                                                { name: 'Promotions', path: '/shop?on_sale=1', icon: 'zap' },
                                                 { name: 'Panier', path: '/panier', icon: 'shopping-cart' },
                                                 { name: 'Blog', path: '/blog', icon: 'book-open' },
                                                 { name: 'Contact', path: '/contact', icon: 'mail' }
@@ -396,6 +400,7 @@ export default function MainLayout({ children }) {
                                                 >
                                                     {item.icon === 'home' && <Menu className="w-5 h-5 text-forest-green" />}
                                                     {item.icon === 'shopping-bag' && <ShoppingCart className="w-5 h-5 text-forest-green" />}
+                                                    {item.icon === 'zap' && <Zap className="w-5 h-5 text-red-500" />}
                                                     {item.icon === 'shopping-cart' && <ShoppingCart className="w-5 h-5 text-forest-green" />}
                                                     {item.icon === 'book-open' && <BookOpen className="w-5 h-5 text-forest-green" />}
                                                     {item.icon === 'mail' && <MailIcon className="w-5 h-5 text-forest-green" />}
@@ -415,7 +420,7 @@ export default function MainLayout({ children }) {
                                                     onClick={() => setMobileMenuOpen(false)}
                                                     className="flex flex-col items-center justify-center p-4 border border-gray-100 rounded-2xl bg-white hover:border-neon-green transition-all"
                                                 >
-                                                    <img src={cat.icon || '/images/icons/default.svg'} alt="" className="w-8 h-8 mb-2" />
+                                                    <img src={resolveCategoryImage(cat)} alt="" className="w-8 h-8 mb-2" onError={(e) => { e.target.src = '/images/icons/default.svg'; }} />
                                                     <span className="text-[9px] font-bold text-center text-gray-600 line-clamp-1 truncate">{cat.name}</span>
                                                 </Link>
                                             ))}
@@ -589,6 +594,9 @@ export default function MainLayout({ children }) {
                     </div>
                 </div>
             </footer>
+
+            {/* Banner Popup */}
+            <BannerPopup />
         </div>
     );
 }

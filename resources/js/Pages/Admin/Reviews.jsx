@@ -5,31 +5,31 @@ import PageHeader from '../../Components/Admin/PageHeader';
 import SearchFilter from '../../Components/Admin/SearchFilter';
 import DataTable from '../../Components/Admin/DataTable';
 import ActionButtons from '../../Components/Admin/ActionButtons';
-import { Star } from 'lucide-react';
+import { Star, Eye, Check, X } from 'lucide-react';
 
 export default function Reviews({ reviews = {}, filters = {} }) {
     const filterOptions = [
-        { 
-            key: 'rating', 
+        {
+            key: 'rating',
             label: 'Note',
             type: 'select',
             options: [
-                { label: '⭐⭐⭐⭐⭐ (5 stars)', value: '5' },
-                { label: '⭐⭐⭐⭐ (4 stars)', value: '4' },
-                { label: '⭐⭐⭐ (3 stars)', value: '3' },
-                { label: '⭐⭐ (2 stars)', value: '2' },
-                { label: '⭐ (1 star)', value: '1' },
+                { label: 'Toutes', value: '' },
+                { label: '⭐⭐⭐⭐⭐ (5)', value: '5' },
+                { label: '⭐⭐⭐⭐ (4)', value: '4' },
+                { label: '⭐⭐⭐ (3)', value: '3' },
+                { label: '⭐⭐ (2)', value: '2' },
+                { label: '⭐ (1)', value: '1' },
             ]
         },
-        { 
-            key: 'status', 
+        {
+            key: 'status',
             label: 'Statut',
             type: 'select',
             options: [
-                { label: 'En attente', value: 'pending' },
+                { label: 'Tous', value: '' },
                 { label: 'Approuvé', value: 'approved' },
-                { label: 'Rejeté', value: 'rejected' },
-                { label: 'Caché', value: 'hidden' },
+                { label: 'En attente', value: 'pending' },
             ]
         },
     ];
@@ -54,31 +54,34 @@ export default function Reviews({ reviews = {}, filters = {} }) {
         {
             key: 'product_name',
             label: 'Produit',
-            width: '30%',
-            render: (value) => <p className="font-bold text-gray-900 truncate">{value}</p>
+            width: '25%',
+            render: (value) => <p className="font-bold text-gray-900 truncate">{value || 'N/A'}</p>
         },
         {
-            key: 'author',
+            key: 'user_name',
             label: 'Auteur',
-            render: (value) => <span className="text-gray-700">{value}</span>
+            width: '20%',
+            render: (value) => <span className="text-gray-700">{value || 'Anonyme'}</span>
+        },
+        {
+            key: 'title',
+            label: 'Titre',
+            width: '20%',
+            render: (value) => <p className="text-gray-900 font-semibold truncate">{value || '-'}</p>
         },
         {
             key: 'comment',
             label: 'Commentaire',
-            width: '25%',
-            render: (value) => <p className="text-gray-600 truncate text-sm">{value}</p>
+            width: '15%',
+            render: (value) => <p className="text-gray-600 truncate text-sm">{value ? (value.length > 50 ? value.substring(0, 50) + '...' : value) : '-'}</p>
         },
         {
-            key: 'status',
+            key: 'is_approved',
             label: 'Statut',
             render: (value) => (
-                <span className={`px-2 py-1 rounded-full text-xs font-bold ${
-                    value === 'approved' ? 'bg-green-50 text-green-600' :
-                    value === 'pending' ? 'bg-yellow-50 text-yellow-600' :
-                    value === 'hidden' ? 'bg-gray-50 text-gray-600' :
-                    'bg-red-50 text-red-600'
-                }`}>
-                    {value === 'approved' ? 'Approuvé' : value === 'pending' ? 'En attente' : value === 'hidden' ? 'Caché' : 'Rejeté'}
+                <span className={`px-2 py-1 rounded-full text-xs font-bold ${value ? 'bg-green-50 text-green-600' : 'bg-yellow-50 text-yellow-600'
+                    }`}>
+                    {value ? 'Approuvé' : 'En attente'}
                 </span>
             )
         },
@@ -86,36 +89,76 @@ export default function Reviews({ reviews = {}, filters = {} }) {
             key: 'id',
             label: 'Actions',
             align: 'right',
-            render: (value) => (
-                <ActionButtons 
-                    actions={[
-                        { key: 'view', icon: 'view', label: 'Voir', color: 'info' },
-                        { key: 'approve', icon: 'edit', label: 'Approuver', color: 'success' },
-                        { key: 'delete', icon: 'delete', label: 'Refuser', color: 'danger' },
-                    ]}
-                />
+            render: (value, row) => (
+                <div className="flex items-center gap-2 justify-end">
+                    <button
+                        onClick={() => router.get(`/admin/reviews/${value}`)}
+                        className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                        title="Voir"
+                    >
+                        <Eye size={16} />
+                    </button>
+                    {!row.is_approved && (
+                        <button
+                            onClick={() => {
+                                if (confirm('Approuver cet avis ?')) {
+                                    router.post(`/admin/reviews/${value}/approve`, {}, {
+                                        preserveScroll: true,
+                                        onSuccess: () => router.reload()
+                                    });
+                                }
+                            }}
+                            className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                            title="Approuver"
+                        >
+                            <Check size={16} />
+                        </button>
+                    )}
+                    <button
+                        onClick={() => {
+                            if (confirm('Supprimer cet avis ?')) {
+                                router.delete(`/admin/reviews/${value}`, {
+                                    preserveScroll: true,
+                                    onSuccess: () => router.reload()
+                                });
+                            }
+                        }}
+                        className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                        title="Supprimer"
+                    >
+                        <X size={16} />
+                    </button>
+                </div>
             )
         },
     ];
 
+    const formatData = (reviews) => {
+        return reviews?.data?.map(review => ({
+            ...review,
+            product_name: review.product?.name || 'Avis Boutique',
+            user_name: review.user?.name || 'Anonyme',
+        })) || [];
+    };
+
     return (
         <AdminLayout>
             <div className="space-y-6">
-                <PageHeader 
+                <PageHeader
                     title="Modération des Avis"
-                    subtitle="Validez, refusez ou répondez aux avis clients"
+                    subtitle="Validez, refusez ou modérez les avis clients"
                 />
 
-                <SearchFilter 
-                    placeholder="Rechercher par produit ou auteur..."
+                <SearchFilter
+                    placeholder="Rechercher par produit, auteur ou commentaire..."
                     filters={filterOptions}
                     currentFilters={filters}
                     endpoint="/admin/reviews"
                 />
 
-                <DataTable 
+                <DataTable
                     columns={columns}
-                    data={reviews?.data || []}
+                    data={formatData(reviews)}
                     pagination={{
                         from: reviews?.from || 1,
                         to: reviews?.to || 0,

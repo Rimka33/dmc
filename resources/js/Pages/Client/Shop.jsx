@@ -17,6 +17,7 @@ import {
     ChevronDown
 } from 'lucide-react';
 import ShimmerImage from '../../Components/ShimmerImage';
+import { resolveCategoryImage } from '../../utils/imageUtils';
 
 const StarRating = ({ rating, count }) => (
     <div className="flex items-center gap-1 mb-2">
@@ -103,20 +104,20 @@ function ProductCard({ product, viewMode = 'grid' }) {
     return (
         <div className="group relative bg-white flex flex-col h-full transition-all border border-gray-100 rounded-2xl overflow-hidden hover:shadow-xl duration-300">
             {/* Image Container */}
-                <Link to={`/produit/${product.id}`} className="relative aspect-square overflow-hidden bg-white mb-2 block overflow-hidden">
-                    <ShimmerImage
-                        src={product.primary_image || '/images/products/default.png'}
-                        alt={product.name}
-                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-4"
-                        fallback={'/images/products/default.png'}
-                    />
+            <Link to={`/produit/${product.id}`} className="relative aspect-square overflow-hidden bg-white mb-2 block overflow-hidden">
+                <ShimmerImage
+                    src={product.primary_image || '/images/products/default.png'}
+                    alt={product.name}
+                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-4"
+                    fallback={'/images/products/default.png'}
+                />
 
-                    {product.is_on_sale && (
-                        <span className="absolute top-2 left-2 px-2 py-1 bg-red-600 text-white text-[9px] font-black uppercase rounded shadow-lg z-10">
-                            SOLDE
-                        </span>
-                    )}
-                </Link>
+                {product.is_on_sale && (
+                    <span className="absolute top-2 left-2 px-2 py-1 bg-red-600 text-white text-[9px] font-black uppercase rounded shadow-lg z-10">
+                        SOLDE
+                    </span>
+                )}
+            </Link>
 
             {/* Content Container */}
             <div className="flex flex-col flex-grow text-left px-4 pb-4">
@@ -175,6 +176,7 @@ export default function Shop() {
     // Filter states
     const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category_id') || null);
     const [search, setSearch] = useState(searchParams.get('search') || '');
+    const [onSale, setOnSale] = useState(searchParams.get('on_sale') === '1');
     const [sortBy, setSortBy] = useState('created_at');
     const [sortOrder, setSortOrder] = useState('desc');
     const [currentPage, setCurrentPage] = useState(1);
@@ -199,10 +201,8 @@ export default function Shop() {
             setCurrentPage(1);
         }
 
-        const catId = searchParams.get('category_id');
-        if (catId) {
-            setSelectedCategory(catId);
-        }
+        setSelectedCategory(searchParams.get('category_id') || null);
+        setOnSale(searchParams.get('on_sale') === '1');
     }, [searchParams]);
 
     const fetchProducts = async (page = 1, append = false) => {
@@ -221,6 +221,7 @@ export default function Shop() {
             if (search) params.search = search;
             if (minPrice) params.min_price = minPrice;
             if (maxPrice) params.max_price = maxPrice;
+            if (onSale) params.on_sale = 1;
 
             const response = await api.get('/products', { params });
 
@@ -255,7 +256,7 @@ export default function Shop() {
 
     useEffect(() => {
         fetchProducts(1, false);
-    }, [selectedCategory, sortBy, sortOrder, search, minPrice, maxPrice]);
+    }, [selectedCategory, sortBy, sortOrder, search, minPrice, maxPrice, onSale]);
 
     const handleLoadMore = () => {
         if (currentPage < pagination.last_page) {
@@ -292,7 +293,7 @@ export default function Shop() {
                 <div className="absolute inset-0 z-0">
                     {/* The Image - Masked by gradient */}
                     <img
-                        src={selectedCategoryData?.image || selectedCategoryData?.icon || '/images/back.jpg'}
+                        src={selectedCategoryData ? resolveCategoryImage(selectedCategoryData) : '/images/back.jpg'}
                         alt=""
                         className="absolute right-0 top-0 w-full h-full object-cover md:object-contain object-right opacity-90 transition-opacity duration-1000"
                     />
@@ -303,13 +304,13 @@ export default function Shop() {
 
                 <div className="relative z-10 text-center px-4 -mt-10">
                     <h1 className="text-2xl md:text-4xl font-black text-neon-green uppercase tracking-[0.1em] drop-shadow-[0_0_20px_rgba(85,255,0,0.4)] mb-4 leading-tight">
-                        {selectedCategoryData?.name || "BOUTIQUE"}
+                        {onSale ? "PROMOTIONS" : (selectedCategoryData?.name || "BOUTIQUE")}
                     </h1>
                     <div className="flex items-center justify-center gap-2 text-white/70 text-[10px] md:text-[11px] font-black uppercase tracking-widest">
                         <Link to="/" className="hover:text-neon-green transition-colors">Accueil</Link>
                         <ChevronRight className="w-3 h-3 text-white/30" />
                         <span className="text-white">
-                            {selectedCategoryData?.name || "Boutique"}
+                            {onSale ? "Nos Promotions" : (selectedCategoryData?.name || "Boutique")}
                         </span>
                     </div>
                 </div>
@@ -356,14 +357,15 @@ export default function Shop() {
                                         className={`flex-shrink-0 w-[105px] aspect-[4/5] bg-white rounded-2xl p-2 shadow-sm transition-all flex flex-col items-center justify-center text-center border-2 group snap-start ${selectedCategory == cat.id ? 'border-neon-green' : 'border-transparent hover:border-neon-green/30'}`}
                                     >
                                         <div className="w-16 h-16 mb-2 flex items-center justify-center relative bg-white rounded-xl overflow-hidden group-hover:bg-neon-green/5 transition-colors">
-                                            {cat.image ? (
+                                            {cat.image || cat.icon ? (
                                                 <img
-                                                    src={cat.image.startsWith('http') ? cat.image : `/storage/${cat.image}`}
+                                                    src={resolveCategoryImage(cat)}
                                                     alt={cat.name}
                                                     className="w-full h-full object-contain transform group-hover:scale-110 transition-transform duration-500 mix-blend-multiply"
+                                                    onError={(e) => { e.target.src = '/images/placeholder.png'; }}
                                                 />
                                             ) : (
-                                                <img src={cat.icon || '/images/icons/default.svg'} className="w-8 h-8 text-gray-400 group-hover:text-forest-green transition-colors opacity-90" />
+                                                <img src="/images/icons/default.svg" className="w-8 h-8 text-gray-400 group-hover:text-forest-green transition-colors opacity-90" />
                                             )}
                                         </div>
                                         <h3 className="text-[9px] font-black uppercase tracking-tighter text-gray-900 line-clamp-1 leading-none">{cat.name}</h3>

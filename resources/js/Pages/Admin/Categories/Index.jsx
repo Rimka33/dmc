@@ -7,6 +7,7 @@ import DataTable from '../../../Components/Admin/DataTable';
 import StatusBadge from '../../../Components/Admin/StatusBadge';
 import ActionButtons from '../../../Components/Admin/ActionButtons';
 import { Plus, Layers } from 'lucide-react';
+import { resolveImagePath } from '../../../utils/imageUtils';
 
 export default function Index({ categories }) {
     const [search, setSearch] = useState('');
@@ -23,14 +24,6 @@ export default function Index({ categories }) {
         }
     };
 
-    const resolveSrc = (path) => {
-        if (!path) return '/images/placeholder.png';
-        if (path.startsWith('http://') || path.startsWith('https://')) return path;
-        if (path.startsWith('/')) return path;
-        if (path.startsWith('images/') || path.startsWith('public/images/')) return `/${path.replace(/^\/+/, '')}`;
-        return `/storage/${path}`;
-    };
-
     const columns = [
         {
             key: 'icon',
@@ -38,9 +31,9 @@ export default function Index({ categories }) {
             width: '5%',
             render: (value, row) => (
                 <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden border border-gray-100">
-                    {row.image ? (
+                    {row.image || row.icon ? (
                         <img
-                            src={resolveSrc(row.image)}
+                            src={resolveImagePath(row.image || row.icon)}
                             alt={row.name}
                             className="w-full h-full object-cover"
                             onError={(e) => { e.target.src = '/images/placeholder.png'; }}

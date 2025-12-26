@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -127,6 +128,16 @@ class Product extends Model
     }
 
     /**
+     * Relation: Collections
+     */
+    public function collections(): BelongsToMany
+    {
+        return $this->belongsToMany(Collection::class, 'collection_product')
+            ->withPivot('sort_order')
+            ->withTimestamps();
+    }
+
+    /**
      * Scope: Produits actifs
      */
     public function scopeActive($query)
@@ -192,10 +203,10 @@ class Product extends Model
     public function getPrimaryImageAttribute()
     {
         if ($this->relationLoaded('images')) {
-            return $this->images->where('is_primary', true)->first() 
+            return $this->images->where('is_primary', true)->first()
                 ?? $this->images->first();
         }
-        return $this->images()->where('is_primary', true)->first() 
+        return $this->images()->where('is_primary', true)->first()
             ?? $this->images()->first();
     }
 

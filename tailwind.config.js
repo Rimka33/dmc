@@ -17,8 +17,11 @@ export default {
       fontFamily: {
         sans: ['Bai Jamjuree', 'sans-serif'],
         montserrat: ['Montserrat', 'sans-serif'],
+        lora: ['Lora', 'serif'],
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/typography'),
+  ],
 }

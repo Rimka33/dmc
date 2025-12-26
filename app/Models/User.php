@@ -63,6 +63,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Relation: Adresses de l'utilisateur
+     */
+    public function addresses()
+    {
+        return $this->hasMany(UserAddress::class);
+    }
+
+    /**
      * Vérifier si l'utilisateur est admin
      */
     public function isAdmin(): bool

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import MainLayout from '../../Layouts/MainLayout';
 import { Link } from 'react-router-dom';
 import { ShieldCheck, Truck, CreditCard, RefreshCw, FileText, ChevronRight } from 'lucide-react';
+import ShimmerImage from '../../Components/ShimmerImage';
 
 export default function Terms() {
     useEffect(() => {
@@ -41,10 +42,11 @@ export default function Terms() {
             {/* Hero Header */}
             <div className="relative h-[300px] bg-[#021008] overflow-hidden flex items-center">
                 <div className="absolute inset-0 opacity-20">
-                    <img
+                    <ShimmerImage
                         src="/images/back.jpg"
                         alt="background"
                         className="w-full h-full object-cover"
+                        fallback={'/images/back.jpg'}
                     />
                 </div>
                 <div className="container mx-auto px-4 relative z-10">

@@ -46,8 +46,17 @@ export default function Pages({ pages = {}, filters = {} }) {
                 <ActionButtons 
                     actions={[
                         { key: 'edit', icon: 'edit', label: 'Modifier', color: 'info' },
-                        { key: 'view', icon: 'view', label: 'Voir', color: 'info' },
+                        { key: 'delete', icon: 'delete', label: 'Supprimer', color: 'danger' },
                     ]}
+                    onAction={(action) => {
+                        if (action === 'edit') {
+                            router.get(`/admin/pages/${value}/edit`);
+                        } else if (action === 'delete') {
+                            if (confirm('Êtes-vous sûr de vouloir supprimer cette page ?')) {
+                                router.delete(`/admin/pages/${value}`);
+                            }
+                        }
+                    }}
                 />
             )
         },

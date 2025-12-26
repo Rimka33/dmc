@@ -27,6 +27,26 @@ export default function Contact() {
     const [processing, setProcessing] = useState(false);
     const [errors, setErrors] = useState({});
     const [success, setSuccess] = useState(false);
+    const [userMessages, setUserMessages] = useState([]);
+    const [loadingMessages, setLoadingMessages] = useState(false);
+
+    useEffect(() => {
+        if (authenticated) {
+            fetchUserMessages();
+        }
+    }, [authenticated]);
+
+    const fetchUserMessages = async () => {
+        setLoadingMessages(true);
+        try {
+            const response = await api.get('/contact/my-messages');
+            setUserMessages(response.data.data);
+        } catch (error) {
+            console.error('Error fetching messages:', error);
+        } finally {
+            setLoadingMessages(false);
+        }
+    };
 
     const handleDataChange = (key, value) => {
         setData(prev => ({ ...prev, [key]: value }));
@@ -50,7 +70,9 @@ export default function Contact() {
             if (error.response?.status === 422) {
                 setErrors(error.response.data.errors);
             } else {
-                alert('Une erreur est survenue lors de l\'envoi du message.');
+                console.error('Contact form error:', error);
+                const serverError = error.response?.data?.message || error.response?.data?.error || error.message || 'Erreur inconnue';
+                alert('Une erreur est survenue lors de l\'envoi du message.\n\nDétails: ' + serverError);
             }
         } finally {
             setProcessing(false);
@@ -275,6 +297,88 @@ export default function Contact() {
                     </div>
                 </div>
             </section>
+
+            {/* User Messages Section */}
+            {authenticated && (
+                <section className="py-20 bg-gray-50 border-t border-gray-100">
+                    <div className="container mx-auto px-4 max-w-5xl">
+                        <div className="flex items-center gap-4 mb-12">
+                            <div className="w-12 h-12 bg-forest-green rounded-2xl flex items-center justify-center shadow-lg">
+                                <MessageSquare className="w-6 h-6 text-neon-green" />
+                            </div>
+                            <div>
+                                <h2 className="text-3xl font-black text-gray-900 uppercase italic tracking-tighter">
+                                    MES <span className="text-forest-green">MESSAGES</span>
+                                </h2>
+                                <p className="text-gray-400 font-bold uppercase text-[10px] tracking-widest mt-1">
+                                    Historique de vos échanges avec notre équipe
+                                </p>
+                            </div>
+                        </div>
+
+                        {loadingMessages ? (
+                            <div className="flex justify-center py-20">
+                                <Loader className="w-10 h-10 text-forest-green animate-spin" />
+                            </div>
+                        ) : userMessages.length > 0 ? (
+                            <div className="space-y-8">
+                                {userMessages.map((msg) => (
+                                    <div key={msg.id} className="bg-white rounded-[2rem] shadow-xl shadow-gray-200/50 border border-gray-100 overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
+                                        <div className="p-8">
+                                            <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+                                                <div>
+                                                    <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${msg.status === 'replied' ? 'bg-neon-green text-black' : 'bg-gray-100 text-gray-400'
+                                                        }`}>
+                                                        {msg.status === 'replied' ? '✓ Répondu' : '⏳ En attente'}
+                                                    </span>
+                                                    <span className="ml-4 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                                        {new Date(msg.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                                    </span>
+                                                </div>
+                                                <h3 className="text-lg font-black text-gray-900 uppercase tracking-tight italic">
+                                                    {msg.subject || 'SANS SUJET'}
+                                                </h3>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                                <div className="space-y-3">
+                                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Votre Message</p>
+                                                    <div className="p-6 bg-gray-50 rounded-2xl border-l-4 border-gray-200">
+                                                        <p className="text-gray-700 font-medium italic">"{msg.message}"</p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="space-y-3">
+                                                    <p className="text-[10px] font-black text-forest-green uppercase tracking-[0.2em]">Notre Réponse</p>
+                                                    {msg.reply ? (
+                                                        <div className="p-6 bg-forest-green/5 rounded-2xl border-l-4 border-forest-green animate-in zoom-in duration-500">
+                                                            <p className="text-gray-900 font-bold leading-relaxed">{msg.reply}</p>
+                                                            <p className="text-[9px] font-black text-forest-green uppercase mt-4 opacity-50">
+                                                                Répondu le {new Date(msg.replied_at).toLocaleDateString('fr-FR')}
+                                                            </p>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="p-6 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-center">
+                                                            <Loader className="w-5 h-5 text-gray-300 mb-3 animate-pulse" />
+                                                            <p className="text-gray-400 font-bold text-xs italic">Notre équipe examine votre message...</p>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="bg-white rounded-[2rem] p-16 text-center border-2 border-dashed border-gray-200">
+                                <Mail className="w-16 h-16 text-gray-200 mx-auto mb-6" />
+                                <h3 className="text-xl font-black text-gray-300 uppercase italic">Aucun message envoyé</h3>
+                                <p className="text-gray-400 font-medium mt-2">Utilisez le formulaire ci-dessus pour nous contacter.</p>
+                            </div>
+                        )}
+                    </div>
+                </section>
+            )}
 
             {/* Map Section */}
             <section className="h-[500px] w-full relative bg-gray-100">
