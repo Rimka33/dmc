@@ -3,7 +3,7 @@ import MainLayout from '../../Layouts/MainLayout';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
 import { AuthContext } from '../../contexts/AuthContext';
-import { MapPin, Phone, Mail, Send, Check, Loader, Smartphone, MessageSquare, AtSign, PhoneCall, Globe, ArrowRight } from 'lucide-react';
+import { MapPin, Phone, Mail, Send, Check, Loader, Smartphone, MessageSquare, AtSign, PhoneCall, Globe, ArrowRight, Instagram } from 'lucide-react';
 
 export default function Contact() {
     const { user, authenticated } = useContext(AuthContext);
@@ -111,7 +111,7 @@ export default function Contact() {
                 </div>
 
                 <div className="relative z-10 text-center container mx-auto px-4">
-                    <h1 className="text-3xl md:text-5xl font-black text-neon-green uppercase tracking-tighter mb-4 drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] italic">
+                    <h1 className="text-2xl md:text-4xl font-black text-neon-green uppercase tracking-tighter mb-4 drop-shadow-[0_10px_10px_rgba(0,0,0,0.5)] italic">
                         CONTACTEZ-NOUS
                     </h1>
                     <nav className="flex items-center justify-center gap-2 text-white/90 font-black text-[10px] uppercase tracking-[0.3em]">
@@ -122,178 +122,150 @@ export default function Contact() {
                 </div>
             </div>
 
-            {/* Contact Section */}
-            <section className="py-24 bg-white relative overflow-hidden">
-                <div className="container mx-auto px-4">
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 max-w-7xl mx-auto">
+            {/* Main Contact Section - New Figma Design */}
+            <section className="py-24 bg-white">
+                <div className="container mx-auto px-4 max-w-7xl">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
 
-                        {/* Contact Info */}
-                        <div className="lg:col-span-5 space-y-12">
-                            <div>
-                                <h2 className="text-3xl font-black text-gray-900 uppercase italic tracking-tighter mb-6">
-                                    NOS <span className="text-forest-green">COORDONNÉES</span>
-                                </h2>
-                                <p className="text-gray-500 font-medium leading-relaxed mb-10">
-                                    Nous sommes à votre écoute pour toute question technique ou commerciale. DM Computer s'engage à vous répondre sous 24h ouvrées.
-                                </p>
-                            </div>
-
-                            <div className="space-y-8">
-                                <div className="flex items-start gap-6 group">
-                                    <div className="w-14 h-14 bg-gray-900 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-forest-green transition-all shadow-lg rotate-3 group-hover:rotate-0">
-                                        <MapPin className="w-6 h-6 text-neon-green" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-black text-gray-900 uppercase text-xs tracking-widest mb-2">Notre Bureau</h3>
-                                        <p className="text-gray-600 font-medium">345 Rue FA 22, Liberté 6 Extension<br />Dakar, Sénégal</p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-start gap-6 group">
-                                    <div className="w-14 h-14 bg-gray-900 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-forest-green transition-all shadow-lg -rotate-3 group-hover:rotate-0">
-                                        <Phone className="w-6 h-6 text-neon-green" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-black text-gray-900 uppercase text-xs tracking-widest mb-2">Appelez-nous</h3>
-                                        <p className="text-lg font-black text-gray-900">+221 77 236 77 77</p>
-                                        <p className="text-gray-400 text-xs font-bold uppercase mt-1 tracking-widest">Lun - Sam | 9h - 19h</p>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-start gap-6 group">
-                                    <div className="w-14 h-14 bg-gray-900 rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:bg-forest-green transition-all shadow-lg rotate-6 group-hover:rotate-0">
-                                        <Mail className="w-6 h-6 text-neon-green" />
-                                    </div>
-                                    <div>
-                                        <h3 className="font-black text-gray-900 uppercase text-xs tracking-widest mb-2">Email Direct</h3>
-                                        <p className="text-forest-green font-black underline decoration-2 underline-offset-4">contact@dmcomputer.sn</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Blog Section Removed */}
-                        </div>
-
-                        {/* Contact Form */}
-                        <div className="lg:col-span-7 bg-white p-6 sm:p-12 rounded-[2.5rem] shadow-2xl shadow-gray-200/50 border border-gray-100 relative">
-                            <h2 className="text-3xl font-black text-gray-900 uppercase italic tracking-tighter mb-8">
-                                ENVOYER UN <span className="text-forest-green">MESSAGE</span>
+                        {/* Form Column - Left side */}
+                        <div className="lg:col-span-8">
+                            <h2 className="text-2xl md:text-4xl font-black text-gray-900 uppercase tracking-tight mb-4">
+                                ENTRER EN CONTACT
                             </h2>
+                            <p className="text-gray-400 text-sm font-medium mb-12">
+                                Veuillez saisir les détails de votre demande. Un membre de notre équipe d'assistance vous répondra dans les plus brefs délais.
+                            </p>
 
                             {success ? (
-                                <div key="success-view-container" className="bg-neon-green/10 border-2 border-neon-green p-8 rounded-3xl text-center animate-in fade-in zoom-in duration-300">
-                                    <div className="w-20 h-20 bg-neon-green rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-neon-green/20">
-                                        <Check className="w-10 h-10 text-black" />
+                                <div className="bg-forest-green/5 border-2 border-forest-green/20 p-12 rounded-3xl text-center animate-in zoom-in duration-300">
+                                    <div className="w-16 h-16 bg-forest-green rounded-full flex items-center justify-center mx-auto mb-6">
+                                        <Check className="w-8 h-8 text-white" />
                                     </div>
-                                    <h3 className="text-2xl font-black text-gray-900 mb-2 uppercase tracking-tighter">MESSAGE ENVOYÉ !</h3>
-                                    <p className="text-gray-600 font-medium mb-8">Merci pour votre message. Nous reviendrons vers vous très prochainement.</p>
+                                    <h3 className="text-xl font-black text-gray-900 mb-2 uppercase">Message Envoyé !</h3>
+                                    <p className="text-gray-500 mb-8 font-medium">Nous vous contacterons dans les plus brefs délais.</p>
                                     <button
                                         onClick={() => setSuccess(false)}
-                                        className="px-10 py-4 bg-gray-900 text-white font-black uppercase rounded-2xl hover:bg-black transition-all shadow-lg active:scale-95 text-xs tracking-widest"
+                                        className="px-8 py-3 bg-gray-900 text-white font-black text-[10px] uppercase tracking-widest rounded-lg hover:bg-forest-green transition-all"
                                     >
-                                        ENVOYER UN AUTRE MESSAGE
+                                        Envoyer un autre message
                                     </button>
                                 </div>
                             ) : (
-                                <div key="form-view-container">
-                                    <form onSubmit={handleSubmit} className="space-y-6">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div>
-                                                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 ml-1">Nom complet</label>
-                                                <input
-                                                    type="text"
-                                                    value={data.name}
-                                                    onChange={(e) => handleDataChange('name', e.target.value)}
-                                                    className={`w-full px-6 py-4 border-2 border-transparent rounded-2xl focus:bg-white focus:border-forest-green focus:outline-none transition-all font-medium text-gray-900 ${authenticated ? 'bg-gray-100 cursor-not-allowed opacity-70' : 'bg-gray-50'}`}
-                                                    placeholder="Jean Dupont"
-                                                    required
-                                                    disabled={authenticated}
-                                                    spellCheck="false"
-                                                    autoComplete="off"
-                                                    data-gramm="false"
-                                                    data-lpignore="true"
-                                                    data-form-type="other"
-                                                />
-                                                {errors.name && <p className="text-red-500 text-[10px] mt-2 font-bold uppercase tracking-wider">{errors.name[0]}</p>}
-                                            </div>
-                                            <div>
-                                                <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 ml-1">Email</label>
-                                                <input
-                                                    type="email"
-                                                    value={data.email}
-                                                    onChange={(e) => handleDataChange('email', e.target.value)}
-                                                    className={`w-full px-6 py-4 border-2 border-transparent rounded-2xl focus:bg-white focus:border-forest-green focus:outline-none transition-all font-medium text-gray-900 ${authenticated ? 'bg-gray-100 cursor-not-allowed opacity-70' : 'bg-gray-50'}`}
-                                                    placeholder="jean@exemple.com"
-                                                    required
-                                                    disabled={authenticated}
-                                                    spellCheck="false"
-                                                    autoComplete="off"
-                                                    data-gramm="false"
-                                                    data-lpignore="true"
-                                                    data-form-type="other"
-                                                />
-                                                {errors.email && <p className="text-red-500 text-[10px] mt-2 font-bold uppercase tracking-wider">{errors.email[0]}</p>}
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 ml-1">Objet du message</label>
+                                <form onSubmit={handleSubmit} className="space-y-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="group">
                                             <input
                                                 type="text"
-                                                value={data.subject}
-                                                onChange={(e) => handleDataChange('subject', e.target.value)}
-                                                className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-forest-green focus:outline-none transition-all font-medium text-gray-900"
-                                                placeholder="Demande de devis / renseignement technique"
+                                                value={data.name}
+                                                onChange={(e) => handleDataChange('name', e.target.value)}
+                                                className={`w-full px-5 py-4 border border-gray-200 rounded-lg focus:border-forest-green focus:outline-none transition-all text-xs font-bold text-gray-900 uppercase tracking-widest ${authenticated ? 'bg-gray-50' : 'bg-white'}`}
+                                                placeholder="VOTRE NOM"
                                                 required
-                                                spellCheck="false"
-                                                autoComplete="off"
-                                                data-gramm="false"
-                                                data-lpignore="true"
-                                                data-form-type="other"
+                                                disabled={authenticated}
                                             />
-                                            {errors.subject && <p className="text-red-500 text-[10px] mt-2 font-bold uppercase tracking-wider">{errors.subject[0]}</p>}
+                                            {errors.name && <p className="text-red-500 text-[9px] mt-1 font-black uppercase">{errors.name[0]}</p>}
                                         </div>
-
-                                        <div>
-                                            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3 ml-1">Votre message</label>
-                                            <textarea
-                                                value={data.message}
-                                                onChange={(e) => handleDataChange('message', e.target.value)}
-                                                rows="5"
-                                                className="w-full px-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-forest-green focus:outline-none transition-all font-medium text-gray-900 resize-none"
-                                                placeholder="Comment pouvons-nous vous aider ?"
+                                        <div className="group">
+                                            <input
+                                                type="email"
+                                                value={data.email}
+                                                onChange={(e) => handleDataChange('email', e.target.value)}
+                                                className={`w-full px-5 py-4 border border-gray-200 rounded-lg focus:border-forest-green focus:outline-none transition-all text-xs font-bold text-gray-900 uppercase tracking-widest ${authenticated ? 'bg-gray-50' : 'bg-white'}`}
+                                                placeholder="VOTRE E-MAIL"
                                                 required
-                                                spellCheck="false"
-                                                autoComplete="off"
-                                                data-gramm="false"
-                                                data-lpignore="true"
-                                                data-form-type="other"
-                                            ></textarea>
-                                            {errors.message && <p className="text-red-500 text-[10px] mt-2 font-bold uppercase tracking-wider">{errors.message[0]}</p>}
+                                                disabled={authenticated}
+                                            />
+                                            {errors.email && <p className="text-red-500 text-[9px] mt-1 font-black uppercase">{errors.email[0]}</p>}
                                         </div>
+                                    </div>
 
+                                    <div className="group">
+                                        <input
+                                            type="text"
+                                            value={data.subject}
+                                            onChange={(e) => handleDataChange('subject', e.target.value)}
+                                            className="w-full px-5 py-4 border border-gray-200 rounded-lg bg-white focus:border-forest-green focus:outline-none transition-all text-xs font-bold text-gray-900 uppercase tracking-widest"
+                                            placeholder="SUJET"
+                                            required
+                                        />
+                                        {errors.subject && <p className="text-red-500 text-[9px] mt-1 font-black uppercase">{errors.subject[0]}</p>}
+                                    </div>
+
+                                    <div className="group">
+                                        <textarea
+                                            value={data.message}
+                                            onChange={(e) => handleDataChange('message', e.target.value)}
+                                            rows="8"
+                                            className="w-full px-5 py-4 border border-gray-200 rounded-lg bg-white focus:border-forest-green focus:outline-none transition-all text-xs font-bold text-gray-900 uppercase tracking-widest resize-none"
+                                            placeholder="VOTRE MESSAGE"
+                                            required
+                                        ></textarea>
+                                        {errors.message && <p className="text-red-500 text-[9px] mt-1 font-black uppercase">{errors.message[0]}</p>}
+                                    </div>
+
+                                    <div className="pt-2">
                                         <button
                                             type="submit"
-                                            key={processing ? 'processing-btn' : 'idle-btn'}
                                             disabled={processing}
-                                            className="w-full py-5 bg-forest-green text-white font-black uppercase rounded-2xl hover:bg-dark-green transition-all shadow-xl shadow-forest-green/20 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-4 text-sm tracking-widest"
+                                            className="px-10 py-4 bg-forest-green text-white font-black text-xs uppercase tracking-widest rounded-lg hover:bg-dark-green transition-all shadow-lg shadow-forest-green/10 disabled:opacity-50 flex items-center gap-3 active:scale-[0.98]"
                                         >
                                             {processing ? (
-                                                <span className="flex items-center gap-4">
-                                                    <Loader className="w-5 h-5 animate-spin" />
-                                                    ENVOI EN COURS...
-                                                </span>
-                                            ) : (
-                                                <span className="flex items-center gap-4">
-                                                    ENVOYER LE MESSAGE
-                                                    <Send className="w-4 h-4" />
-                                                </span>
-                                            )}
+                                                <>
+                                                    <Loader className="w-4 h-4 animate-spin" />
+                                                    TRAITEMENT...
+                                                </>
+                                            ) : 'SOUMETTRE MAINTENANT'}
                                         </button>
-                                    </form>
-                                </div>
+                                    </div>
+                                </form>
                             )}
                         </div>
+
+                        {/* Info Column - Right side */}
+                        <div className="lg:col-span-4 space-y-8 pt-12 lg:pt-24">
+                            <div className="space-y-6">
+                                <div className="space-y-1">
+                                    <p className="text-sm font-black text-gray-900">
+                                        Adresse : <span className="font-medium text-gray-400">Rue 22 Fass Delorme - en face Keur Seydi Djamil - Dakar Sénégal</span>
+                                    </p>
+                                </div>
+
+                                <div className="space-y-1">
+                                    <p className="text-sm font-black text-gray-900">
+                                        Courriel : <span className="font-medium text-gray-400">contact@dmcomputer.sn</span>
+                                    </p>
+                                    <p className="text-sm font-black text-gray-900">
+                                        Appelez-nous : <span className="font-medium text-gray-400">(+221) 77 236 77 77 / 77 430 44 44</span>
+                                    </p>
+                                </div>
+
+                                <div className="space-y-1">
+                                    <p className="text-sm font-black text-gray-900">
+                                        Horaires d'ouverture : <span className="font-medium text-gray-400">Notre magasin ouvre ses portes du Lundi au Samedi de <span className="text-gray-900 font-black">09h à 20h.</span></span>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-3 pt-4">
+                                {[
+                                    { icon: <Globe className="w-5 h-5" />, label: 'Facebook' },
+                                    { icon: <Smartphone className="w-5 h-5" />, label: 'TikTok' },
+                                    { icon: <Instagram className="w-5 h-5" />, label: 'Instagram' },
+                                    { icon: <Globe className="w-5 h-5" />, label: 'Youtube' },
+                                    { icon: <MessageSquare className="w-5 h-5" />, label: 'X' }
+                                ].map((social, idx) => (
+                                    <a
+                                        key={idx}
+                                        href="#"
+                                        className="w-10 h-10 bg-gray-50 border border-gray-100 rounded-xl flex items-center justify-center text-gray-400 hover:text-forest-green hover:bg-white hover:shadow-lg transition-all"
+                                        title={social.label}
+                                    >
+                                        {social.icon}
+                                    </a>
+                                ))}
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </section>

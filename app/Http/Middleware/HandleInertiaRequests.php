@@ -39,10 +39,12 @@ class HandleInertiaRequests extends InertiaMiddleware
                     'id' => $request->user()->id,
                     'name' => $request->user()->name,
                     'email' => $request->user()->email,
-                    'role' => $request->user()->role,
+                    'role' => $request->user()->roleModel ? $request->user()->roleModel->slug : $request->user()->role,
+                    'permissions' => $request->user()->getPermissions(),
+                    'avatar' => $request->user()->avatar ? (str_starts_with($request->user()->avatar, 'http') ? $request->user()->avatar : asset('storage/' . $request->user()->avatar)) : null,
                 ] : null,
             ],
-            'admin_notifications' => $request->user() && $request->user()->role === 'admin' ? [
+            'admin_notifications' => $request->user() && ($request->user()->isAdmin() || $request->user()->hasPermission('dashboard.view')) ? [
                 'pending_orders' => \App\Models\Order::where('status', 'pending')->count(),
                 'new_messages' => \App\Models\Message::where('status', 'new')->count(),
                 'pending_reviews' => \App\Models\ProductReview::where('is_approved', false)->count(),

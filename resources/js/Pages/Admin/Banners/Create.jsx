@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import AdminLayout from '../../../Layouts/AdminLayout';
-import { router, Link } from '@inertiajs/react';
+import { useForm, Link } from '@inertiajs/react';
 import PageHeader from '../../../Components/Admin/PageHeader';
 import FormField from '../../../Components/Admin/FormField';
 import Section from '../../../Components/Admin/Section';
-import { Save, ArrowLeft, Image as ImageIcon, X } from 'lucide-react';
+import { Save, ArrowLeft, Image as ImageIcon, X, AlertCircle } from 'lucide-react';
 
 export default function Create({ types = [], positions = [] }) {
-    const [formData, setFormData] = useState({
+    const { data, setData, post, processing, errors } = useForm({
         title: '',
         type: 'banner',
         image: null,
@@ -26,31 +26,14 @@ export default function Create({ types = [], positions = [] }) {
 
     const [imagePreview, setImagePreview] = useState(null);
     const [mobileImagePreview, setMobileImagePreview] = useState(null);
-    const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(false);
 
-    const handleInputChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked : value
-        }));
-        if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: null }));
-        }
-    };
-
-    const handleImageUpload = (e, isMobile = false) => {
-        const file = e.target.files?.[0];
+    const handleImageUpload = (e, field) => {
+        const file = e.target.files[0];
         if (file) {
-            if (isMobile) {
-                setFormData(prev => ({ ...prev, mobile_image: file }));
-            } else {
-                setFormData(prev => ({ ...prev, image: file }));
-            }
+            setData(field, file);
             const reader = new FileReader();
             reader.onload = (event) => {
-                if (isMobile) {
+                if (field === 'mobile_image') {
                     setMobileImagePreview(event.target.result);
                 } else {
                     setImagePreview(event.target.result);
@@ -60,307 +43,246 @@ export default function Create({ types = [], positions = [] }) {
         }
     };
 
-    const removeImage = (isMobile = false) => {
-        if (isMobile) {
-            setFormData(prev => ({ ...prev, mobile_image: null }));
+    const removeImage = (field) => {
+        setData(field, null);
+        if (field === 'mobile_image') {
             setMobileImagePreview(null);
         } else {
-            setFormData(prev => ({ ...prev, image: null }));
             setImagePreview(null);
         }
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        setLoading(true);
-
-        const formDataMultipart = new FormData();
-        Object.keys(formData).forEach(key => {
-            if (key === 'image' || key === 'mobile_image') return;
-
-            // Fix boolean fields for FormData
-            if (key === 'is_active') {
-                formDataMultipart.append(key, formData[key] ? '1' : '0');
-            } else {
-                formDataMultipart.append(key, formData[key] === null ? '' : formData[key]);
-            }
-        });
-
-        if (formData.image) {
-            formDataMultipart.append('image', formData.image);
-        }
-        if (formData.mobile_image) {
-            formDataMultipart.append('mobile_image', formData.mobile_image);
-        }
-
-        router.post('/admin/banners', formDataMultipart, {
+        post('/admin/banners', {
             forceFormData: true,
-            onSuccess: () => {
-                setLoading(false);
-            },
-            onError: (errs) => {
-                setErrors(errs);
-                setLoading(false);
-            },
-            onFinish: () => setLoading(false)
         });
     };
 
     return (
         <AdminLayout>
-            <div className="space-y-6">
+            <div className="max-w-5xl mx-auto space-y-6 pb-12">
                 <PageHeader
                     title="Créer une Bannière"
-                    subtitle="Créez une bannière ou popup promotionnelle"
+                    subtitle="Ajoutez une nouvelle bannière promotionnelle ou un popup"
                     breadcrumbs={['Bannières', 'Nouvelle Bannière']}
-                />
+                >
+                    <Link
+                        href="/admin/banners"
+                        className="flex items-center gap-2 text-gray-500 hover:text-dark-green transition-colors font-bold text-sm"
+                    >
+                        <ArrowLeft size={16} />
+                        Retour à la liste
+                    </Link>
+                </PageHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {Object.keys(errors).length > 0 && (
-                        <div className="bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
-                            <div className="flex">
-                                <div className="ml-3">
-                                    <h3 className="text-sm font-medium text-red-800">
-                                        Erreurs de validation
-                                    </h3>
-                                    <div className="mt-2 text-sm text-red-700">
-                                        <ul className="list-disc pl-5 space-y-1">
-                                            {Object.entries(errors).map(([field, error]) => (
-                                                <li key={field}>{error}</li>
-                                            ))}
-                                        </ul>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        {/* Main Info */}
+                        <div className="lg:col-span-2 space-y-6">
+                            <Section title="Format & Contenu">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <FormField
+                                        label="Titre de la bannière"
+                                        name="title"
+                                        value={data.title}
+                                        onChange={e => setData('title', e.target.value)}
+                                        placeholder="Ex: Arrivage de Noël"
+                                        error={errors.title}
+                                        required
+                                    />
+                                    <FormField
+                                        label="Type de bannière"
+                                        name="type"
+                                        type="select"
+                                        value={data.type}
+                                        onChange={e => setData('type', e.target.value)}
+                                        options={types}
+                                        error={errors.type}
+                                        required
+                                    />
+                                </div>
+
+                                <FormField
+                                    label="Description courte"
+                                    name="description"
+                                    type="textarea"
+                                    value={data.description}
+                                    onChange={e => setData('description', e.target.value)}
+                                    placeholder="Texte qui apparaîtra sur la bannière"
+                                    error={errors.description}
+                                    rows={3}
+                                />
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <FormField
+                                        label="Texte du bouton"
+                                        name="button_text"
+                                        value={data.button_text}
+                                        onChange={e => setData('button_text', e.target.value)}
+                                        placeholder="Ex: Acheter maintenant"
+                                        error={errors.button_text}
+                                    />
+                                    <FormField
+                                        label="Lien de destination"
+                                        name="link"
+                                        value={data.link}
+                                        onChange={e => setData('link', e.target.value)}
+                                        placeholder="https://..."
+                                        error={errors.link}
+                                    />
+                                </div>
+                            </Section>
+
+                            <Section title="Images & Visuels">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    {/* Desktop Image */}
+                                    <div className="space-y-4">
+                                        <label className="block text-xs font-black text-dark-green/40 uppercase tracking-wider">
+                                            Image Desktop (HD) *
+                                        </label>
+                                        <div className="relative group">
+                                            {imagePreview ? (
+                                                <div className="relative aspect-[16/6] rounded-2xl overflow-hidden border-2 border-forest-green shadow-xl shadow-forest-green/10">
+                                                    <img src={imagePreview} alt="Desktop preview" className="w-full h-full object-cover" />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeImage('image')}
+                                                        className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:scale-110 transition-transform shadow-lg"
+                                                    >
+                                                        <X size={16} />
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <label className="flex flex-col items-center justify-center aspect-[16/6] border-2 border-dashed border-forest-green/20 rounded-2xl cursor-pointer hover:border-forest-green hover:bg-forest-green/5 transition-all text-dark-green/30 hover:text-forest-green">
+                                                    <ImageIcon size={48} strokeWidth={1} />
+                                                    <span className="text-xs font-black uppercase mt-4 tracking-widest">Choisir Image Desktop</span>
+                                                    <input type="file" className="hidden" accept="image/*" onChange={e => handleImageUpload(e, 'image')} />
+                                                </label>
+                                            )}
+                                        </div>
+                                        {errors.image && <p className="text-xs text-red-500 font-bold flex items-center gap-1 mt-1"><AlertCircle size={12} /> {errors.image}</p>}
+                                    </div>
+
+                                    {/* Mobile Image */}
+                                    <div className="space-y-4">
+                                        <label className="block text-xs font-black text-dark-green/40 uppercase tracking-wider">
+                                            Image Mobile (Verticale)
+                                        </label>
+                                        <div className="relative group">
+                                            {mobileImagePreview ? (
+                                                <div className="relative aspect-[9/16] max-h-[250px] mx-auto rounded-2xl overflow-hidden border-2 border-forest-green shadow-xl shadow-forest-green/10">
+                                                    <img src={mobileImagePreview} alt="Mobile preview" className="w-full h-full object-cover" />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => removeImage('mobile_image')}
+                                                        className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:scale-110 transition-transform shadow-lg"
+                                                    >
+                                                        <X size={16} />
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <label className="flex flex-col items-center justify-center aspect-[9/16] max-h-[250px] mx-auto border-2 border-dashed border-forest-green/20 rounded-2xl cursor-pointer hover:border-forest-green hover:bg-forest-green/5 transition-all text-dark-green/30 hover:text-forest-green">
+                                                    <ImageIcon size={32} strokeWidth={1} />
+                                                    <span className="text-[10px] font-black uppercase mt-2 tracking-widest px-4 text-center">Image Mobile (Optionnel)</span>
+                                                    <input type="file" className="hidden" accept="image/*" onChange={e => handleImageUpload(e, 'mobile_image')} />
+                                                </label>
+                                            )}
+                                        </div>
+                                        {errors.mobile_image && <p className="text-xs text-red-500 font-bold flex items-center gap-1 mt-1"><AlertCircle size={12} /> {errors.mobile_image}</p>}
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                    )}
-
-                    <Section title="Informations de Base">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <FormField
-                                label="Titre"
-                                name="title"
-                                value={formData.title}
-                                onChange={handleInputChange}
-                                placeholder="Ex: Promotion Noël"
-                                error={errors.title}
-                                required
-                            />
-                            <FormField
-                                label="Type"
-                                name="type"
-                                type="select"
-                                value={formData.type}
-                                onChange={handleInputChange}
-                                options={types}
-                                error={errors.type}
-                                required
-                            />
+                            </Section>
                         </div>
 
-                        <FormField
-                            label="Description"
-                            name="description"
-                            type="textarea"
-                            value={formData.description}
-                            onChange={handleInputChange}
-                            placeholder="Description de la promotion..."
-                            error={errors.description}
-                            rows={3}
-                        />
+                        {/* Sidebar Options */}
+                        <div className="space-y-6 text-dark-green">
+                            <Section title="Paramètres">
+                                <FormField
+                                    label="Emplacement"
+                                    name="position"
+                                    type="select"
+                                    value={data.position}
+                                    onChange={e => setData('position', e.target.value)}
+                                    options={positions}
+                                    error={errors.position}
+                                    required
+                                />
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <FormField
-                                label="Position"
-                                name="position"
-                                type="select"
-                                value={formData.position}
-                                onChange={handleInputChange}
-                                options={positions}
-                                error={errors.position}
-                                required
-                            />
-                            <FormField
-                                label="Ordre d'affichage"
-                                name="sort_order"
-                                type="number"
-                                value={formData.sort_order}
-                                onChange={handleInputChange}
-                                error={errors.sort_order}
-                            />
-                        </div>
+                                <FormField
+                                    label="Ordre d'affichage"
+                                    name="sort_order"
+                                    type="number"
+                                    value={data.sort_order}
+                                    onChange={e => setData('sort_order', e.target.value)}
+                                    error={errors.sort_order}
+                                />
 
-                        {formData.type === 'popup' && (
-                            <FormField
-                                label="Durée d'affichage (secondes)"
-                                name="display_duration"
-                                type="number"
-                                value={formData.display_duration}
-                                onChange={handleInputChange}
-                                placeholder="Ex: 5 (la popup s'affichera pendant 5 secondes)"
-                                error={errors.display_duration}
-                            />
-                        )}
-
-                        <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                            <input
-                                type="checkbox"
-                                id="is_active"
-                                name="is_active"
-                                checked={formData.is_active}
-                                onChange={handleInputChange}
-                                className="w-5 h-5 text-forest-green rounded focus:ring-forest-green border-gray-300"
-                            />
-                            <label htmlFor="is_active" className="text-sm font-bold text-gray-700 cursor-pointer">
-                                Bannière active
-                            </label>
-                        </div>
-                    </Section>
-
-                    <Section title="Images">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">
-                                    Image Desktop *
-                                </label>
-                                {imagePreview ? (
-                                    <div className="relative">
-                                        <img src={imagePreview} alt="Preview" className="w-full h-48 object-cover rounded-lg border border-gray-200" />
-                                        <button
-                                            type="button"
-                                            onClick={() => removeImage(false)}
-                                            className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
-                                        >
-                                            <X size={16} />
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <label className="flex items-center gap-3 px-6 py-8 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-forest-green transition-colors">
-                                        <ImageIcon size={24} className="text-gray-400" />
-                                        <div>
-                                            <p className="font-bold text-gray-700">Ajouter une image</p>
-                                            <p className="text-sm text-gray-500">Cliquez ou glissez un fichier</p>
-                                        </div>
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={(e) => handleImageUpload(e, false)}
-                                            className="hidden"
-                                            required={!imagePreview}
-                                        />
-                                    </label>
+                                {data.type === 'popup' && (
+                                    <FormField
+                                        label="Durée d'affichage (sec)"
+                                        name="display_duration"
+                                        type="number"
+                                        value={data.display_duration}
+                                        onChange={e => setData('display_duration', e.target.value)}
+                                        hint="Temps avant la fermeture auto"
+                                        error={errors.display_duration}
+                                    />
                                 )}
-                                {errors.image && <p className="text-red-500 text-xs mt-1">{errors.image}</p>}
+
+                                <div className="mt-6">
+                                    <FormField
+                                        label="Bannière active"
+                                        name="is_active"
+                                        type="checkbox"
+                                        value={data.is_active}
+                                        onChange={e => setData('is_active', e.target.checked)}
+                                    />
+                                </div>
+                            </Section>
+
+                            <Section title="Planification">
+                                <FormField
+                                    label="Date de début"
+                                    name="start_date"
+                                    type="datetime-local"
+                                    value={data.start_date}
+                                    onChange={e => setData('start_date', e.target.value)}
+                                    error={errors.start_date}
+                                />
+                                <FormField
+                                    label="Date de fin"
+                                    name="end_date"
+                                    type="datetime-local"
+                                    value={data.end_date}
+                                    onChange={e => setData('end_date', e.target.value)}
+                                    error={errors.end_date}
+                                />
+                                <p className="text-[10px] text-dark-green/40 mt-4 leading-relaxed font-bold uppercase tracking-wider bg-gray-50/50 p-3 rounded-xl border border-dashed border-gray-200">
+                                    Si vide, la bannière sera visible immédiatement et sans limite de temps dès qu'elle est active.
+                                </p>
+                            </Section>
+
+                            <div className="sticky bottom-6 flex flex-col gap-3">
+                                <button
+                                    type="submit"
+                                    disabled={processing}
+                                    className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-forest-green text-white rounded-2xl hover:bg-dark-green hover:scale-[1.02] active:scale-95 transition-all font-black uppercase tracking-widest shadow-xl shadow-forest-green/20 disabled:opacity-50"
+                                >
+                                    <Save size={20} />
+                                    {processing ? 'Création en cours...' : 'Publier la Bannière'}
+                                </button>
+                                <Link
+                                    href="/admin/banners"
+                                    className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-white border-2 border-dark-green/10 text-dark-green rounded-2xl hover:bg-gray-50 transition-all font-black uppercase tracking-widest"
+                                >
+                                    Annuler
+                                </Link>
                             </div>
-
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-2">
-                                    Image Mobile (Optionnel)
-                                </label>
-                                {mobileImagePreview ? (
-                                    <div className="relative">
-                                        <img src={mobileImagePreview} alt="Preview Mobile" className="w-full h-48 object-cover rounded-lg border border-gray-200" />
-                                        <button
-                                            type="button"
-                                            onClick={() => removeImage(true)}
-                                            className="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600"
-                                        >
-                                            <X size={16} />
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <label className="flex items-center gap-3 px-6 py-8 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-forest-green transition-colors">
-                                        <ImageIcon size={24} className="text-gray-400" />
-                                        <div>
-                                            <p className="font-bold text-gray-700">Ajouter une image mobile</p>
-                                            <p className="text-sm text-gray-500">Cliquez ou glissez un fichier</p>
-                                        </div>
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={(e) => handleImageUpload(e, true)}
-                                            className="hidden"
-                                        />
-                                    </label>
-                                )}
-                                {errors.mobile_image && <p className="text-red-500 text-xs mt-1">{errors.mobile_image}</p>}
-                            </div>
                         </div>
-                    </Section>
-
-                    <Section title="Liens & Actions">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <FormField
-                                label="Lien principal (URL)"
-                                name="link"
-                                type="url"
-                                value={formData.link}
-                                onChange={handleInputChange}
-                                placeholder="https://..."
-                                error={errors.link}
-                            />
-                            <FormField
-                                label="Texte du bouton"
-                                name="button_text"
-                                value={formData.button_text}
-                                onChange={handleInputChange}
-                                placeholder="Ex: Voir l'offre"
-                                error={errors.button_text}
-                            />
-                        </div>
-                        <FormField
-                            label="Lien du bouton (URL)"
-                            name="button_link"
-                            type="url"
-                            value={formData.button_link}
-                            onChange={handleInputChange}
-                            placeholder="https://..."
-                            error={errors.button_link}
-                        />
-                    </Section>
-
-                    <Section title="Planning">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <FormField
-                                label="Date de début"
-                                name="start_date"
-                                type="datetime-local"
-                                value={formData.start_date}
-                                onChange={handleInputChange}
-                                error={errors.start_date}
-                            />
-                            <FormField
-                                label="Date de fin"
-                                name="end_date"
-                                type="datetime-local"
-                                value={formData.end_date}
-                                onChange={handleInputChange}
-                                error={errors.end_date}
-                            />
-                        </div>
-                        <p className="text-xs text-gray-500">Laissez vide pour afficher immédiatement et indéfiniment</p>
-                    </Section>
-
-                    <div className="flex items-center gap-3 pt-6">
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className="flex items-center gap-2 px-6 py-3 bg-forest-green text-white rounded-lg hover:bg-dark-green transition-colors font-bold shadow-lg shadow-forest-green/20 disabled:opacity-50"
-                        >
-                            <Save size={18} />
-                            {loading ? 'Création...' : 'Créer la Bannière'}
-                        </button>
-                        <Link
-                            href="/admin/banners"
-                            className="flex items-center gap-2 px-6 py-3 border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-bold"
-                        >
-                            <ArrowLeft size={18} />
-                            Annuler
-                        </Link>
                     </div>
                 </form>
             </div>
         </AdminLayout>
     );
 }
-

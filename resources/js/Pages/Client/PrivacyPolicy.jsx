@@ -1,82 +1,89 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import MainLayout from '../../Layouts/MainLayout';
 import { Link } from 'react-router-dom';
-import { Shield, Eye, Lock, FileCheck, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
+import axios from 'axios';
 
 export default function PrivacyPolicy() {
+    const [page, setPage] = useState(null);
+    const [loading, setLoading] = useState(true);
+
     useEffect(() => {
         window.scrollTo(0, 0);
+        fetchPage();
     }, []);
+
+    const fetchPage = async () => {
+        try {
+            const response = await axios.get('/api/pages/privacy-policy');
+            setPage(response.data.data);
+        } catch (error) {
+            console.error("Erreur lors du chargement de la politique de confidentialité:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     return (
         <MainLayout>
-            <div className="relative h-[300px] bg-[#021008] overflow-hidden flex items-center">
+            <div className="relative h-[200px] bg-[#021008] overflow-hidden flex items-center">
                 <div className="absolute inset-0 opacity-20">
                     <img src="/images/back.jpg" alt="background" className="w-full h-full object-cover" />
                 </div>
-                <div className="container mx-auto px-4 relative z-10">
-                    <h1 className="text-5xl md:text-6xl font-black text-white uppercase mb-4 leading-tight">
+                <div className="container mx-auto px-4 relative z-10 text-center">
+                    <h1 className="text-2xl md:text-3xl font-black text-white uppercase mb-4 leading-tight">
                         Politique de <span className="text-neon-green">Confidentialité</span>
                     </h1>
-                    <nav className="flex items-center gap-2 text-white/60 text-sm font-bold uppercase tracking-widest">
+                    <nav className="flex items-center justify-center gap-2 text-white/60 text-[10px] font-bold uppercase tracking-widest">
                         <Link to="/" className="hover:text-neon-green transition-colors">Accueil</Link>
-                        <ChevronRight className="w-4 h-4" />
+                        <ChevronRight className="w-3 h-3" />
                         <span className="text-neon-green">Confidentialité</span>
                     </nav>
                 </div>
             </div>
 
-            <section className="py-20 bg-white">
+            <section className="py-16 bg-white">
                 <div className="container mx-auto px-4 max-w-4xl">
-                    <div className="prose prose-lg max-w-none">
-                        <div className="flex items-center gap-4 mb-8">
-                            <Shield className="w-12 h-12 text-forest-green" />
-                            <h2 className="text-3xl font-black text-gray-900 uppercase m-0">Protection de vos données</h2>
+                    {loading ? (
+                        <div className="flex flex-col items-center justify-center py-20">
+                            <div className="w-12 h-12 border-4 border-forest-green border-t-transparent rounded-full animate-spin"></div>
+                            <p className="mt-4 text-gray-500 font-bold uppercase tracking-widest text-xs">Chargement...</p>
                         </div>
+                    ) : page ? (
+                        <div className="prose prose-sm max-w-none">
+                            <div className="mb-12">
+                                <h2 className="text-xl font-black text-gray-900 uppercase mb-4 tracking-tighter">{page.title}</h2>
+                                {page.updated_at && (
+                                    <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest italic border-b border-gray-100 pb-4">
+                                        Dernière mise à jour : {new Date(page.updated_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+                                    </p>
+                                )}
+                            </div>
 
-                        <div className="space-y-12">
-                            <section>
-                                <h3 className="text-xl font-black text-gray-900 border-l-4 border-neon-green pl-4 uppercase tracking-tight">1. Collecte des données</h3>
-                                <p className="text-gray-600 font-medium leading-relaxed mt-4">
-                                    Nous collectons les informations que vous nous fournissez lors de la création d'un compte, d'un achat ou de l'inscription à notre newsletter (Nom, email, numéro de téléphone, adresse). Ces données sont indispensables pour traiter vos commandes.
-                                </p>
-                            </section>
+                            <div
+                                className="text-gray-600 font-medium leading-relaxed"
+                                dangerouslySetInnerHTML={{ __html: page.content }}
+                            />
 
-                            <section>
-                                <h3 className="text-xl font-black text-gray-900 border-l-4 border-neon-green pl-4 uppercase tracking-tight">2. Utilisation des informations</h3>
-                                <div className="grid md:grid-cols-2 gap-4 mt-6">
-                                    <div className="bg-gray-50 p-4 rounded-xl flex items-center gap-3">
-                                        <Lock className="w-5 h-5 text-forest-green" />
-                                        <span className="text-sm font-bold text-gray-700">Traitement sécurisé des commandes</span>
-                                    </div>
-                                    <div className="bg-gray-50 p-4 rounded-xl flex items-center gap-3">
-                                        <Eye className="w-5 h-5 text-forest-green" />
-                                        <span className="text-sm font-bold text-gray-700">Amélioration de votre expérience</span>
-                                    </div>
-                                </div>
-                            </section>
-
-                            <section>
-                                <h3 className="text-xl font-black text-gray-900 border-l-4 border-neon-green pl-4 uppercase tracking-tight">3. Protection des données</h3>
-                                <p className="text-gray-600 font-medium leading-relaxed mt-4">
-                                    DMC met en œuvre toutes les mesures de sécurité nécessaires (cryptage SSL, accès restreints) pour protéger vos données personnelles contre tout accès non autorisé.
-                                </p>
-                            </section>
-
-                            <section className="bg-gray-50 p-8 rounded-3xl border border-gray-100">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <FileCheck className="w-6 h-6 text-forest-green" />
-                                    <h3 className="text-xl font-black text-gray-900 uppercase m-0">Vos droits</h3>
-                                </div>
-                                <p className="text-gray-600 font-medium leading-relaxed mb-6">
+                            <div className="mt-12 bg-gray-50 p-8 rounded-3xl border border-gray-100">
+                                <h3 className="text-lg font-black text-gray-900 uppercase mb-4">Vos droits</h3>
+                                <p className="text-gray-600 font-medium leading-relaxed mb-6 italic text-sm">
                                     Vous disposez d'un droit d'accès, de rectification et de suppression de vos données personnelles. Vous pouvez exercer ce droit à tout moment depuis votre espace client ou en nous contactant.
                                 </p>
-                                <Link to="/mon-compte" className="text-forest-green font-black uppercase text-sm hover:text-neon-green transition-colors flex items-center gap-2">
-                                    Gérer mon profil <ChevronRight className="w-4 h-4" />
+                                <Link to="/mon-compte" className="text-forest-green font-black uppercase text-[10px] tracking-widest hover:text-neon-green transition-colors flex items-center gap-2">
+                                    Gérer mon profil <ChevronRight className="w-3 h-3" />
                                 </Link>
-                            </section>
+                            </div>
                         </div>
-                    </div>
+                    ) : (
+                        <div className="text-center py-20">
+                            <h2 className="text-xl font-black text-gray-900 uppercase mb-4 tracking-tighter">Information non disponible</h2>
+                            <p className="text-gray-500 mb-8">Désolé, cette page n'est pas accessible pour le moment.</p>
+                            <Link to="/" className="px-8 py-4 bg-forest-green text-white font-black uppercase rounded-sm hover:bg-dark-green transition-all">
+                                Retour à l'accueil
+                            </Link>
+                        </div>
+                    )}
                 </div>
             </section>
         </MainLayout>

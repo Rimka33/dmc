@@ -12,9 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('messages', function (Blueprint $table) {
-            $table->foreignId('user_id')->nullable()->after('id')->constrained()->onDelete('set null');
-            $table->text('reply')->nullable()->after('message');
-            $table->timestamp('replied_at')->nullable()->after('reply');
+            // user_id already exists, skip it
+            if (!Schema::hasColumn('messages', 'reply')) {
+                $table->text('reply')->nullable()->after('content');
+            }
+            if (!Schema::hasColumn('messages', 'replied_at')) {
+                $table->timestamp('replied_at')->nullable()->after('is_read');
+            }
         });
     }
 
@@ -24,8 +28,12 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('messages', function (Blueprint $table) {
-            $table->dropForeign(['user_id']);
-            $table->dropColumn(['user_id', 'reply', 'replied_at']);
+            if (Schema::hasColumn('messages', 'replied_at')) {
+                $table->dropColumn('replied_at');
+            }
+            if (Schema::hasColumn('messages', 'reply')) {
+                $table->dropColumn('reply');
+            }
         });
     }
 };

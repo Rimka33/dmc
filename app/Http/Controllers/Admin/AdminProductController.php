@@ -116,11 +116,63 @@ class AdminProductController extends Controller
             'description' => 'nullable|string',
             'sku' => 'nullable|string|unique:products,sku,' . $product->id,
             'is_active' => 'boolean',
+            'tags' => 'nullable|string',
+            'new_images.*' => 'file|mimes:jpeg,png,jpg,webp,mp4,mov,avi,webm|max:51200',
+            'deleted_images' => 'nullable|array',
+            'deleted_images.*' => 'exists:product_images,id',
+            'primary_image_id' => 'nullable|exists:product_images,id',
+            'primary_image_new_index' => 'nullable|integer',
         ]);
 
+        // 1. Mise à jour des informations de base
         $product->update($validated);
 
-        return redirect()->route('admin.products.index')->with('success', 'Produit mis à jour.');
+        // 2. Gestion des suppressions d'images
+        if ($request->has('deleted_images')) {
+            foreach ($request->deleted_images as $imageId) {
+                $image = $product->images()->find($imageId);
+                if ($image) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($image->image_path);
+                    $image->delete();
+                }
+            }
+        }
+
+        $newPrimaryImageId = null;
+
+        // 3. Gestion des nouvelles images
+        if ($request->hasFile('new_images')) {
+            $lastOrder = $product->images()->max('sort_order') ?? -1;
+            foreach ($request->file('new_images') as $index => $image) {
+                $path = $image->store('products', 'public');
+                $isPrimary = ($request->primary_image_new_index !== null && (int)$request->primary_image_new_index === $index);
+                
+                $createdImage = $product->images()->create([
+                    'image_path' => $path,
+                    'is_primary' => $isPrimary,
+                    'sort_order' => $lastOrder + $index + 1,
+                ]);
+
+                if ($isPrimary) {
+                    $newPrimaryImageId = $createdImage->id;
+                }
+            }
+        }
+
+        // 4. Gestion de l'image principale
+        if ($request->primary_image_id) {
+            $product->images()->update(['is_primary' => false]);
+            $product->images()->where('id', $request->primary_image_id)->update(['is_primary' => true]);
+        } elseif ($newPrimaryImageId) {
+            $product->images()->where('id', '!=', $newPrimaryImageId)->update(['is_primary' => false]);
+        }
+
+        // Sécurité: s'assurer qu'au moins une image est principale s'il reste des images
+        if ($product->images()->count() > 0 && !$product->images()->where('is_primary', true)->exists()) {
+            $product->images()->orderBy('sort_order')->first()->update(['is_primary' => true]);
+        }
+
+        return redirect()->route('admin.products.index')->with('success', 'Produit mis à jour avec succès.');
     }
 
     public function destroy(Product $product)

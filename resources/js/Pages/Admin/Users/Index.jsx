@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 import { Link, router } from '@inertiajs/react';
-import { Search, User, Trash2, Shield, Filter } from 'lucide-react';
+import { Search, User, Trash2, Shield, Edit, Plus, CheckCircle, XCircle } from 'lucide-react';
 
 export default function Index({ users, filters }) {
     const [search, setSearch] = useState(filters.search || '');
@@ -20,9 +20,18 @@ export default function Index({ users, filters }) {
     return (
         <AdminLayout>
             <div className="space-y-6">
-                <div>
-                    <h1 className="text-2xl font-bold text-gray-900">Utilisateurs</h1>
-                    <p className="text-gray-500">Gérez les comptes utilisateurs de la plateforme.</p>
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h1 className="text-2xl font-bold text-gray-900">Utilisateurs</h1>
+                        <p className="text-gray-500">Gérez les comptes utilisateurs et leurs rôles.</p>
+                    </div>
+                    <Link
+                        href="/admin/users/create"
+                        className="flex items-center justify-center gap-2 px-6 py-3 bg-forest-green text-white rounded-xl hover:bg-dark-green transition-all shadow-lg hover:shadow-xl font-bold text-sm uppercase tracking-wider"
+                    >
+                        <Plus size={18} />
+                        Ajouter
+                    </Link>
                 </div>
 
                 <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -45,6 +54,7 @@ export default function Index({ users, filters }) {
                                 <tr>
                                     <th className="px-6 py-4">Utilisateur</th>
                                     <th className="px-6 py-4">Rôle</th>
+                                    <th className="px-6 py-4">Statut</th>
                                     <th className="px-6 py-4">Inscription</th>
                                     <th className="px-6 py-4 text-right">Actions</th>
                                 </tr>
@@ -64,17 +74,46 @@ export default function Index({ users, filters }) {
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className={`px-2 py-1 rounded-full text-[10px] font-bold uppercase flex items-center gap-1 w-fit ${user.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-700'
-                                                }`}>
-                                                {user.role === 'admin' && <Shield size={10} />}
-                                                {user.role}
-                                            </span>
+                                            {(() => {
+                                                const getRoleBadgeStyle = (roleName) => {
+                                                    const name = roleName?.toLowerCase() || '';
+                                                    if (name.includes('admin')) return 'bg-purple-100 text-purple-700 border border-purple-200';
+                                                    if (name.includes('gestionnaire')) return 'bg-blue-100 text-blue-700 border border-blue-200';
+                                                    if (name.includes('client')) return 'bg-green-100 text-green-700 border border-green-200';
+                                                    return 'bg-gray-100 text-gray-700 border border-gray-200';
+                                                };
+
+                                                return (
+                                                    <span className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-2 w-fit ${getRoleBadgeStyle(user.role)}`}>
+                                                        {user.role?.toLowerCase().includes('admin') && <Shield size={12} />}
+                                                        {user.role}
+                                                    </span>
+                                                );
+                                            })()}
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            {user.is_active ? (
+                                                <span className="flex items-center gap-1 text-green-600 text-xs font-bold">
+                                                    <CheckCircle size={14} /> Actif
+                                                </span>
+                                            ) : (
+                                                <span className="flex items-center gap-1 text-red-500 text-xs font-bold">
+                                                    <XCircle size={14} /> Inactif
+                                                </span>
+                                            )}
                                         </td>
                                         <td className="px-6 py-4 text-gray-500">
-                                            {new Date(user.created_at).toLocaleDateString()}
+                                            {user.created_at}
                                         </td>
                                         <td className="px-6 py-4 text-right">
-                                            {user.role !== 'admin' && (
+                                            <div className="flex items-center justify-end gap-2">
+                                                <Link
+                                                    href={`/admin/users/${user.id}/edit`}
+                                                    className="inline-flex p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                                                    title="Modifier"
+                                                >
+                                                    <Edit size={18} />
+                                                </Link>
                                                 <button
                                                     onClick={() => handleDelete(user.id)}
                                                     className="inline-flex p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
@@ -82,7 +121,7 @@ export default function Index({ users, filters }) {
                                                 >
                                                     <Trash2 size={18} />
                                                 </button>
-                                            )}
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}

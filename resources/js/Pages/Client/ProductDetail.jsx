@@ -305,9 +305,9 @@ export default function ProductDetail() {
                         {/* Product Info */}
                         <div className="flex flex-col h-full">
                             <div className="border-b border-gray-100 pb-6 mb-6">
-                                <h1 className="text-2xl font-black text-gray-900 mb-2 leading-tight uppercase tracking-tight">{product.name}</h1>
+                                <h1 className="text-lg font-black text-gray-900 mb-2 leading-tight uppercase tracking-tight">{product.name}</h1>
                                 <div className="flex items-baseline gap-4 mb-4">
-                                    <span className="text-2xl font-black text-forest-green">
+                                    <span className="text-xl font-black text-forest-green">
                                         {product.price_formatted}
                                     </span>
                                     {product.has_discount && (
@@ -316,7 +316,7 @@ export default function ProductDetail() {
                                         </span>
                                     )}
                                 </div>
-                                <div className="text-gray-500 leading-relaxed text-sm mb-6 line-clamp-3">
+                                <div className="text-gray-500 leading-relaxed text-xs mb-6 line-clamp-3">
                                     {product.short_description || product.description?.replace(/<[^>]+>/g, '').substring(0, 150) + '...'}
                                 </div>
 
@@ -327,7 +327,7 @@ export default function ProductDetail() {
                                         <div className="flex items-center bg-gray-100 rounded-lg p-1 w-32">
                                             <button
                                                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                                className="w-8 h-full flex items-center justify-center text-gray-500 hover:text-black hover:bg-white rounded-md transition-all font-bold"
+                                                className="w-8 h-full flex items-center justify-center text-gray-500 hover:text-black hover:bg-white rounded-md transition-all"
                                             >
                                                 <Minus className="w-4 h-4" />
                                             </button>
@@ -335,11 +335,11 @@ export default function ProductDetail() {
                                                 type="number"
                                                 value={quantity}
                                                 onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                                                className="flex-1 w-full bg-transparent text-center font-bold text-gray-900 focus:outline-none text-sm appearance-none"
+                                                className="flex-1 w-full bg-transparent text-center font-bold text-gray-900 focus:outline-none text-xs appearance-none"
                                             />
                                             <button
                                                 onClick={() => setQuantity(Math.min(product.stock_quantity, quantity + 1))}
-                                                className="w-8 h-full flex items-center justify-center text-gray-500 hover:text-black hover:bg-white rounded-md transition-all font-bold"
+                                                className="w-8 h-full flex items-center justify-center text-gray-500 hover:text-black hover:bg-white rounded-md transition-all"
                                             >
                                                 <Plus className="w-4 h-4" />
                                             </button>
@@ -349,7 +349,7 @@ export default function ProductDetail() {
                                         <button
                                             onClick={handleAddToCart}
                                             disabled={addingToCart || product.stock_quantity <= 0}
-                                            className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-900 font-extrabold text-[11px] uppercase tracking-widest rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                            className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-900 font-extrabold text-[11px] uppercase tracking-widest rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 text-xs"
                                         >
                                             {addingToCart ? 'AJOUT...' : 'AJOUTER AU PANIER'}
                                         </button>
@@ -391,7 +391,7 @@ export default function ProductDetail() {
                             </div>
 
                             {/* Payment Security Box */}
-                            <div className="bg-gray-50 rounded-xl p-5 mb-6">
+                            <div className="bg-gray-50 rounded-xl p-2 mb-6">
                                 <div className="flex items-center justify-center gap-2 mb-3 text-[10px] font-black uppercase tracking-widest text-gray-400">
                                     <ShieldCheck className="w-4 h-4" />
                                     Garantie de paiement sécurisé
@@ -400,7 +400,7 @@ export default function ProductDetail() {
                                     <img
                                         src="/images/payment-methods.png"
                                         alt="Moyens de paiement sécurisés"
-                                        className="h-7 md:h-8 object-contain opacity-80"
+                                        className="h-3 md:h-4 object-contain opacity-80"
                                     />
                                 </div>
                             </div>
@@ -768,7 +768,7 @@ export default function ProductDetail() {
                 <section className="py-16 bg-gray-50 border-t">
                     <div className="container mx-auto px-4">
                         <div className="flex items-center justify-between mb-8">
-                            <h2 className="text-2xl font-bold text-gray-900 uppercase">Produits similaires</h2>
+                            <h2 className="text-1xl font-bold text-gray-900 uppercase">Produits similaires</h2>
                             <Link to="/shop" className="text-forest-green font-bold hover:underline">Voir tout →</Link>
                         </div>
 
@@ -787,10 +787,10 @@ export default function ProductDetail() {
                                             fallback={'/images/products/default.png'}
                                         />
                                     </div>
-                                    <h3 className="font-semibold text-sm text-gray-900 mb-2 line-clamp-2 min-h-[40px]">
+                                    <h3 className="font-semibold text-xs text-gray-900 mb-2 line-clamp-2 min-h-[40px]">
                                         {related.name}
                                     </h3>
-                                    <p className="text-lg font-bold text-forest-green">
+                                    <p className="text-xs font-bold text-forest-green">
                                         {related.price_formatted}
                                     </p>
                                 </Link>

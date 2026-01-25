@@ -120,6 +120,11 @@ export default function Edit({ page }) {
                     </Section>
 
                     <Section title="Contenu">
+                        <div className="mb-4 p-4 bg-blue-50 border border-blue-100 rounded-lg">
+                            <p className="text-sm text-blue-700 font-medium">
+                                💡 Ce champ supporte le code HTML pour la mise en forme (ex: &lt;h1&gt;, &lt;p&gt;, &lt;br&gt;, &lt;strong&gt;).
+                            </p>
+                        </div>
                         <FormField
                             label="Contenu de la page"
                             name="content"

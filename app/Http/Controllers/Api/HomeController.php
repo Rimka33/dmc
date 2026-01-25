@@ -80,14 +80,6 @@ class HomeController extends Controller
                 ->limit($specialOffersCollection->limit ?? 3)
                 ->get()
                 ->map(function($product) {
-                    $primaryImage = $product->images->where('is_primary', true)->first() 
-                        ?? $product->images->first();
-                    $imagePath = $primaryImage 
-                        ? (str_starts_with($primaryImage->image_path, '/') || str_starts_with($primaryImage->image_path, 'http')
-                            ? asset($primaryImage->image_path)
-                            : asset('storage/' . $primaryImage->image_path))
-                        : asset('images/products/default.png');
-                    
                     return [
                         'id' => $product->id,
                         'product_id' => $product->id,
@@ -98,7 +90,7 @@ class HomeController extends Controller
                         'old_price_formatted' => $product->hasDiscount ? number_format($product->price, 0, ',', '.') . ' FCFA' : null,
                         'has_discount' => $product->hasDiscount,
                         'discount_percentage' => $product->discount_percentage,
-                        'primary_image' => $imagePath,
+                        'primary_image' => $product->primaryImage ? $product->primaryImage->url : asset('images/products/default.png'),
                         'category_name' => $product->category->name ?? '',
                         'stock_quantity' => $product->stock_quantity,
                         'is_on_sale' => $product->is_on_sale,
@@ -128,7 +120,7 @@ class HomeController extends Controller
                         'old_price_formatted' => $product->hasDiscount ? number_format($product->price, 0, ',', '.') . ' FCFA' : null,
                         'has_discount' => $product->hasDiscount,
                         'discount_percentage' => $product->discount_percentage,
-                        'primary_image' => $product->primaryImage ? asset($product->primaryImage->image_path) : asset('images/products/default.png'),
+                        'primary_image' => $product->primaryImage ? $product->primaryImage->url : asset('images/products/default.png'),
                         'category_name' => $product->category->name,
                         'stock_quantity' => $product->stock_quantity,
                         'is_on_sale' => $product->is_on_sale,
@@ -155,15 +147,15 @@ class HomeController extends Controller
                 ->get();
         }
 
-        // 6. Bannières (pour le slider, hors popup)
+        // 6. Bannières (tous types et positions)
         $banners = \App\Models\Banner::active()
-            ->where('type', '!=', 'popup')
             ->orderBy('sort_order')
             ->get()
             ->map(function($banner) {
                 return [
                     'id' => $banner->id,
                     'title' => $banner->title,
+                    'type' => $banner->type,
                     'description' => $banner->description,
                     'image' => $banner->image ? (str_starts_with($banner->image, 'http') ? $banner->image : asset('storage/' . $banner->image)) : null,
                     'mobile_image' => $banner->mobile_image ? (str_starts_with($banner->mobile_image, 'http') ? $banner->mobile_image : asset('storage/' . $banner->mobile_image)) : null,
@@ -171,6 +163,7 @@ class HomeController extends Controller
                     'button_text' => $banner->button_text,
                     'button_link' => $banner->button_link,
                     'position' => $banner->position,
+                    'display_duration' => $banner->display_duration,
                 ];
             });
 
@@ -238,7 +231,7 @@ class HomeController extends Controller
                     'old_price_formatted' => $offer->product->hasDiscount ? number_format($offer->product->price, 0, ',', '.') . ' FCFA' : null,
                     'has_discount' => $offer->product->hasDiscount,
                     'discount_percentage' => $offer->product->discount_percentage,
-                    'primary_image' => $offer->product->primaryImage ? asset($offer->product->primaryImage->image_path) : asset('images/products/default.png'),
+                    'primary_image' => $offer->product->primaryImage ? $offer->product->primaryImage->url : asset('images/products/default.png'),
                     'category_name' => $offer->product->category->name,
                     'stock_quantity' => $offer->product->stock_quantity,
                     'is_on_sale' => $offer->product->is_on_sale,

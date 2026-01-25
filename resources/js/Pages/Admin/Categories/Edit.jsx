@@ -1,27 +1,45 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 import { useForm, Link } from '@inertiajs/react';
-import { ArrowLeft, Save, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Save, AlertCircle, Upload, X } from 'lucide-react';
 
 export default function Edit({ category }) {
-    const { data, setData, put, processing, errors } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
+        _method: 'put',
         name: category.name || '',
         slug: category.slug || '',
         description: category.description || '',
         icon: category.icon || '',
-        image: category.image || '',
-        order: category.order || 0,
+        image: null,
+        sort_order: category.sort_order || 0,
         is_active: category.is_active ?? true,
     });
 
+    const [imagePreview, setImagePreview] = useState(category.image ? `/storage/${category.image}` : null);
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            setData('image', file);
+            setImagePreview(URL.createObjectURL(file));
+        }
+    };
+
+    const removeImage = () => {
+        setData('image', null);
+        setImagePreview(null);
+    };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        put(`/admin/categories/${category.id}`);
+        post(`/admin/categories/${category.id}`, {
+            forceFormData: true,
+        });
     };
 
     return (
         <AdminLayout>
-            <div className="max-w-4xl mx-auto space-y-6">
+            <div className="max-w-4xl mx-auto space-y-6 pb-12">
                 <div className="flex items-center justify-between">
                     <div>
                         <Link href="/admin/categories" className="flex items-center gap-1 text-gray-500 hover:text-forest-green mb-2 text-sm">
@@ -71,13 +89,51 @@ export default function Edit({ category }) {
                             ></textarea>
                         </div>
 
+                        {/* Upload Image */}
+                        <div className="space-y-2">
+                            <label className="text-sm font-semibold text-gray-700">Image de la catégorie</label>
+                            <div className="flex items-start gap-4">
+                                {imagePreview ? (
+                                    <div className="relative w-32 h-32 rounded-lg overflow-hidden border border-gray-100 shadow-sm group">
+                                        <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                                        <button
+                                            type="button"
+                                            onClick={removeImage}
+                                            className="absolute top-1 right-1 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                        >
+                                            <X size={14} />
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <label className="w-32 h-32 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-lg cursor-pointer hover:border-forest-green hover:bg-forest-green/5 transition-all">
+                                        <Upload className="text-gray-400 group-hover:text-forest-green" size={24} />
+                                        <span className="text-[10px] text-gray-400 font-medium mt-2">Upload</span>
+                                        <input type="file" className="hidden" onChange={handleImageChange} accept="image/*" />
+                                    </label>
+                                )}
+                                <div className="flex-1">
+                                    <p className="text-xs text-gray-500 mb-2">
+                                        Cette image sera affichée sur la page boutique et les listes de catégories.
+                                        Format recommandé : Carré (ex: 500x500px), Max 2Mo.
+                                    </p>
+                                    <input
+                                        type="file"
+                                        onChange={handleImageChange}
+                                        className="text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-forest-green/10 file:text-forest-green hover:file:bg-forest-green/20"
+                                        accept="image/*"
+                                    />
+                                </div>
+                            </div>
+                            {errors.image && <p className="text-xs text-red-500 flex items-center gap-1 mt-1"><AlertCircle size={12} /> {errors.image}</p>}
+                        </div>
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="space-y-2">
                                 <label className="text-sm font-semibold text-gray-700">Ordre d'affichage</label>
                                 <input
                                     type="number"
-                                    value={data.order}
-                                    onChange={(e) => setData('order', e.target.value)}
+                                    value={data.sort_order}
+                                    onChange={(e) => setData('sort_order', e.target.value)}
                                     className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-neon-green outline-none transition-all"
                                 />
                             </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import AdminLayout from '../../Layouts/AdminLayout';
-import { Link } from '@inertiajs/react';
+import { Link, router } from '@inertiajs/react';
 import PageHeader from '../../Components/Admin/PageHeader';
 import SearchFilter from '../../Components/Admin/SearchFilter';
 import DataTable from '../../Components/Admin/DataTable';
@@ -10,8 +10,8 @@ import { Plus, FileText } from 'lucide-react';
 
 export default function Pages({ pages = {}, filters = {} }) {
     const filterOptions = [
-        { 
-            key: 'status', 
+        {
+            key: 'status',
             label: 'Statut',
             type: 'select',
             options: [
@@ -43,7 +43,7 @@ export default function Pages({ pages = {}, filters = {} }) {
             label: 'Actions',
             align: 'right',
             render: (value) => (
-                <ActionButtons 
+                <ActionButtons
                     actions={[
                         { key: 'edit', icon: 'edit', label: 'Modifier', color: 'info' },
                         { key: 'delete', icon: 'delete', label: 'Supprimer', color: 'danger' },
@@ -75,20 +75,20 @@ export default function Pages({ pages = {}, filters = {} }) {
     return (
         <AdminLayout>
             <div className="space-y-6">
-                <PageHeader 
+                <PageHeader
                     title="Pages"
                     subtitle="Créez et gérez les pages statiques de votre site"
                     action={createButton}
                 />
 
-                <SearchFilter 
+                <SearchFilter
                     placeholder="Rechercher une page..."
                     filters={filterOptions}
                     currentFilters={filters}
                     endpoint="/admin/pages"
                 />
 
-                <DataTable 
+                <DataTable
                     columns={columns}
                     data={pages?.data || []}
                     pagination={{

@@ -109,7 +109,7 @@ export default function Cart() {
                     <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
                 </div>
                 <div className="container mx-auto px-4 h-full flex flex-col items-center justify-center relative z-10">
-                    <h1 className="text-5xl font-black text-neon-green uppercase mb-3 tracking-tight">PANIER</h1>
+                    <h1 className="text-3xl font-black text-neon-green uppercase mb-3 tracking-tight">PANIER</h1>
                     <div className="flex items-center gap-2 text-white/70 text-sm">
                         <Link to="/" className="hover:text-neon-green transition-colors">Accueil</Link>
                         <span>/</span>
@@ -261,11 +261,11 @@ export default function Cart() {
                                             value={couponCode}
                                             onChange={(e) => setCouponCode(e.target.value)}
                                             placeholder="CODE PROMO"
-                                            className="flex-1 md:w-40 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-forest-green transition-colors text-sm font-medium uppercase"
+                                            className="flex-1 md:w-32 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-forest-green transition-colors text-sm font-medium uppercase"
                                         />
                                         <button
                                             onClick={applyCoupon}
-                                            className="px-6 py-3 bg-gray-900 text-white font-bold uppercase rounded-lg hover:bg-black transition-all text-xs tracking-wider"
+                                            className="px-6 py-2 bg-gray-900 text-white font-bold uppercase rounded-lg hover:bg-black transition-all text-xs tracking-wider"
                                         >
                                             Appliquer
                                         </button>
@@ -282,13 +282,13 @@ export default function Cart() {
 
                             {/* Summary Card */}
                             <div className="lg:col-span-1">
-                                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
-                                    <h2 className="text-md font-black text-gray-900 uppercase mb-6 pb-4 border-b">Total du panier</h2>
+                                <div className="bg-white rounded-sm shadow-sm border border-gray-200 p-2 sticky top-24">
+                                    <h2 className="text-sm font-black text-gray-900 uppercase mb-6 pb-4 border-b">Total du panier</h2>
 
                                     <div className="space-y-4 mb-6">
                                         <div className="flex justify-between items-center">
                                             <span className="text-xs text-gray-600">Sous-total</span>
-                                            <span className="font-bold text-gray-900">{cart.subtotal_formatted || `${(cart.subtotal || 0).toLocaleString()} F CFA`}</span>
+                                            <span className="text-xs text-gray-900">{cart.subtotal_formatted || `${(cart.subtotal || 0).toLocaleString()} F CFA`}</span>
                                         </div>
 
                                         {/* Delivery Method Selection */}
@@ -306,7 +306,7 @@ export default function Cart() {
                                                 />
                                                 <Truck className="w-5 h-5 text-forest-green" />
                                                 <div className="flex-1">
-                                                    <span className="text-sm font-bold text-gray-900 block">Livraison</span>
+                                                    <span className="text-xs font-bold text-gray-900 block">Livraison</span>
                                                     <span className="text-[10px] text-gray-500">5.000 F CFA</span>
                                                 </div>
                                             </label>
@@ -322,15 +322,15 @@ export default function Cart() {
                                                 />
                                                 <Store className="w-5 h-5 text-forest-green" />
                                                 <div className="flex-1">
-                                                    <span className="text-sm font-bold text-gray-900 block">Récupération en boutique</span>
+                                                    <span className="text-xs font-bold text-gray-900 block">Récupération en boutique</span>
                                                     <span className="text-[10px] text-gray-500">Gratuit</span>
                                                 </div>
                                             </label>
                                         </div>
 
                                         <div className="flex justify-between items-center pt-4 border-t-2 border-gray-900">
-                                            <span className="text-lg font-black text-gray-900 uppercase">Total</span>
-                                            <span className={`text-2xl font-black text-neon-green transition-opacity duration-300 ${isUpdating ? 'opacity-50' : 'opacity-100'}`}>
+                                            <span className="text-sm font-black text-gray-900 uppercase">Total</span>
+                                            <span className={`text-1xl font-black text-neon-green transition-opacity duration-300 ${isUpdating ? 'opacity-50' : 'opacity-100'}`}>
                                                 {finalTotal.toLocaleString()} F CFA
                                             </span>
                                         </div>
@@ -339,7 +339,7 @@ export default function Cart() {
                                     <button
                                         onClick={proceedToCheckout}
                                         disabled={isProcessing}
-                                        className="w-full py-4 bg-forest-green text-white font-black uppercase rounded-lg hover:bg-dark-green transition-all shadow-lg text-sm tracking-wider disabled:opacity-75 flex items-center justify-center gap-2"
+                                        className="w-full py-4 bg-forest-green text-white font-black uppercase rounded-lg hover:bg-dark-green transition-all shadow-lg text-xs tracking-wider disabled:opacity-75 flex items-center justify-center gap-2"
                                     >
                                         {isProcessing ? (
                                             <>

@@ -2,8 +2,9 @@ import React, { useState, useContext, useEffect } from 'react';
 import MainLayout from '../../Layouts/MainLayout';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
+import { Eye, EyeOff } from 'lucide-react';
 
-export default function Auth() {
+export default function Auth({ defaultMode = 'login' }) {
     const navigate = useNavigate();
     const { login, register, authenticated, loading } = useContext(AuthContext);
 
@@ -18,6 +19,7 @@ export default function Auth() {
     const [loginData, setLoginData] = useState({
         email: '',
         password: '',
+        remember: false
     });
     const [loginError, setLoginError] = useState('');
     const [loginProcessing, setLoginProcessing] = useState(false);
@@ -33,12 +35,17 @@ export default function Auth() {
     const [registerError, setRegisterError] = useState('');
     const [registerProcessing, setRegisterProcessing] = useState(false);
 
+    // Visibility states
+    const [showLoginPassword, setShowLoginPassword] = useState(false);
+    const [showRegisterPassword, setShowRegisterPassword] = useState(false);
+    const [showRegisterConfirmPassword, setShowRegisterConfirmPassword] = useState(false);
+
     const handleLoginSubmit = async (e) => {
         e.preventDefault();
         setLoginProcessing(true);
         setLoginError('');
 
-        const result = await login(loginData.email, loginData.password);
+        const result = await login(loginData.email, loginData.password, loginData.remember);
 
         if (result.success) {
             navigate('/');
@@ -91,7 +98,7 @@ export default function Auth() {
                         {/* Login Form */}
                         <div className="space-y-6">
                             <div className="border-b-2 border-neon-green pb-3">
-                                <h2 className="text-2xl font-bold text-gray-900 uppercase italic">Se connecter</h2>
+                                <h2 className="text-sm font-bold text-gray-900 uppercase italic">Se connecter</h2>
                             </div>
 
                             {loginError && (
@@ -119,14 +126,23 @@ export default function Auth() {
                                     <label className="block text-gray-700 text-xs font-bold uppercase mb-2">
                                         Mot de passe <span className="text-red-500">*</span>
                                     </label>
-                                    <input
-                                        type="password"
-                                        value={loginData.password}
-                                        onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
-                                        className="w-full px-4 py-3 border border-gray-300 focus:border-forest-green focus:outline-none transition-colors"
-                                        placeholder="••••••••"
-                                        required
-                                    />
+                                    <div className="relative">
+                                        <input
+                                            type={showLoginPassword ? "text" : "password"}
+                                            value={loginData.password}
+                                            onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
+                                            className="w-full px-4 py-3 border border-gray-300 focus:border-forest-green focus:outline-none transition-colors pr-12"
+                                            placeholder="••••••••"
+                                            required
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowLoginPassword(!showLoginPassword)}
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-forest-green transition-colors"
+                                        >
+                                            {showLoginPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <div className="flex items-center justify-between">
@@ -134,9 +150,11 @@ export default function Auth() {
                                         <input
                                             type="checkbox"
                                             id="remember"
-                                            className="w-4 h-4 border-gray-300 text-forest-green focus:ring-forest-green"
+                                            checked={loginData.remember}
+                                            onChange={(e) => setLoginData({ ...loginData, remember: e.target.checked })}
+                                            className="w-4 h-4 border-gray-300 text-forest-green focus:ring-forest-green cursor-pointer"
                                         />
-                                        <label htmlFor="remember" className="text-gray-600 text-sm cursor-pointer hover:text-gray-900">
+                                        <label htmlFor="remember" className="text-gray-600 text-sm cursor-pointer hover:text-gray-900 font-medium">
                                             Souviens-toi de moi
                                         </label>
                                     </div>
@@ -159,7 +177,7 @@ export default function Auth() {
                         {/* Register Form */}
                         <div className="space-y-6">
                             <div className="border-b-2 border-neon-green pb-3">
-                                <h2 className="text-2xl font-bold text-gray-900 uppercase italic">S'inscrire</h2>
+                                <h2 className="text-xl font-bold text-gray-900 uppercase italic">S'inscrire</h2>
                             </div>
 
                             {registerError && (
@@ -202,28 +220,46 @@ export default function Auth() {
                                         <label className="block text-gray-700 text-xs font-bold uppercase mb-2">
                                             Mot de passe <span className="text-red-500">*</span>
                                         </label>
-                                        <input
-                                            type="password"
-                                            value={registerData.password}
-                                            onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
-                                            className="w-full px-4 py-3 border border-gray-300 focus:border-forest-green focus:outline-none transition-colors"
-                                            placeholder="••••••••"
-                                            required
-                                            minLength={8}
-                                        />
+                                        <div className="relative">
+                                            <input
+                                                type={showRegisterPassword ? "text" : "password"}
+                                                value={registerData.password}
+                                                onChange={(e) => setRegisterData({ ...registerData, password: e.target.value })}
+                                                className="w-full px-4 py-3 border border-gray-300 focus:border-forest-green focus:outline-none transition-colors pr-12"
+                                                placeholder="••••••••"
+                                                required
+                                                minLength={8}
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowRegisterPassword(!showRegisterPassword)}
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-forest-green transition-colors"
+                                            >
+                                                {showRegisterPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                            </button>
+                                        </div>
                                     </div>
                                     <div>
                                         <label className="block text-gray-700 text-xs font-bold uppercase mb-2">
                                             Confirmation <span className="text-red-500">*</span>
                                         </label>
-                                        <input
-                                            type="password"
-                                            value={registerData.password_confirmation}
-                                            onChange={(e) => setRegisterData({ ...registerData, password_confirmation: e.target.value })}
-                                            className="w-full px-4 py-3 border border-gray-300 focus:border-forest-green focus:outline-none transition-colors"
-                                            placeholder="••••••••"
-                                            required
-                                        />
+                                        <div className="relative">
+                                            <input
+                                                type={showRegisterConfirmPassword ? "text" : "password"}
+                                                value={registerData.password_confirmation}
+                                                onChange={(e) => setRegisterData({ ...registerData, password_confirmation: e.target.value })}
+                                                className="w-full px-4 py-3 border border-gray-300 focus:border-forest-green focus:outline-none transition-colors pr-12"
+                                                placeholder="••••••••"
+                                                required
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowRegisterConfirmPassword(!showRegisterConfirmPassword)}
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-forest-green transition-colors"
+                                            >
+                                                {showRegisterConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
 

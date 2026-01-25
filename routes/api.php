@@ -32,6 +32,7 @@ Route::prefix('auth')->group(function () {
     // Public
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
     
     // Protégé (nécessite token Sanctum)
     Route::middleware('auth:sanctum')->group(function () {
@@ -69,6 +70,9 @@ Route::get('/blog/{slug}', [\App\Http\Controllers\Api\BlogController::class, 'sh
 
 // Banners
 Route::get('/banners', [\App\Http\Controllers\Api\BannerController::class, 'index']);
+
+// Pages
+Route::get('/pages/{slug}', [\App\Http\Controllers\Api\PageController::class, 'show']);
 
 // Special Offers
 Route::get('/special-offers', [HomeController::class, 'specialOffers']);

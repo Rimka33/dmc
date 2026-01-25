@@ -32,6 +32,27 @@ class ProductImage extends Model
      */
     public function getUrlAttribute()
     {
-        return asset('storage/products/' . $this->image_path);
+        $path = $this->image_path;
+
+        if (!$path) {
+            return asset('images/products/default.png');
+        }
+
+        if (str_starts_with($path, 'http')) {
+            return $path;
+        }
+
+        // Si le chemin commence par /images/ ou images/ (fichiers publics, seeders)
+        if (str_starts_with($path, '/images/') || str_starts_with($path, 'images/')) {
+            return asset($path);
+        }
+
+        // Si le chemin commence déjà par storage
+        if (str_starts_with($path, '/storage/') || str_starts_with($path, 'storage/')) {
+            return asset($path);
+        }
+
+        // Sinon, c'est un fichier stocké dans storage/app/public
+        return asset('storage/' . $path);
     }
 }

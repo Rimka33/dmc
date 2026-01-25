@@ -36,8 +36,8 @@ class AuthController extends Controller
             ], 403);
         }
 
-        // Connecter l'utilisateur pour la session web (utile pour l'admin Inertia)
-        \Illuminate\Support\Facades\Auth::login($user, true);
+        // Connecter l'utilisateur pour la session web
+        \Illuminate\Support\Facades\Auth::login($user, $request->boolean('remember'));
 
         // Créer un token Sanctum pour le frontend API
         $token = $user->createToken('auth-token')->plainTextToken;
@@ -177,6 +177,32 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Mot de passe modifié avec succès',
+        ]);
+    }
+
+    /**
+     * Mot de passe oublié (envoi de lien de réinitialisation)
+     */
+    public function forgotPassword(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => "Nous n'avons pas trouvé d'utilisateur avec cette adresse e-mail.",
+            ], 404);
+        }
+
+        // Pour l'instant, on simule l'envoi ou on log le lien
+        // Dans une version de production, on utiliserait le système de Password::sendResetLink
+        \Illuminate\Support\Facades\Log::info("Réinitialisation de mot de passe pour {$user->email}");
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Un lien de réinitialisation a été envoyé.',
         ]);
     }
 }

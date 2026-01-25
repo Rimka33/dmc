@@ -58,7 +58,7 @@ export default function BlogPost() {
         return (
             <MainLayout>
                 <div className="py-24 text-center">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">{error || 'Article non trouvé'}</h2>
+                    <h2 className="text-1xl font-bold text-gray-900 mb-4">{error || 'Article non trouvé'}</h2>
                     <Link to="/blog" className="text-forest-green font-bold underline">Retour au blog</Link>
                 </div>
             </MainLayout>
@@ -105,10 +105,10 @@ export default function BlogPost() {
                             </span>
                         </div>
                     )}
-                    <h1 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter mb-6 drop-shadow-2xl">
+                    <h1 className="text-1xl md:text-3xl font-black text-white uppercase tracking-tighter mb-6 drop-shadow-2xl">
                         {post.title}
                     </h1>
-                    <div className="flex items-center justify-center gap-6 text-white/80 text-sm flex-wrap">
+                    <div className="flex items-center justify-center gap-6 text-white/80 text-xs flex-wrap">
                         {post.author && (
                             <div className="flex items-center gap-2">
                                 <User size={16} />
@@ -119,10 +119,7 @@ export default function BlogPost() {
                             <Calendar size={16} />
                             <span>{post.date}</span>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <Clock size={16} />
-                            <span>{post.read_time || 5} min de lecture</span>
-                        </div>
+
                     </div>
                 </div>
             </div>
@@ -215,26 +212,6 @@ export default function BlogPost() {
                 </section>
             )}
 
-            {/* Newsletter CTA */}
-            <section className="py-20 bg-forest-green relative overflow-hidden">
-                <div className="absolute inset-0 opacity-10 pointer-events-none">
-                    <img src="/images/footer-bg.png" alt="" className="w-full h-full object-cover grayscale" />
-                </div>
-                <div className="container mx-auto px-4 relative z-10 text-center">
-                    <h2 className="text-3xl md:text-4xl font-black text-white uppercase italic tracking-tighter mb-4">
-                        RESTEZ À L'AFFÛT DE L'ACTUALITÉ <span className="text-neon-green">TECH</span>
-                    </h2>
-                    <p className="text-white/70 max-w-2xl mx-auto mb-8 font-medium">
-                        Abonnez-vous à notre newsletter pour ne rien manquer de nos conseils d'experts et de nos nouvelles arrivées.
-                    </p>
-                    <Link
-                        to="/contact"
-                        className="inline-flex items-center gap-3 px-8 py-4 bg-neon-green text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-white transition-all shadow-2xl shadow-neon-green/30"
-                    >
-                        Nous Contacter
-                    </Link>
-                </div>
-            </section>
         </MainLayout>
     );
 }

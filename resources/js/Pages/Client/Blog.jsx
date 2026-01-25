@@ -70,7 +70,7 @@ export default function Blog() {
                 </div>
 
                 <div className="relative z-10 text-center container mx-auto px-4">
-                    <h1 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter mb-4 drop-shadow-2xl italic">
+                    <h1 className="text-2xl md:text-4xl font-black text-white uppercase tracking-tighter mb-4 drop-shadow-2xl italic">
                         LE <span className="text-neon-green">BLOG</span>
                     </h1>
                     <nav className="flex items-center justify-center gap-2 text-white/90 font-black text-[10px] uppercase tracking-[0.3em]">

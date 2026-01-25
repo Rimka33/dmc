@@ -22,12 +22,14 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',
+        'role', // Deprecated but kept for compatibility
+        'role_id',
         'phone',
         'address',
         'city',
         'postal_code',
         'is_active',
+        'avatar', // Added based on home controller usage
     ];
 
     /**
@@ -55,6 +57,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Relation: Rôle de l'utilisateur
+     */
+    public function roleModel()
+    {
+        return $this->belongsTo(Role::class, 'role_id');
+    }
+
+    /**
      * Relation: Commandes de l'utilisateur
      */
     public function orders()
@@ -75,15 +85,39 @@ class User extends Authenticatable
      */
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        // Check old role column OR new role relationship
+        if ($this->role === 'admin') return true;
+        
+        return $this->roleModel && $this->roleModel->slug === 'admin';
     }
 
     /**
-     * Vérifier si l'utilisateur est client
+     * Vérifier si l'utilisateur a un rôle spécifique
      */
-    public function isCustomer(): bool
+    public function hasRole(string $slug): bool
     {
-        return $this->role === 'customer';
+        return $this->roleModel && $this->roleModel->slug === $slug;
+    }
+
+    /**
+     * Vérifier si l'utilisateur a une permission spécifique
+     */
+    public function hasPermission(string $permissionSlug): bool
+    {
+        if ($this->isAdmin()) return true; // Admin has all permissions
+
+        if (!$this->roleModel) return false;
+
+        return $this->roleModel->permissions()->where('slug', $permissionSlug)->exists();
+    }
+    
+    /**
+     * Obtenir toutes les permissions de l'utilisateur
+     */
+    public function getPermissions()
+    {
+        if (!$this->roleModel) return collect();
+        return $this->roleModel->permissions->pluck('slug');
     }
 
     /**
@@ -91,7 +125,9 @@ class User extends Authenticatable
      */
     public function scopeAdmins($query)
     {
-        return $query->where('role', 'admin');
+        return $query->whereHas('roleModel', function($q) {
+            $q->where('slug', 'admin');
+        })->orWhere('role', 'admin');
     }
 
     /**
@@ -99,7 +135,9 @@ class User extends Authenticatable
      */
     public function scopeCustomers($query)
     {
-        return $query->where('role', 'customer');
+         return $query->whereHas('roleModel', function($q) {
+            $q->where('slug', 'customer');
+        });
     }
 
     /**
@@ -110,4 +148,5 @@ class User extends Authenticatable
         return $query->where('is_active', true);
     }
 }
+
 

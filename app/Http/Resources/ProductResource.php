@@ -46,9 +46,7 @@ class ProductResource extends JsonResource
                     return $this->images->map(function ($image) {
                         return [
                             'id' => $image->id,
-                            'path' => str_starts_with($image->image_path, '/') || str_starts_with($image->image_path, 'http') 
-                                ? asset($image->image_path) 
-                                : asset('storage/' . $image->image_path),
+                            'path' => $image->url,
                             'is_primary' => $image->is_primary,
                             'type' => preg_match('/\.(mp4|webm|avi|mov)$/i', $image->image_path) ? 'video' : 'image',
                             'order' => $image->sort_order,
@@ -57,9 +55,7 @@ class ProductResource extends JsonResource
                 }
             ),
             'primary_image' => $this->primaryImage 
-                ? (str_starts_with($this->primaryImage->image_path, '/') || str_starts_with($this->primaryImage->image_path, 'http')
-                    ? asset($this->primaryImage->image_path)
-                    : asset('storage/' . $this->primaryImage->image_path))
+                ? $this->primaryImage->url
                 : asset('images/products/default.png'),
             'features' => $this->when(
                 $this->relationLoaded('features'),

@@ -45,7 +45,7 @@ export default function PageHeader({
                 {actionText}
               </button>
             )}
-            <div className="absolute -inset-1 bg-neon-green blur-lg opacity-0 group-hover:opacity-20 rounded-xl transition-opacity"></div>
+            <div className="absolute -inset-1 bg-neon-green blur-lg opacity-0 group-hover:opacity-20 rounded-xl transition-opacity pointer-events-none"></div>
           </div>
         ) : null}
       </div>

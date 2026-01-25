@@ -286,7 +286,7 @@ export default function Checkout() {
                                                         </label>
                                                     </div>
                                                 ) : (
-                                                    <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-4">Détails de livraison</h3>
+                                                    <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-4">Détails de livraison</h3>
                                                 )}
 
                                                 {(formData.ship_to_different_address || !authenticated) && (
@@ -361,7 +361,7 @@ export default function Checkout() {
                             {/* Order Summary */}
                             <div className="lg:col-span-1">
                                 <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sticky top-24">
-                                    <h3 className="text-xl font-black text-gray-900 uppercase mb-6 pb-4 border-b">Votre commande</h3>
+                                    <h3 className="text-sm font-black text-gray-900 uppercase mb-6 pb-4 border-b">Votre commande</h3>
 
                                     {/* Products */}
                                     <div className="space-y-4 mb-6">
@@ -392,17 +392,17 @@ export default function Checkout() {
                                         </div>
 
                                         <div className="pt-4 space-y-3 border-t">
-                                            <div className="flex justify-between text-sm text-gray-600">
+                                            <div className="flex justify-between text-xs text-gray-600">
                                                 <span>Sous-total</span>
                                                 <span className="font-bold">{cart.subtotal_formatted || `${(cart.subtotal || 0).toLocaleString()} F CFA`}</span>
                                             </div>
-                                            <div className="flex justify-between text-sm text-gray-600">
+                                            <div className="flex justify-between text-xs text-gray-600">
                                                 <span>Expédition</span>
                                                 <span className="font-bold text-forest-green">
                                                     {deliveryMethod === 'pickup' ? 'Gratuit' : (cart.shipping_formatted || '5.000 F CFA')}
                                                 </span>
                                             </div>
-                                            <div className="flex justify-between text-lg font-black pt-3 border-t-2 border-gray-900">
+                                            <div className="flex justify-between text-xs font-black pt-3 border-t-2 border-gray-900">
                                                 <span className="text-gray-900 uppercase">Total</span>
                                                 <span className="text-neon-green">
                                                     {deliveryMethod === 'pickup'
@@ -427,7 +427,7 @@ export default function Checkout() {
                                                 className="w-4 h-4 text-forest-green"
                                             />
                                             <DollarSign className="w-5 h-5 text-forest-green" />
-                                            <span className="text-sm font-bold text-gray-900">Paiement à la livraison</span>
+                                            <span className="text-xs font-bold text-gray-900">Paiement à la livraison</span>
                                         </label>
 
                                         <label className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${formData.payment_method === 'mobile_money' ? 'border-forest-green bg-green-50' : 'border-gray-200 hover:border-gray-300'}`}>
@@ -440,7 +440,7 @@ export default function Checkout() {
                                                 className="w-4 h-4 text-forest-green"
                                             />
                                             <Smartphone className="w-5 h-5 text-forest-green" />
-                                            <span className="text-sm font-bold text-gray-900">Mobile Money</span>
+                                            <span className="text-xs font-bold text-gray-900">Mobile Money</span>
                                         </label>
 
                                         <label className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${formData.payment_method === 'bank_transfer' ? 'border-forest-green bg-green-50' : 'border-gray-200 hover:border-gray-300'}`}>
@@ -453,7 +453,7 @@ export default function Checkout() {
                                                 className="w-4 h-4 text-forest-green"
                                             />
                                             <Landmark className="w-5 h-5 text-forest-green" />
-                                            <span className="text-sm font-bold text-gray-900">Transfert Bancaire</span>
+                                            <span className="text-xs font-bold text-gray-900">Transfert Bancaire</span>
                                         </label>
                                     </div>
 
@@ -478,7 +478,7 @@ export default function Checkout() {
                                     <button
                                         type="submit"
                                         disabled={processing}
-                                        className="w-full py-4 bg-forest-green text-white font-black uppercase rounded-lg hover:bg-dark-green transition-all shadow-lg text-sm tracking-wider disabled:opacity-50 flex items-center justify-center gap-2"
+                                        className="w-full py-4 bg-forest-green text-white font-black uppercase rounded-lg hover:bg-dark-green transition-all shadow-lg text-xs tracking-wider disabled:opacity-50 flex items-center justify-center gap-2"
                                     >
                                         {processing ? (
                                             <>

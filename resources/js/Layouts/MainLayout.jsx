@@ -210,11 +210,11 @@ export default function MainLayout({ children }) {
                                                     <Link to="/mon-compte" className="flex items-center gap-3 px-5 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-forest-green font-bold transition-all">
                                                         <User className="w-4 h-4 text-gray-400" /> Mon Profil
                                                     </Link>
-                                                    {user?.role === 'admin' && (
+                                                    {user?.role === 'admin' || (user?.permissions && user.permissions.length > 0) ? (
                                                         <a href="/admin/dashboard" className="flex items-center gap-3 px-5 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-forest-green font-bold transition-all border-t border-gray-50">
-                                                            <Settings className="w-4 h-4 text-gray-400" /> Configuration Admin
+                                                            <Settings className="w-4 h-4 text-gray-400" /> Administration
                                                         </a>
-                                                    )}
+                                                    ) : null}
                                                     <button
                                                         onClick={handleLogout}
                                                         className="w-full flex items-center gap-3 px-5 py-2.5 text-sm text-red-600 hover:bg-red-50 font-bold transition-all"
@@ -585,12 +585,14 @@ export default function MainLayout({ children }) {
 
                     <div className="flex justify-center mb-6">
                         <div className="bg-white/95 backdrop-blur-sm px-5 py-2 rounded-full flex items-center gap-6 shadow-md">
-                            <img src="/images/payment-methods.png" alt="Moyens de paiement" className="h-5 object-contain" />
+                            <img src="/images/payment-methods.png" alt="Moyens de paiement" className="h-4 object-contain" />
                         </div>
                     </div>
 
-                    <div className="pt-6 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-3 text-[9px] font-bold tracking-wider text-white/50">
-                        <p>© 2025 DAROUL MOUHTY COMPUTER. TOUS DROITS RÉSERVÉS. CONÇU PAR <span className="text-white">ITEA</span></p>
+                    <div className="pt-6 border-t border-white/10 flex flex-col items-center justify-center gap-3 text-[9px] font-bold tracking-wider text-white/50 w-full mx-auto max-w-7xl">
+                        <p className="text-center">
+                            © 2025 DAROUL MOUHTY COMPUTER. TOUS DROITS RÉSERVÉS. CONÇU PAR <span className="text-white">ITEA</span>
+                        </p>
                     </div>
                 </div>
             </footer>

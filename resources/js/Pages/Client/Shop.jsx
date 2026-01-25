@@ -105,11 +105,11 @@ function ProductCard({ product, viewMode = 'grid' }) {
     return (
         <div className="group relative bg-white flex flex-col h-full transition-all border border-gray-100 rounded-2xl overflow-hidden hover:shadow-xl duration-300">
             {/* Image Container */}
-            <Link to={`/produit/${product.id}`} className="relative aspect-square overflow-hidden bg-white mb-2 block overflow-hidden">
+            <Link to={`/produit/${product.id}`} className="relative aspect-square overflow-hidden bg-white mb-1 block overflow-hidden">
                 <ShimmerImage
                     src={product.primary_image || '/images/products/default.png'}
                     alt={product.name}
-                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-4"
+                    className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-2"
                     fallback={'/images/products/default.png'}
                 />
 
@@ -121,27 +121,27 @@ function ProductCard({ product, viewMode = 'grid' }) {
             </Link>
 
             {/* Content Container */}
-            <div className="flex flex-col flex-grow text-left px-4 pb-4">
-                <div className="mb-1">
-                    <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none line-clamp-1">
+            <div className="flex flex-col flex-grow text-left px-3 pb-3">
+                <div className="mb-0.5">
+                    <span className="text-[8px] font-bold text-gray-400 uppercase tracking-widest leading-none line-clamp-1">
                         {product.category_name}
                     </span>
                 </div>
 
-                <Link to={`/produit/${product.id}`} className="block mb-1.5 group-hover:text-forest-green transition-colors">
-                    <h3 className="text-[13px] font-bold text-gray-800 line-clamp-2 min-h-[2.5em] leading-snug">
+                <Link to={`/produit/${product.id}`} className="block mb-1 group-hover:text-forest-green transition-colors">
+                    <h3 className="text-[11px] font-bold text-gray-800 line-clamp-2 min-h-[1.6rem] leading-snug">
                         {product.name}
                     </h3>
                 </Link>
 
                 <StarRating rating={product.rating} count={product.review_count} />
 
-                <div className="mt-auto flex items-baseline gap-2 pt-2 border-t border-gray-50">
-                    <span className="text-[15px] font-black text-forest-green">
+                <div className="mt-auto flex items-baseline gap-1.5">
+                    <span className="text-[11px] font-black text-forest-green">
                         {product.price_formatted}
                     </span>
                     {product.has_discount && (
-                        <span className="text-[11px] text-gray-400 line-through font-bold">
+                        <span className="text-[9px] text-gray-400 line-through font-bold">
                             {product.old_price_formatted}
                         </span>
                     )}
@@ -170,7 +170,7 @@ export default function Shop() {
     const [searchParams, setSearchParams] = useSearchParams();
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
-    const [pagination, setPagination] = useState({});
+    const [pagination, setPagination] = useState({ total: 0, last_page: 1, current_page: 1 });
     const [loading, setLoading] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
 
@@ -181,9 +181,11 @@ export default function Shop() {
     const [sortBy, setSortBy] = useState('created_at');
     const [sortOrder, setSortOrder] = useState('desc');
     const [currentPage, setCurrentPage] = useState(1);
-    const [viewMode, setViewMode] = useState('grid');
+    const [viewMode, setViewMode] = useState('grid-compact');
     const [minPrice, setMinPrice] = useState('');
     const [maxPrice, setMaxPrice] = useState('');
+    const [selectedBrands, setSelectedBrands] = useState([]);
+    const [selectedRating, setSelectedRating] = useState(null);
     const [openFilter, setOpenFilter] = useState(null);
     const scrollContainerRef = useRef(null);
 
@@ -223,16 +225,36 @@ export default function Shop() {
             if (minPrice) params.min_price = minPrice;
             if (maxPrice) params.max_price = maxPrice;
             if (onSale) params.on_sale = 1;
+            if (selectedBrands.length > 0) params.brands = selectedBrands.join(',');
+            if (selectedRating) params.rating = selectedRating;
 
             const response = await api.get('/products', { params });
 
+            const responseData = response.data;
+            const productList = responseData.data || responseData;
+
             if (append) {
-                setProducts(prev => [...prev, ...(response.data.data || [])]);
+                setProducts(prev => [...prev, ...(productList || [])]);
             } else {
-                setProducts(response.data.data || []);
+                setProducts(productList || []);
             }
 
-            setPagination(response.data.meta || {});
+            // Gestion ultra-robuste du total et des métadonnées (certains environnements renvoient des tableaux [22, 22])
+            const getSafeNumber = (val, fallback = 0) => {
+                if (Array.isArray(val)) return Number(val[0]) || fallback;
+                if (typeof val === 'object' && val !== null) return Number(Object.values(val)[0]) || fallback;
+                return Number(val) || fallback;
+            };
+
+            const total = getSafeNumber(responseData.meta?.total || responseData.total, 0) || (Array.isArray(productList) ? productList.length : 0);
+            const lastPage = getSafeNumber(responseData.meta?.last_page || responseData.last_page, Math.ceil(total / 12));
+
+            setPagination({
+                total: total,
+                last_page: lastPage || 1,
+                current_page: getSafeNumber(responseData.meta?.current_page || responseData.current_page, page),
+                per_page: getSafeNumber(responseData.meta?.per_page || responseData.per_page, 12)
+            });
             setCurrentPage(page);
         } catch (error) {
             console.error('Erreur lors du chargement des produits', error);
@@ -257,7 +279,26 @@ export default function Shop() {
 
     useEffect(() => {
         fetchProducts(1, false);
-    }, [selectedCategory, sortBy, sortOrder, search, minPrice, maxPrice, onSale]);
+    }, [selectedCategory, sortBy, sortOrder, search, minPrice, maxPrice, onSale, selectedBrands, selectedRating]);
+
+    const handleResetFilters = () => {
+        setSelectedCategory(null);
+        setSearch('');
+        setMinPrice('');
+        setMaxPrice('');
+        setSelectedBrands([]);
+        setSelectedRating(null);
+        setOnSale(false);
+        setSearchParams({});
+    };
+
+    const toggleBrand = (brand) => {
+        setSelectedBrands(prev =>
+            prev.includes(brand)
+                ? prev.filter(b => b !== brand)
+                : [...prev, brand]
+        );
+    };
 
     const handleLoadMore = () => {
         if (currentPage < pagination.last_page) {
@@ -387,9 +428,19 @@ export default function Shop() {
                 <div className="container mx-auto px-4">
                     {/* Filter Header Section */}
                     <div className="space-y-8">
-                        <div className="flex items-center gap-2 border-b-2 border-forest-green pb-2 w-max">
-                            <SlidersHorizontal className="w-4 h-4 text-forest-green" />
-                            <h2 className="text-sm font-black text-gray-900 uppercase tracking-tight">FILTRER PAR</h2>
+                        <div className="flex flex-wrap items-center justify-between gap-4 border-b-2 border-forest-green pb-2">
+                            <div className="flex items-center gap-2">
+                                <SlidersHorizontal className="w-4 h-4 text-forest-green" />
+                                <h2 className="text-sm font-black text-gray-900 uppercase tracking-tight">FILTRER PAR</h2>
+                            </div>
+                            {(selectedCategory || search || minPrice || maxPrice || selectedBrands.length > 0 || selectedRating || onSale) && (
+                                <button
+                                    onClick={handleResetFilters}
+                                    className="text-[10px] font-black text-red-500 uppercase tracking-widest hover:text-red-700 transition-colors flex items-center gap-1"
+                                >
+                                    Réinitialiser les filtres
+                                </button>
+                            )}
                         </div>
 
                         {/* Top Filters Block - Responsive Grid */}
@@ -501,10 +552,18 @@ export default function Shop() {
                                     {openFilter === 'brands' && (
                                         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                                             {['HP', 'Dell', 'Lenovo', 'Apple', 'Asus', 'Acer'].map((brand) => (
-                                                <label key={brand} className="flex items-center gap-3 group cursor-pointer">
-                                                    <div className="w-5 h-5 rounded-lg border border-gray-200 group-hover:border-forest-green transition-all"></div>
-                                                    <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500 group-hover:text-gray-900">{brand}</span>
-                                                </label>
+                                                <button
+                                                    key={brand}
+                                                    onClick={() => toggleBrand(brand)}
+                                                    className="flex items-center gap-3 group text-left"
+                                                >
+                                                    <div className={`w-5 h-5 rounded-lg border transition-all flex items-center justify-center ${selectedBrands.includes(brand) ? 'bg-forest-green border-forest-green' : 'border-gray-200 group-hover:border-forest-green'}`}>
+                                                        {selectedBrands.includes(brand) && <Check className="w-3 h-3 text-white" />}
+                                                    </div>
+                                                    <span className={`text-[11px] font-bold uppercase tracking-wider transition-colors ${selectedBrands.includes(brand) ? 'text-forest-green' : 'text-gray-500 group-hover:text-gray-900'}`}>
+                                                        {brand}
+                                                    </span>
+                                                </button>
                                             ))}
                                         </div>
                                     )}
@@ -512,13 +571,22 @@ export default function Shop() {
                                     {openFilter === 'rating' && (
                                         <div className="flex flex-wrap justify-center gap-8">
                                             {[5, 4, 3, 2, 1].map((stars) => (
-                                                <button key={stars} className="flex items-center gap-2 group">
+                                                <button
+                                                    key={stars}
+                                                    onClick={() => {
+                                                        setSelectedRating(selectedRating === stars ? null : stars);
+                                                        setOpenFilter(null);
+                                                    }}
+                                                    className="flex items-center gap-2 group"
+                                                >
                                                     <div className="flex">
                                                         {[...Array(5)].map((_, i) => (
                                                             <Star key={i} className={`w-3.5 h-3.5 ${i < stars ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200'}`} />
                                                         ))}
                                                     </div>
-                                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest group-hover:text-forest-green transition-colors mt-0.5">& Plus</span>
+                                                    <span className={`text-[10px] font-black uppercase tracking-widest transition-colors mt-0.5 ${selectedRating === stars ? 'text-forest-green' : 'text-gray-400 group-hover:text-forest-green'}`}>
+                                                        {stars === 5 ? '5 Étoiles' : '& Plus'}
+                                                    </span>
                                                 </button>
                                             ))}
                                         </div>
@@ -596,34 +664,89 @@ export default function Shop() {
                             </div>
                         )}
 
-                        {/* Pagination Progress & Load More (Design Match) */}
-                        {pagination.total > 0 && products.length < pagination.total && (
-                            <div className="mt-20 flex flex-col items-center gap-8">
-                                <div className="flex flex-col items-center gap-4 w-full max-w-[280px]">
-                                    <div className="w-full h-1 bg-gray-100 rounded-full overflow-hidden">
+                        {/* Pagination Progress & Navigation - COMPACT */}
+                        {products.length > 0 && (
+                            <div className="mt-12 flex flex-col items-center gap-8 mb-20 relative z-[60]">
+                                <div className="flex flex-col items-center gap-3 w-full max-w-[280px]">
+                                    <div className="w-full h-1 bg-gray-100 rounded-full overflow-hidden shadow-sm">
                                         <div
-                                            className="h-full bg-forest-green rounded-full transition-all duration-700 shadow-[0_0_8px_rgba(5,128,49,0.3)]"
-                                            style={{ width: `${(products.length / pagination.total) * 100}%` }}
+                                            className="h-full bg-forest-green rounded-full transition-all duration-1000 shadow-[0_0_8px_rgba(5,128,49,0.3)]"
+                                            style={{ width: `${(products.length / (Math.max(Number(pagination.total), products.length) || 1)) * 100}%` }}
                                         ></div>
                                     </div>
-                                    <div className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] text-center">
-                                        Affichage de <span>{products.length}</span> sur <span>{pagination.total}</span> produits
+                                    <div className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] text-center">
+                                        AFFICHAGE DE <span className="text-forest-green">{products.length}</span> SUR <span className="text-forest-green">{Math.max(Number(pagination.total), products.length)}</span> PRODUITS
                                     </div>
                                 </div>
-                                <button
-                                    onClick={handleLoadMore}
-                                    disabled={loadingMore}
-                                    className="px-14 py-4 bg-gray-900 hover:bg-forest-green text-white rounded-xl font-black text-[11px] uppercase tracking-[0.2em] transition-all shadow-xl hover:shadow-forest-green/20 disabled:opacity-50 flex items-center gap-3"
-                                >
-                                    {loadingMore ? 'Chargement...' : 'Charger plus d\'articles'}
-                                    {!loadingMore && <ChevronDown className="w-4 h-4" />}
-                                </button>
+
+                                {Number(pagination.last_page) > 1 && (
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={() => fetchProducts(currentPage - 1)}
+                                            disabled={currentPage === 1 || loading}
+                                            className="w-10 h-10 rounded-xl border border-gray-200 bg-white flex items-center justify-center hover:border-forest-green hover:text-forest-green transition-all disabled:opacity-20 shadow-sm"
+                                        >
+                                            <ChevronLeft className="w-5 h-5" />
+                                        </button>
+
+                                        <div className="flex items-center gap-1.5">
+                                            {[...Array(Number(pagination.last_page))].map((_, i) => {
+                                                const page = i + 1;
+                                                if (
+                                                    page === 1 ||
+                                                    page === Number(pagination.last_page) ||
+                                                    (page >= currentPage - 1 && page <= currentPage + 1)
+                                                ) {
+                                                    return (
+                                                        <button
+                                                            key={page}
+                                                            onClick={() => fetchProducts(page)}
+                                                            className={`w-10 h-10 rounded-xl font-black text-[11px] transition-all border-2 ${currentPage === page
+                                                                ? 'bg-forest-green border-forest-green text-white shadow-lg shadow-forest-green/20'
+                                                                : 'bg-white border-gray-100 text-gray-400 hover:border-forest-green hover:text-forest-green'
+                                                                }`}
+                                                        >
+                                                            {page}
+                                                        </button>
+                                                    );
+                                                } else if (
+                                                    page === currentPage - 2 ||
+                                                    page === currentPage + 2
+                                                ) {
+                                                    if (page === currentPage - 2 && currentPage > 3) return <span key={page} className="text-gray-300 font-bold px-1">...</span>;
+                                                    if (page === currentPage + 2 && currentPage < Number(pagination.last_page) - 2) return <span key={page} className="text-gray-300 font-bold px-1">...</span>;
+                                                    return null;
+                                                }
+                                                return null;
+                                            })}
+                                        </div>
+
+                                        <button
+                                            onClick={() => fetchProducts(currentPage + 1)}
+                                            disabled={currentPage === Number(pagination.last_page) || loading}
+                                            className="w-10 h-10 rounded-xl border border-gray-200 bg-white flex items-center justify-center hover:border-forest-green hover:text-forest-green transition-all disabled:opacity-20 shadow-sm"
+                                        >
+                                            <ChevronRight className="w-5 h-5" />
+                                        </button>
+                                    </div>
+                                )}
+
+                                {Number(pagination.last_page) > 1 && products.length < Number(pagination.total) && (
+                                    <button
+                                        onClick={handleLoadMore}
+                                        disabled={loadingMore}
+                                        className="px-10 py-3.5 bg-gray-900 hover:bg-forest-green text-white rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all shadow-xl hover:shadow-forest-green/20 disabled:opacity-50 flex items-center gap-2 active:scale-95"
+                                    >
+                                        {loadingMore ? 'Chargement...' : 'Charger la suite'}
+                                        {!loadingMore && <ChevronDown className="w-4 h-4" />}
+                                    </button>
+                                )}
                             </div>
                         )}
 
                         {/* Final Finish Message */}
-                        {pagination.total > 0 && products.length >= pagination.total && !loading && (
-                            <div className="mt-20 py-8 border-t border-gray-50 text-center">
+                        {pagination.total > 0 && products.length >= pagination.total && !loading && currentPage === (pagination.last_page || 1) && (
+                            <div className="mt-20 py-8 border-t border-gray-50 text-center mb-20">
                                 <div className="text-[10px] font-black text-gray-300 uppercase tracking-[0.3em]">Vous avez parcouru tout le catalogue</div>
                             </div>
                         )}

@@ -11,21 +11,35 @@ use Inertia\Inertia;
 | Seules les routes admin Inertia sont conservées ici.
 */
 
-Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    // Dashboard admin
+
+Route::middleware(['auth:sanctum', 'permission:admin.access'])->prefix('admin')->name('admin.')->group(function () {
+    // Dashboard (Accessible par Admin et Manager)
     Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
     
-    // CRUD Produits & Catégories
+    // CRUD Produits & Catégories (Accessible par Manager)
     Route::resource('products', \App\Http\Controllers\Admin\AdminProductController::class);
     Route::resource('categories', \App\Http\Controllers\Admin\AdminCategoryController::class);
     Route::resource('orders', \App\Http\Controllers\Admin\AdminOrderController::class);
     Route::get('orders/{order}/invoice', [\App\Http\Controllers\Admin\AdminOrderController::class, 'downloadInvoice'])->name('orders.invoice');
-    Route::resource('users', \App\Http\Controllers\Admin\AdminUserController::class);
-    Route::get('/settings', [\App\Http\Controllers\Admin\AdminSettingController::class, 'index'])->name('settings.index');
-    Route::post('/settings', [\App\Http\Controllers\Admin\AdminSettingController::class, 'store'])->name('settings.store');
+    Route::resource('collections', \App\Http\Controllers\Admin\AdminCollectionController::class);
 
-    // Routes additionnelles complètes
-    Route::resource('customers', \App\Http\Controllers\Admin\AdminCustomerController::class);
+    // Routes réservées strictement aux Admins (Système & Clients)
+    Route::middleware(['role:admin'])->group(function () {
+        Route::resource('users', \App\Http\Controllers\Admin\AdminUserController::class);
+        Route::resource('roles', \App\Http\Controllers\Admin\AdminRoleController::class);
+        Route::get('/settings', [\App\Http\Controllers\Admin\AdminSettingController::class, 'index'])->name('settings.index');
+        Route::post('/settings', [\App\Http\Controllers\Admin\AdminSettingController::class, 'store'])->name('settings.store');
+        
+        Route::resource('customers', \App\Http\Controllers\Admin\AdminCustomerController::class); // Managers might need read-only access later
+        Route::resource('newsletter', \App\Http\Controllers\Admin\AdminNewsletterController::class);
+        Route::get('newsletter/export', [\App\Http\Controllers\Admin\AdminNewsletterController::class, 'export'])->name('newsletter.export');
+        Route::post('newsletter/{newsletter}/toggle-status', [\App\Http\Controllers\Admin\AdminNewsletterController::class, 'toggleStatus'])->name('newsletter.toggle-status');
+        
+        Route::resource('pages', \App\Http\Controllers\Admin\AdminPageController::class);
+        Route::resource('banners', \App\Http\Controllers\Admin\AdminBannerController::class);
+    });
+
+    // Routes additionnelles accessibles par Managers (Permissions spécifiques à ajouter si besoin plus tard)
     Route::resource('reviews', \App\Http\Controllers\Admin\AdminReviewController::class);
     Route::post('reviews/{review}/approve', [\App\Http\Controllers\Admin\AdminReviewController::class, 'approve'])->name('reviews.approve');
     Route::post('reviews/{review}/reject', [\App\Http\Controllers\Admin\AdminReviewController::class, 'reject'])->name('reviews.reject');
@@ -40,19 +54,11 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->name('admin.
     Route::post('messages/{message}/archive', [\App\Http\Controllers\Admin\AdminMessageController::class, 'archive'])->name('messages.archive');
     
     Route::resource('blog', \App\Http\Controllers\Admin\AdminBlogController::class);
-    
-    // Routes spécifiques avant la ressource pour éviter les conflits
-    Route::get('newsletter/export', [\App\Http\Controllers\Admin\AdminNewsletterController::class, 'export'])->name('newsletter.export');
-    Route::post('newsletter/{newsletter}/toggle-status', [\App\Http\Controllers\Admin\AdminNewsletterController::class, 'toggleStatus'])->name('newsletter.toggle-status');
-    Route::resource('newsletter', \App\Http\Controllers\Admin\AdminNewsletterController::class);
-    Route::resource('collections', \App\Http\Controllers\Admin\AdminCollectionController::class);
-    Route::resource('pages', \App\Http\Controllers\Admin\AdminPageController::class);
-    Route::resource('banners', \App\Http\Controllers\Admin\AdminBannerController::class);
 });
 
 // Redirection pour le middleware auth
 Route::get('/login', function () {
-    return view('app');
+    return Inertia::render('ClientEntry');
 })->name('login');
 
 Route::post('/logout', function (Illuminate\Http\Request $request) {

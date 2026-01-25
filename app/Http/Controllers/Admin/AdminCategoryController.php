@@ -66,10 +66,21 @@ class AdminCategoryController extends Controller
             'slug' => 'required|string|max:255|unique:categories,slug,' . $category->id,
             'description' => 'nullable|string',
             'icon' => 'nullable|string',
-            'image' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'sort_order' => 'nullable|integer',
             'is_active' => 'boolean',
         ]);
+
+        if ($request->hasFile('image')) {
+            // Supprimer l'ancienne image si elle existe
+            if ($category->image && \Illuminate\Support\Facades\Storage::disk('public')->exists($category->image)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($category->image);
+            }
+            $validated['image'] = $request->file('image')->store('categories', 'public');
+        } else {
+            // Conserver l'image actuelle si aucune nouvelle image n'est fournie
+            unset($validated['image']);
+        }
 
         $category->update($validated);
 

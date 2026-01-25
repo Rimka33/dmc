@@ -11,6 +11,75 @@ import { AuthContext } from '../../contexts/AuthContext';
 import { useRef } from 'react';
 import { resolveCategoryImage } from '../../utils/imageUtils';
 
+// Popup Banner Component
+function PopupBanner({ banner, onClose }) {
+    if (!banner) return null;
+
+    return (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/70 backdrop-blur-md" onClick={onClose}></div>
+            <div className="relative bg-white rounded-[2.5rem] w-full max-w-2xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-500">
+                <button onClick={onClose} className="absolute top-6 right-6 p-2 bg-white/20 hover:bg-white/40 backdrop-blur-md rounded-full transition-all z-20 text-white">
+                    <X className="w-6 h-6" />
+                </button>
+                <div className="flex flex-col md:flex-row h-full">
+                    {/* Banner Image */}
+                    <div className="w-full md:w-1/2 h-64 md:h-[450px]">
+                        <img
+                            src={banner.image || "/images/placeholder.png"}
+                            className="w-full h-full object-cover"
+                            alt={banner.title}
+                        />
+                    </div>
+                    {/* Content */}
+                    <div className="w-full md:w-1/2 p-10 flex flex-col justify-center bg-white">
+                        <span className="text-neon-green font-black text-[10px] uppercase tracking-[0.3em] mb-4">Offre Exclusive</span>
+                        <h2 className="text-3xl font-black text-gray-900 uppercase leading-tight mb-4">{banner.title}</h2>
+                        <p className="text-gray-500 font-medium mb-8 leading-relaxed italic line-clamp-4">"{banner.description}"</p>
+                        <Link
+                            to={banner.link || banner.button_link || '/shop'}
+                            onClick={onClose}
+                            className="w-full bg-black text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] text-center hover:bg-forest-green transition-all shadow-xl shadow-forest-green/20"
+                        >
+                            {banner.button_text || 'Découvrir maintenant'}
+                        </Link>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// Static Banner Component
+function StaticBanner({ banner, className = "" }) {
+    if (!banner) return null;
+
+    return (
+        <section className={`py-8 ${className}`}>
+            <div className="container mx-auto px-4">
+                <Link to={banner.link || banner.button_link || '/shop'} className="block group">
+                    <div className="relative h-48 md:h-64 rounded-3xl overflow-hidden shadow-2xl">
+                        <img
+                            src={banner.image || "/images/placeholder.png"}
+                            alt={banner.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent flex items-center px-12">
+                            <div className="max-w-md space-y-4">
+                                <h2 className="text-2xl md:text-3xl font-black text-white uppercase leading-tight">{banner.title}</h2>
+                                {banner.description && <p className="text-white/80 text-sm font-bold line-clamp-2">{banner.description}</p>}
+                                <span className="inline-block px-6 py-3 bg-neon-green text-black font-black text-[10px] uppercase tracking-widest rounded-xl">
+                                    {banner.button_text || 'Voir l\'offre'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </Link>
+            </div>
+        </section>
+    );
+}
+
 // Countdown Component
 function Countdown({ endDate }) {
     const [timeLeft, setTimeLeft] = useState({ days: '00', hours: '00', minutes: '00', seconds: '00' });
@@ -138,11 +207,11 @@ function ProductCard({ product }) {
     return (
         <div className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow overflow-hidden group relative">
             <Link to={`/produit/${product.id}`} className="flex flex-col h-full">
-                <div className="relative aspect-square overflow-hidden bg-white mb-2">
+                <div className="relative aspect-square overflow-hidden bg-white mb-1">
                     <ShimmerImage
                         src={product.primary_image || '/images/products/default.png'}
                         alt={product.name}
-                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-6"
+                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-3"
                         fallback={'/images/products/default.png'}
                     />
 
@@ -153,15 +222,15 @@ function ProductCard({ product }) {
                     )}
                 </div>
 
-                <div className="flex flex-col flex-grow text-left px-4 pb-4">
-                    <p className="text-[9px] text-gray-400 uppercase font-bold tracking-wider mb-1 leading-none">
+                <div className="flex flex-col flex-grow text-left px-3 pb-3">
+                    <p className="text-[8px] text-gray-400 uppercase font-bold tracking-wider mb-0.5 leading-none">
                         {product.category_name}
                     </p>
-                    <h3 className="text-[13px] font-bold text-gray-800 mb-1.5 line-clamp-2 min-h-[2.2rem] leading-snug group-hover:text-forest-green transition-colors">
+                    <h3 className="text-[11px] font-bold text-gray-800 mb-1 line-clamp-2 min-h-[1.6rem] leading-snug group-hover:text-forest-green transition-colors">
                         {product.name}
                     </h3>
 
-                    <div className="flex items-center gap-1 mb-2">
+                    <div className="flex items-center gap-1 mb-1">
                         {[...Array(5)].map((_, i) => (
                             <Star
                                 key={i}
@@ -171,11 +240,11 @@ function ProductCard({ product }) {
                     </div>
 
                     <div className="mt-auto flex items-baseline gap-1.5">
-                        <span className="text-[15px] font-black text-forest-green">
+                        <span className="text-[11px] font-black text-forest-green">
                             {product.price_formatted}
                         </span>
                         {product.has_discount && (
-                            <span className="text-[11px] text-gray-400 line-through font-bold">
+                            <span className="text-[9px] text-gray-400 line-through font-bold">
                                 {product.old_price_formatted}
                             </span>
                         )}
@@ -310,6 +379,8 @@ export default function Home() {
     const { user, authenticated } = useContext(AuthContext);
     const { addToCart } = useContext(CartContext);
     const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+    const [isPopupVisible, setIsPopupVisible] = useState(false);
+    const [currentPopup, setCurrentPopup] = useState(null);
 
     // Refs for scrolling sections
     const offersRef = useRef(null);
@@ -380,6 +451,21 @@ export default function Home() {
                     reviews: response.data.reviews || [],
                     reviewStats: response.data.reviewStats || { average: 4.2, total: 100, counts: { 5: 95, 4: 5, 3: 0, 2: 0, 1: 0 } }
                 });
+
+                // Handle Popup
+                const popups = response.data.banners.filter(b => b.type === 'popup');
+                if (popups.length > 0) {
+                    setCurrentPopup(popups[0]);
+                    const timer = setTimeout(() => {
+                        setIsPopupVisible(true);
+                    }, 2000);
+
+                    if (popups[0].display_duration) {
+                        setTimeout(() => setIsPopupVisible(false), (popups[0].display_duration + 2) * 1000);
+                    }
+
+                    return () => clearTimeout(timer);
+                }
             } catch (error) {
                 console.error("Erreur lors du chargement de la home", error);
             } finally {
@@ -419,9 +505,9 @@ export default function Home() {
                 {/* Hero Section */}
                 <section className="header py-16 relative overflow-hidden min-h-[500px] flex items-center">
                     <div className="container mx-auto px-4 z-10">
-                        {data.banners.length > 0 ? (
+                        {data.banners.filter(b => b.type === 'slider' || (b.type === 'banner' && b.position === 'top')).length > 0 ? (
                             <div className="relative">
-                                {data.banners.map((banner, index) => (
+                                {data.banners.filter(b => b.type === 'slider' || (b.type === 'banner' && b.position === 'top')).map((banner, index) => (
                                     <div
                                         key={banner.id}
                                         className={`transition-opacity duration-700 ease-in-out absolute inset-0 ${index === currentHeroSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
@@ -429,9 +515,9 @@ export default function Home() {
                                     >
                                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                                             {/* Hero Text */}
-                                            <div className="space-y-6">
+                                            <div className="space-y-6 text-left">
                                                 <p className="text-neon-green text-lg font-bold uppercase animate-in slide-in-from-left duration-700 delay-100">
-                                                    Chez DAROUL Mouhty COMPUTER - SARL
+                                                    {banner.type === 'banner' ? 'Offre Spéciale' : 'Chez DAROUL Mouhty COMPUTER - SARL'}
                                                 </p>
 
                                                 <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white uppercase leading-tight animate-in slide-in-from-left duration-700 delay-200">
@@ -494,18 +580,18 @@ export default function Home() {
                                 )}
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                            <div className="grid grid-cols-1 lg:grid-cols-1 gap-8 items-center">
                                 {/* Hero Text (Fallback) */}
-                                <div className="space-y-6 z-10">
+                                <div className="space-y-6 z-10" style={{ marginTop: '5%' }}>
                                     <p className="text-neon-green text-lg font-bold uppercase">
                                         Chez DAROUL Mouhty COMPUTER - SARL
                                     </p>
 
-                                    <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white uppercase leading-tight">
+                                    <h1 className="text-3xl md:text-2xl lg:text-3xl font-bold text-white uppercase leading-tight">
                                         Retrouver le Meilleur matériels informatiques
                                     </h1>
 
-                                    <p className="text-neon-green text-2xl font-bold">
+                                    <p className="text-neon-green text-1xl font-bold">
                                         À PARTIR DE 75.000 FCFA
                                     </p>
 
@@ -515,7 +601,7 @@ export default function Home() {
                                 </div>
 
                                 {/* Hero Images (Fallback) */}
-                                <div className="relative h-96 lg:h-[500px]">
+                                <div className="relative h-80 lg:h-[320px]">
                                     <img
                                         src="/images/hero-slider-1.png"
                                         alt="Gaming Setup"
@@ -524,7 +610,7 @@ export default function Home() {
                                     <img
                                         src="/images/hero-slider-2.png"
                                         alt="Laptop"
-                                        className="absolute top-10 -right-20 w-48 h-48 object-contain rotate-12"
+                                        className="absolute -top-20 right-50 w-24 h-24 object-contain rotate-145"
                                     />
                                 </div>
                             </div>
@@ -533,10 +619,8 @@ export default function Home() {
                 </section>
 
                 {/* Featured Products Carousel */}
-                <section className="py-0 bg-transparent pb-16" style={{ marginTop: '-7%' }}>
+                <section className="py-0 bg-transparent pb-16" >
                     <div className="container mx-auto px-4">
-                        <h2 className="text-2xl font-bold text-white uppercase mb-8">Produits en vedette</h2>
-
                         <div className="relative">
                             {/* Products Carousel */}
                             <div className="overflow-hidden">
@@ -667,12 +751,17 @@ export default function Home() {
                 </div>
             </section>
 
+            {/* Middle Banners */}
+            {data.banners.filter(b => b.type === 'banner' && b.position === 'middle').map(banner => (
+                <StaticBanner key={banner.id} banner={banner} />
+            ))}
+
             {/* Special Offers Section */}
             {data.specialOffers && data.specialOffers.length > 0 && (
                 <section className="py-8 bg-white">
                     <div className="container mx-auto px-4">
                         <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-3xl font-bold text-gray-900 uppercase">Offres du moment</h2>
+                            <h2 className="text-1xl font-bold text-gray-900 uppercase">Offres du moment</h2>
                             <div className="flex gap-1">
                                 <button
                                     onClick={() => scroll(offersRef, 'left')}
@@ -691,7 +780,7 @@ export default function Home() {
 
                         <div className="flex flex-col lg:flex-row gap-6">
                             {/* Left hero image */}
-                            <div className="lg:w-1/3 hidden md:block">
+                            <div className="lg:w-1/5 hidden md:block">
                                 <img
                                     src="/images/offers/laptop-colorful.jpg"
                                     alt="Special Offer"
@@ -700,14 +789,14 @@ export default function Home() {
                             </div>
 
                             {/* Horizontal offers list */}
-                            <div className="lg:w-2/3 relative">
+                            <div className="lg:w-3/4 relative">
                                 <div
                                     ref={offersRef}
                                     className="flex gap-4 md:gap-6 overflow-x-auto pb-4 -mx-3 px-3 scrollbar-hide snap-x"
                                 >
                                     {data.specialOffers.map((offer, index) => (
-                                        <div key={index} className="min-w-[300px] md:min-w-[420px] bg-white border border-gray-200 rounded-lg shadow p-3 md:p-4 flex gap-4 snap-start">
-                                            <div className="w-36 flex-shrink-0">
+                                        <div key={index} className="min-w-[280px] md:min-w-[360px] bg-white border border-gray-200 rounded-lg shadow p-3 md:p-4 flex gap-4 snap-start">
+                                            <div className="w-32 flex-shrink-0">
                                                 <img
                                                     src={offer.primary_image}
                                                     alt={offer.name}
@@ -723,23 +812,23 @@ export default function Home() {
                                             <div className="flex-1 flex flex-col justify-between">
                                                 <div>
                                                     <p className="text-gray-500 text-xs font-bold uppercase">{offer.category_name}</p>
-                                                    <h3 className="text-lg font-semibold">{offer.name}</h3>
+                                                    <h3 className="text-xs font-semibold">{offer.name}</h3>
 
                                                     <div className="flex items-center gap-3 mt-2">
-                                                        <span className="text-2xl font-bold text-red-600">
+                                                        <span className="text-xs font-bold text-red-600">
                                                             {offer.price_formatted}
                                                         </span>
                                                         {offer.has_discount && (
-                                                            <span className="px-2 py-1 bg-red-600 text-white text-xs font-bold">
+                                                            <span className="px-2 py-1 bg-red-600 text-white text-xs">
                                                                 -{offer.discount_percentage}%
                                                             </span>
                                                         )}
                                                     </div>
 
-                                                    <ul className="mt-3 space-y-1 text-sm text-gray-600">
+                                                    <ul className="mt-3 space-y-1 text-xs text-gray-600">
                                                         {offer.features?.slice(0, 3).map((feature, i) => (
                                                             <li key={i} className="flex items-center gap-2">
-                                                                <Check className="w-4 h-4 text-forest-green" />
+                                                                <Check className="w-3 h-3 text-forest-green" />
                                                                 <span>{feature}</span>
                                                             </li>
                                                         ))}
@@ -747,25 +836,25 @@ export default function Home() {
                                                 </div>
 
                                                 <div className="mt-4">
-                                                    <div className="mt-3">
-                                                        <div className="h-2 bg-gray-200 rounded overflow-hidden">
+                                                    <div className="mt-2">
+                                                        <div className="w-1/2 h-1 bg-gray-200 rounded-xs overflow-hidden">
                                                             <div
-                                                                className="h-full bg-forest-green"
+                                                                className="h-1 bg-forest-green"
                                                                 style={{ width: `${(offer.stock_quantity > 0 ? 30 : 100)}%` }}
                                                             ></div>
                                                         </div>
-                                                        <p className="text-xs text-gray-500 mt-2">
+                                                        <p className="text-[10px] text-gray-500 mt-1">
                                                             Disponible : {offer.stock_quantity}
                                                         </p>
                                                     </div>
 
-                                                    <div className="mt-3">
+                                                    <div className="mt-2">
                                                         <button
                                                             onClick={(e) => {
                                                                 e.preventDefault();
                                                                 addToCart(offer.product || offer);
                                                             }}
-                                                            className="w-full px-4 py-2 bg-forest-green text-white font-bold rounded hover:bg-dark-green transition-colors"
+                                                            className="w-2/3 px-3 py-2 text-xs bg-forest-green text-white  rounded hover:bg-dark-green transition-colors"
                                                         >
                                                             Ajout au panier
                                                         </button>
@@ -788,12 +877,12 @@ export default function Home() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
                         <div>
                             <div className="bg-white rounded-lg shadow p-8">
-                                <h3 className="text-2xl font-bold mb-2">Dell Desktop Ultrasharp 32 U3223QE</h3>
-                                <p className="text-sm text-gray-600 mb-4">
+                                <h3 className="text-1xl font-bold mb-2">Dell Desktop Ultrasharp 32 U3223QE</h3>
+                                <p className="text-xs text-gray-600 mb-4">
                                     Écran 4K+ avec des couleurs réalistes. Avec 1,5 million de pixels supplémentaires par rapport à la 4K standard, vous bénéficierez d'une vision plus large et plus claire, tant au travail que dans la vie.
                                 </p>
 
-                                <div className="grid grid-cols-2 gap-4 mt-6 text-sm text-gray-700">
+                                <div className="grid grid-cols-2 gap-4 mt-6 text-xs text-gray-700">
                                     <div className="flex items-start gap-3">
                                         <img src="/images/icons/monitor.jpeg" alt="4K+" className="w-8 h-8" />
                                         <div>
@@ -847,10 +936,10 @@ export default function Home() {
                     {/* Section Header */}
                     <div className="flex items-center justify-between mb-12">
                         <div className="flex items-center gap-6">
-                            <h2 className="text-xl md:text-2xl font-black text-gray-900 uppercase tracking-tight">NOUVEAUTÉS</h2>
+                            <h2 className="text-1xl font-bold text-gray-900 uppercase">NOUVEAUTÉS</h2>
                             <div className="hidden md:block h-4 w-px bg-gray-200"></div>
                             <div className="relative flex items-center gap-2 text-[10px] md:text-[11px] font-bold text-gray-400">
-                                <span className="hidden sm:inline">Trier Par</span>
+                                <span className="hidden md:inline">Trier Par</span>
                                 <button
                                     onClick={() => setIsNewProductDropdownOpen(!isNewProductDropdownOpen)}
                                     className="flex items-center gap-1 text-forest-green hover:text-dark-green transition-colors uppercase tracking-widest"
@@ -898,18 +987,18 @@ export default function Home() {
                     </div>
 
                     {/* Layout Grid */}
-                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                         {/* Left: Featured Banner */}
-                        <div className="lg:col-span-3 flex flex-col items-center text-center">
+                        <div className="lg:col-span-4 flex flex-col items-center text-center bg-gray-50/50 rounded-2xl p-8 border border-gray-100/50">
                             <div className="mb-10">
-                                <p className="text-[10px] font-black text-forest-green uppercase tracking-[0.2em] mb-3">NOUVELLES ARRIVAGES</p>
-                                <h3 className="text-2xl font-black text-gray-900 uppercase tracking-tight mb-4">ORDINATEURS PORTABLES</h3>
-                                <Link to="/shop" className="inline-flex items-center gap-2 text-[11px] font-black text-gray-400 uppercase tracking-widest hover:text-forest-green transition-colors group">
+                                <p className="text-[10px] font-black text-forest-green uppercase tracking-widest mb-2">NOUVELLES ARRIVAGES</p>
+                                <h3 className="text-xl font-bold text-gray-900 uppercase mb-4 leading-tight">ORDINATEURS PORTABLES</h3>
+                                <Link to="/shop" className="inline-flex items-center gap-2 text-[10px] font-bold text-gray-400 hover:text-forest-green transition-colors group">
                                     Voir Plus
-                                    <ChevronRight className="w-3 h-3 transition-transform group-hover:translate-x-1" />
+                                    <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                                 </Link>
                             </div>
-                            <div className="relative w-full aspect-[3/4] overflow-hidden">
+                            <div className="relative w-full aspect-[4/5] overflow-hidden">
                                 <img
                                     src="/images/home/laptop-feature.png"
                                     alt="Laptop Feature"
@@ -925,10 +1014,10 @@ export default function Home() {
                             </div>
                         </div>
 
-                        {/* Right: Products Grid (2 rows x 4 cols) */}
+                        {/* Right: Products Grid (Static 4x2 on desktop, scroll on mobile) */}
                         <div
                             ref={newProductsRef}
-                            className="lg:col-span-9 grid grid-flow-col grid-rows-2 auto-cols-[calc(50%-12px)] md:auto-cols-[calc(25%-18px)] gap-6 overflow-x-auto scrollbar-hide snap-x"
+                            className="lg:col-span-8 grid grid-cols-2 md:grid-cols-4 gap-3"
                         >
                             {loading ? (
                                 [...Array(8)].map((_, i) => (
@@ -952,7 +1041,7 @@ export default function Home() {
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
                         {[
-                            { name: 'Acer', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/a7/Acer_Logo.svg' },
+                            { name: 'Acer', logo: 'https://upload.wikimedia.org/wikipedia/commons/0/00/Acer_2011.svg' },
                             { name: 'Asus', logo: 'https://upload.wikimedia.org/wikipedia/commons/2/2e/ASUS_Logo.svg' },
                             { name: 'Dell', logo: 'https://upload.wikimedia.org/wikipedia/commons/1/18/Dell_logo_2016.svg' },
                             { name: 'Apple', logo: 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg' },
@@ -977,11 +1066,15 @@ export default function Home() {
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start mb-24">
                         {/* Company Description */}
                         <div className="lg:col-span-7 space-y-6">
-                            <h2 className="text-2xl md:text-3xl font-black text-gray-900 uppercase tracking-tight">Daroul Mouhty Computer Sarl</h2>
-                            <div className="space-y-4 text-gray-500 text-sm md:text-base leading-relaxed max-w-2xl">
-                                <p>Votre destination unique pour tous vos besoins informatiques.</p>
-                                <p>Nous sommes une société informatique leader basée au Sénégal, offrant une large gamme d'ordinateurs portables, d'ordinateurs de bureau et d'accessoires informatiques de haute qualité à des prix imbattables.</p>
-                                <p>Que ce soit que vous soyez un professionnel férus de technologie, un étudiant ou un passionné de jeux, nous avons la solution parfaite pour répondre à vos exigences.</p>
+                            <h2 className="text-2xl md:text-xl font-black text-gray-900 uppercase tracking-tight">Daroul Mouhty Computer Sarl</h2>
+                            <div className="space-y-2 text-gray-500 text-[5px] md:text-base leading-relaxed max-w-1xl text-justify">
+                                <p>
+                                    Votre destination unique pour tous vos besoins informatiques. <br />
+                                    Nous sommes une société informatique leader basée au Sénégal,
+                                    offrant une large gamme d'ordinateurs portables, d'ordinateurs de bureau et d'accessoires informatiques de haute qualité à des prix imbattables.
+                                    Que ce soit que vous soyez un professionnel férus de technologie,
+                                    un étudiant ou un passionné de jeux, nous avons la solution parfaite pour répondre à vos exigences.
+                                </p>
                             </div>
                         </div>
 
@@ -989,29 +1082,29 @@ export default function Home() {
                         <div className="lg:col-span-5 grid grid-cols-2 gap-x-8 gap-y-12 py-6">
                             <div className="text-center lg:text-left">
                                 <div className="flex items-center justify-center lg:justify-start gap-1 mb-1">
-                                    <span className="text-4xl font-black text-gray-900 tracking-tighter">5.000</span>
-                                    <span className="text-3xl font-black text-forest-green">+</span>
+                                    <span className="text-2xl font-black text-gray-900 tracking-tighter">5.000</span>
+                                    <span className="text-xl font-black text-forest-green">+</span>
                                 </div>
                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] leading-tight">Produits</p>
                             </div>
                             <div className="text-center lg:text-left">
                                 <div className="flex items-center justify-center lg:justify-start gap-1 mb-1">
-                                    <span className="text-4xl font-black text-gray-900 tracking-tighter">10</span>
-                                    <span className="text-3xl font-black text-forest-green">+</span>
+                                    <span className="text-2xl font-black text-gray-900 tracking-tighter">10</span>
+                                    <span className="text-xl font-black text-forest-green">+</span>
                                 </div>
                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] leading-tight">Catégories de produits</p>
                             </div>
                             <div className="text-center lg:text-left">
                                 <div className="flex items-center justify-center lg:justify-start gap-1 mb-1">
-                                    <span className="text-4xl font-black text-gray-900 tracking-tighter">4.000</span>
-                                    <span className="text-3xl font-black text-forest-green">+</span>
+                                    <span className="text-2xl font-black text-gray-900 tracking-tighter">4.000</span>
+                                    <span className="text-xl font-black text-forest-green">+</span>
                                 </div>
                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] leading-tight">Les produits ont été vendus</p>
                             </div>
                             <div className="text-center lg:text-left">
                                 <div className="flex items-center justify-center lg:justify-start gap-1 mb-1">
-                                    <span className="text-4xl font-black text-gray-900 tracking-tighter">500</span>
-                                    <span className="text-3xl font-black text-forest-green">+</span>
+                                    <span className="text-2xl font-black text-gray-900 tracking-tighter">500</span>
+                                    <span className="text-xl font-black text-forest-green">+</span>
                                 </div>
                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] leading-tight">Clients satisfaits</p>
                             </div>
@@ -1179,7 +1272,7 @@ export default function Home() {
                         </div>
                         <div
                             ref={bestSellersRef}
-                            className="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x pt-2"
+                            className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x pt-2"
                         >
                             {loading ? (
                                 [...Array(5)].map((_, i) => (
@@ -1195,9 +1288,14 @@ export default function Home() {
                         </div>
                     </div>
 
+                    {/* Bottom Banners */}
+                    {data.banners.filter(b => b.type === 'banner' && b.position === 'bottom').map(banner => (
+                        <StaticBanner key={banner.id} banner={banner} className="py-12" />
+                    ))}
+
                     {/* Trending Tags Section */}
-                    <div className="max-w-6xl mx-auto pb-24 px-4">
-                        <h2 className="text-lg font-black text-gray-900 uppercase tracking-widest mb-8 text-center">TAGS TENDANCES</h2>
+                    <div className="max-w-6xl mx-auto">
+                        <h2 className="text-[15px] font-black text-gray-900 uppercase tracking-widest mb-8 text-center">TAGS TENDANCES</h2>
                         <div className="flex flex-wrap justify-center gap-3">
                             {[
                                 'Boutique Informatique', 'Ordinateurs Portables', 'Ordinateur Portable Pas Cher',
@@ -1207,7 +1305,7 @@ export default function Home() {
                                 <Link
                                     key={i}
                                     to={`/shop?search=${tag}`}
-                                    className="px-5 py-2.5 bg-gray-50 hover:bg-forest-green hover:text-white rounded-lg text-[10px] font-bold text-gray-500 uppercase tracking-widest transition-all"
+                                    className="px-5 py-1 bg-gray-50 hover:bg-forest-green hover:text-white rounded-lg text-[10px] font-bold text-gray-500 uppercase tracking-widest transition-all"
                                 >
                                     {tag}
                                 </Link>
@@ -1223,6 +1321,14 @@ export default function Home() {
                 onClose={() => setIsReviewModalOpen(false)}
                 user={user}
             />
+
+            {/* Popup Banner */}
+            {isPopupVisible && (
+                <PopupBanner
+                    banner={currentPopup}
+                    onClose={() => setIsPopupVisible(false)}
+                />
+            )}
         </MainLayout>
     );
 }

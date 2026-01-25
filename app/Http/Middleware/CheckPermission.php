@@ -1,0 +1,41 @@
+<?php
+
+namespace App\Http\Middleware;
+
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+class CheckPermission
+{
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     */
+    public function handle(Request $request, Closure $next, string $permission): Response
+    {
+        if (!$request->user()) {
+            return redirect()->route('login');
+        }
+
+        if ($request->user()->isAdmin()) {
+            return $next($request);
+        }
+
+        // Special check for general admin access
+        if ($permission === 'admin.access') {
+            // Check if user has a role with at least one permission
+            if ($request->user()->roleModel && $request->user()->roleModel->permissions()->exists()) {
+                return $next($request);
+            }
+            abort(403, 'Accès administration non autorisé.');
+        }
+
+        if (!$request->user()->hasPermission($permission)) {
+            abort(403, 'Accès non autorisé. Permission requise: ' . $permission);
+        }
+
+        return $next($request);
+    }
+}

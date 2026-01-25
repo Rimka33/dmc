@@ -5,7 +5,7 @@ import { ChevronRight } from 'lucide-react';
 import ShimmerImage from '../../Components/ShimmerImage';
 import axios from 'axios';
 
-export default function Terms() {
+export default function About() {
     const [page, setPage] = useState(null);
     const [loading, setLoading] = useState(true);
 
@@ -16,10 +16,10 @@ export default function Terms() {
 
     const fetchPage = async () => {
         try {
-            const response = await axios.get('/api/pages/terms-conditions');
+            const response = await axios.get('/api/pages/a-propos');
             setPage(response.data.data);
         } catch (error) {
-            console.error("Erreur lors du chargement de la page:", error);
+            console.error("Erreur lors du chargement de la page à propos:", error);
         } finally {
             setLoading(false);
         }
@@ -40,12 +40,12 @@ export default function Terms() {
                 <div className="container mx-auto px-4 relative z-10 text-center">
                     <div className="max-w-3xl mx-auto">
                         <h1 className="text-2xl md:text-3xl font-black text-white uppercase mb-4 leading-tight">
-                            {page?.title || 'Termes &'} <span className="text-neon-green">{!page ? 'Conditions' : ''}</span>
+                            {page?.title || 'Qui Sommes'} <span className="text-neon-green">{!page ? 'Nous ?' : ''}</span>
                         </h1>
                         <nav className="flex items-center justify-center gap-2 text-white/60 text-sm font-bold uppercase tracking-widest">
                             <Link to="/" className="hover:text-neon-green transition-colors">Accueil</Link>
                             <ChevronRight className="w-4 h-4" />
-                            <span className="text-neon-green">Conditions Générales</span>
+                            <span className="text-neon-green">Qui sommes-nous ?</span>
                         </nav>
                     </div>
                 </div>
@@ -64,15 +64,11 @@ export default function Terms() {
                             <>
                                 <div className="mb-12 text-center">
                                     <h2 className="text-xl font-black text-gray-900 uppercase mb-4 tracking-tighter">{page.title}</h2>
-                                    {page.updated_at && (
-                                        <p className="text-gray-400 text-[10px] font-bold uppercase tracking-widest italic">
-                                            Dernière mise à jour : {new Date(page.updated_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
-                                        </p>
-                                    )}
+                                    <div className="w-20 h-1 bg-neon-green mx-auto"></div>
                                 </div>
 
                                 <div
-                                    className="prose prose-lg max-w-none text-gray-600 font-medium"
+                                    className="prose prose-lg max-w-none text-gray-600 font-medium leading-relaxed"
                                     dangerouslySetInnerHTML={{ __html: page.content }}
                                 />
                             </>
@@ -85,20 +81,6 @@ export default function Terms() {
                                 </Link>
                             </div>
                         )}
-
-                        <div className="mt-16 p-8 rounded-2xl bg-forest-green text-white">
-                            <h3 className="text-sm font-black uppercase mb-4">Vous avez des questions ?</h3>
-                            <p className="font-medium opacity-90 mb-6">
-                                Notre équipe est à votre disposition pour vous éclairer sur nos conditions ou pour toute autre demande concernant vos achats chez DMC.
-                            </p>
-                            <Link
-                                to="/contact"
-                                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-forest-green font-black uppercase rounded-sm hover:bg-neon-green hover:text-black transition-all"
-                            >
-                                Contactez-nous
-                                <ChevronRight className="w-5 h-5" />
-                            </Link>
-                        </div>
                     </div>
                 </div>
             </section>

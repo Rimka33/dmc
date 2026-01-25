@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 import { useForm, Link } from '@inertiajs/react';
 import { ArrowLeft, Save, AlertCircle, Image as ImageIcon } from 'lucide-react';
-import { useState } from 'react';
 
 export default function Create() {
     const { data, setData, post, processing, errors } = useForm({
@@ -11,7 +10,7 @@ export default function Create() {
         description: '',
         icon: '',
         image: null,
-        order: 0,
+        sort_order: 0,
         is_active: true,
     });
 
@@ -117,8 +116,8 @@ export default function Create() {
                                 <label className="text-sm font-semibold text-gray-700">Ordre d'affichage</label>
                                 <input
                                     type="number"
-                                    value={data.order}
-                                    onChange={(e) => setData('order', e.target.value)}
+                                    value={data.sort_order}
+                                    onChange={(e) => setData('sort_order', e.target.value)}
                                     className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-neon-green outline-none transition-all"
                                 />
                             </div>

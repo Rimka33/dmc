@@ -21,37 +21,49 @@ import {
   Search,
   User,
   Leaf,
+  Shield,
 } from "lucide-react"
 
 export default function AdminLayout({ children }) {
   const { url } = usePage()
   const { auth } = usePage().props
+  const user = auth?.user
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [hoveredItem, setHoveredItem] = useState(null)
 
-  const navigations = [
+  const hasPermission = (permission) => {
+    if (user?.role === 'admin') return true;
+    return user?.permissions?.includes(permission);
+  }
+
+  const allNavigations = [
     {
       name: "Dashboard",
       icon: LayoutDashboard,
       href: "/admin/dashboard",
       badge: null,
+      permission: 'dashboard.view'
     },
     {
       name: "Catalogue",
       icon: ShoppingBag,
+      // Visible if has products.view OR marketing.collections.manage
+      groupPermissions: ['products.view', 'marketing.collections.manage'],
       submenu: [
-        { name: "Produits", href: "/admin/products" },
-        { name: "Catégories", href: "/admin/categories" },
-        { name: "Collections", href: "/admin/collections" },
+        { name: "Produits", href: "/admin/products", permission: 'products.view' },
+        { name: "Catégories", href: "/admin/categories", permission: 'products.view' },
+        { name: "Collections", href: "/admin/collections", permission: 'marketing.collections.manage' },
       ],
     },
     {
       name: "Contenu",
       icon: FileText,
+      // Visible if has ANY of below
+      groupPermissions: ['content.blog.manage', 'content.pages.manage', 'content.banners.manage'],
       submenu: [
-        { name: "Blog", href: "/admin/blog" },
-        { name: "Pages", href: "/admin/pages" },
-        { name: "Bannières", href: "/admin/banners" },
+        { name: "Blog", href: "/admin/blog", permission: 'content.blog.manage' },
+        { name: "Pages", href: "/admin/pages", permission: 'content.pages.manage' },
+        { name: "Bannières", href: "/admin/banners", permission: 'content.banners.manage' },
       ],
     },
     {
@@ -59,32 +71,68 @@ export default function AdminLayout({ children }) {
       icon: ShoppingCart,
       href: "/admin/orders",
       badge: null,
+      permission: 'orders.manage'
     },
     {
       name: "Clients",
       icon: Users,
       href: "/admin/customers",
+      permission: 'customers.view'
     },
     {
       name: "Interactions",
       icon: MessageSquare,
+      groupPermissions: ['interactions.reviews.manage', 'interactions.questions.manage', 'interactions.messages.manage'],
       submenu: [
-        { name: "Avis & Notes", href: "/admin/reviews" },
-        { name: "Questions", href: "/admin/questions" },
-        { name: "Messages", href: "/admin/messages" },
+        { name: "Avis & Notes", href: "/admin/reviews", permission: 'interactions.reviews.manage' },
+        { name: "Questions", href: "/admin/questions", permission: 'interactions.questions.manage' },
+        { name: "Messages", href: "/admin/messages", permission: 'interactions.messages.manage' },
+      ],
+    },
+    {
+      name: "Système",
+      icon: Shield,
+      groupPermissions: ['users.manage', 'roles.manage'],
+      submenu: [
+        { name: "Utilisateurs", href: "/admin/users", permission: 'users.manage' },
+        { name: "Rôles & Permissions", href: "/admin/roles", permission: 'roles.manage' },
       ],
     },
     {
       name: "Newsletter",
       icon: Mail,
       href: "/admin/newsletter",
+      permission: 'marketing.newsletter.manage'
     },
     {
       name: "Paramètres",
       icon: Settings,
       href: "/admin/settings",
+      permission: 'settings.manage'
     },
   ]
+
+  const navigations = allNavigations.filter(item => {
+    // 1. Check direct permission
+    if (item.permission) {
+      return hasPermission(item.permission);
+    }
+    // 2. Check group permissions (if has any of them)
+    if (item.groupPermissions) {
+      return item.groupPermissions.some(perm => hasPermission(perm));
+    }
+    // 3. Fallback to Admin role if no permissions defined (should not happen with new setup)
+    return user?.role === 'admin';
+  }).map(item => {
+    // Filter submenu items if they have specific permissions
+    if (item.submenu) {
+      return {
+        ...item,
+        submenu: item.submenu.filter(sub => !sub.permission || hasPermission(sub.permission))
+      };
+    }
+    return item;
+  });
 
   const handleLogout = () => {
     localStorage.removeItem('auth_token')

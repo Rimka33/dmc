@@ -73,7 +73,7 @@ export default function CheckoutReceived() {
                     <div className="w-20 h-20 bg-neon-green rounded-full flex items-center justify-center mb-4 shadow-2xl">
                         <Check className="w-10 h-10 text-black" strokeWidth={3} />
                     </div>
-                    <h1 className="text-4xl font-black text-white uppercase mb-2 tracking-tight">Merci !</h1>
+                    <h1 className="text-2xl font-black text-white uppercase mb-2 tracking-tight">Merci !</h1>
                     <p className="text-white/80 text-lg">Votre commande a été confirmée</p>
                 </div>
             </div>
@@ -226,14 +226,14 @@ export default function CheckoutReceived() {
                     <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
                         <Link
                             to="/"
-                            className="w-full sm:w-auto px-10 py-4 bg-gray-900 text-white font-bold uppercase rounded-lg hover:bg-black transition-all shadow-lg text-center"
+                            className="w-full sm:w-auto px-6 py-3 bg-gray-900 text-white font-bold uppercase rounded-lg hover:bg-black transition-all shadow-lg text-center"
                         >
                             Retour à l'accueil
                         </Link>
                         {authenticated && (
                             <Link
                                 to="/mes-commandes"
-                                className="w-full sm:w-auto px-10 py-4 border-2 border-forest-green text-forest-green font-bold uppercase rounded-lg hover:bg-forest-green hover:text-white transition-all text-center"
+                                className="w-full sm:w-auto px-6 py-3 border-2 border-forest-green text-forest-green font-bold uppercase rounded-lg hover:bg-forest-green hover:text-white transition-all text-center"
                             >
                                 Mes commandes
                             </Link>

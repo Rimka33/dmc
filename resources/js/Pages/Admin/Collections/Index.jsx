@@ -22,8 +22,8 @@ export default function Index({ collections = {}, filters = {} }) {
     };
 
     const filterOptions = [
-        { 
-            key: 'status', 
+        {
+            key: 'status',
             label: 'Statut',
             type: 'select',
             options: [
@@ -88,7 +88,7 @@ export default function Index({ collections = {}, filters = {} }) {
             label: 'Actions',
             align: 'right',
             render: (value) => (
-                <ActionButtons 
+                <ActionButtons
                     actions={[
                         { key: 'edit', icon: 'edit', label: 'Modifier', color: 'info' },
                         { key: 'delete', icon: 'delete', label: 'Supprimer', color: 'danger' },
@@ -118,13 +118,13 @@ export default function Index({ collections = {}, filters = {} }) {
     return (
         <AdminLayout>
             <div className="space-y-6">
-                <PageHeader 
+                <PageHeader
                     title="Collections"
                     subtitle="Créez des collections de produits (vedettes, offres, nouveautés)"
                     action={createButton}
                 />
 
-                <SearchFilter 
+                <SearchFilter
                     placeholder="Rechercher une collection..."
                     filters={filterOptions}
                     currentFilters={filters}
@@ -133,7 +133,7 @@ export default function Index({ collections = {}, filters = {} }) {
 
                 {/* Afficher les collections existantes dans un tableau */}
                 {(collections?.data && collections.data.length > 0) ? (
-                    <DataTable 
+                    <DataTable
                         columns={columns}
                         data={collections.data}
                         pagination={{
@@ -164,7 +164,7 @@ export default function Index({ collections = {}, filters = {} }) {
                                 ].map((section) => {
                                     const Icon = section.icon;
                                     const existingCollection = collections?.data?.find(c => c.type === section.type);
-                                    
+
                                     return (
                                         <Link
                                             key={section.type}
