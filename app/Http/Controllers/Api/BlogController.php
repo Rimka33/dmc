@@ -19,10 +19,10 @@ class BlogController extends Controller
 
         // Recherche
         if ($request->has('search')) {
-            $query->where(function($q) use ($request) {
+            $query->where(function ($q) use ($request) {
                 $q->where('title', 'like', "%{$request->search}%")
-                  ->orWhere('excerpt', 'like', "%{$request->search}%")
-                  ->orWhere('content', 'like', "%{$request->search}%");
+                    ->orWhere('excerpt', 'like', "%{$request->search}%")
+                    ->orWhere('content', 'like', "%{$request->search}%");
             });
         }
 
@@ -33,14 +33,14 @@ class BlogController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $blogs->map(function($blog) {
+            'data' => $blogs->map(function ($blog) {
                 return [
                     'id' => $blog->id,
                     'title' => $blog->title,
                     'slug' => $blog->slug,
                     'excerpt' => $blog->excerpt,
                     'content' => $blog->content,
-                    'image' => $blog->image ? asset('storage/' . $blog->image) : asset('images/back.jpg'),
+                    'image' => $blog->image ? asset('storage/'.$blog->image) : asset('images/back.jpg'),
                     'category' => $blog->category,
                     'author' => $blog->author,
                     'date' => \Carbon\Carbon::parse($blog->created_at)->locale('fr')->translatedFormat('d M Y'),
@@ -54,7 +54,7 @@ class BlogController extends Controller
                 'last_page' => $blogs->lastPage(),
                 'per_page' => $blogs->perPage(),
                 'total' => $blogs->total(),
-            ]
+            ],
         ]);
     }
 
@@ -73,12 +73,12 @@ class BlogController extends Controller
             ->where('status', 'published')
             ->take(3)
             ->get()
-            ->map(function($post) {
+            ->map(function ($post) {
                 return [
                     'id' => $post->id,
                     'title' => $post->title,
                     'slug' => $post->slug,
-                    'image' => $post->image ? asset('storage/' . $post->image) : asset('images/back.jpg'),
+                    'image' => $post->image ? asset('storage/'.$post->image) : asset('images/back.jpg'),
                     'date' => \Carbon\Carbon::parse($post->created_at)->locale('fr')->translatedFormat('d M Y'),
                 ];
             });
@@ -91,7 +91,7 @@ class BlogController extends Controller
                 'slug' => $blog->slug,
                 'excerpt' => $blog->excerpt,
                 'content' => $blog->content,
-                'image' => $blog->image ? asset('storage/' . $blog->image) : asset('images/back.jpg'),
+                'image' => $blog->image ? asset('storage/'.$blog->image) : asset('images/back.jpg'),
                 'category' => $blog->category,
                 'author' => $blog->author,
                 'date' => \Carbon\Carbon::parse($blog->created_at)->locale('fr')->translatedFormat('d M Y'),
@@ -99,8 +99,8 @@ class BlogController extends Controller
                 'views' => $blog->views,
                 'meta_title' => $blog->meta_title,
                 'meta_description' => $blog->meta_description,
-                'related_posts' => $relatedPosts
-            ]
+                'related_posts' => $relatedPosts,
+            ],
         ]);
     }
 
@@ -115,8 +115,7 @@ class BlogController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $categories
+            'data' => $categories,
         ]);
     }
 }
-

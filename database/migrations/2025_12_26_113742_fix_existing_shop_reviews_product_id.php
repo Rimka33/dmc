@@ -1,8 +1,6 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -15,7 +13,7 @@ return new class extends Migration
         \App\Models\ProductReview::where('title', 'Avis Site Web')
             ->update([
                 'product_id' => null,
-                'title' => 'Avis Boutique' // Standardize title
+                'title' => 'Avis Boutique', // Standardize title
             ]);
     }
 

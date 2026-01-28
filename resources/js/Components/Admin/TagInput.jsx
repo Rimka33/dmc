@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
 
-export default function TagInput({ 
-  value = [], 
-  onChange, 
+export default function TagInput({
+  value = [],
+  onChange,
   placeholder = 'Ajouter un tag...',
   suggestions = [],
-  allowNew = true
+  allowNew = true,
 }) {
   const [input, setInput] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -20,7 +20,7 @@ export default function TagInput({
   };
 
   const handleRemoveTag = (tag) => {
-    onChange(value.filter(t => t !== tag));
+    onChange(value.filter((t) => t !== tag));
   };
 
   const handleKeyDown = (e) => {
@@ -30,8 +30,8 @@ export default function TagInput({
     }
   };
 
-  const filtered = suggestions.filter(s => 
-    s.toLowerCase().includes(input.toLowerCase()) && !value.includes(s)
+  const filtered = suggestions.filter(
+    (s) => s.toLowerCase().includes(input.toLowerCase()) && !value.includes(s)
   );
 
   return (
@@ -43,11 +43,7 @@ export default function TagInput({
             className="bg-forest-green text-white px-3 py-1 rounded-full text-sm font-medium flex items-center gap-2"
           >
             {tag}
-            <button
-              type="button"
-              onClick={() => handleRemoveTag(tag)}
-              className="hover:opacity-75"
-            >
+            <button type="button" onClick={() => handleRemoveTag(tag)} className="hover:opacity-75">
               <X size={14} />
             </button>
           </span>
@@ -65,7 +61,7 @@ export default function TagInput({
             placeholder={value.length === 0 ? placeholder : ''}
             className="w-full outline-none text-sm"
           />
-          
+
           {showSuggestions && filtered.length > 0 && (
             <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
               {filtered.map((suggestion) => (

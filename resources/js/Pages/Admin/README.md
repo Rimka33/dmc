@@ -1,6 +1,7 @@
 # DMC Admin Panel - Complete Documentation
 
 ## 🎯 Overview
+
 Complete admin dashboard for DMC e-commerce platform with modern UI/UX using React, Inertia, Tailwind CSS v4, and Lucide icons.
 
 ## 📁 Directory Structure
@@ -51,16 +52,19 @@ Components/Admin/
 ## 🎨 Design System
 
 ### Colors
+
 - **Primary**: Forest Green (#058031)
 - **Dark**: Dark Green (#011a0a)
 - **Accent**: Neon Green (#00ff24)
 - **Background**: Light Gray (#f5f5f7)
 
 ### Typography
+
 - **Body**: Bai Jamjuree (400, 500, 600, 700)
 - **Headings**: Montserrat (400, 700)
 
 ### Icons
+
 - All icons from **Lucide React**
 - 20-24px sizes for navigation
 - 16-18px sizes for inline icons
@@ -68,6 +72,7 @@ Components/Admin/
 ## 🚀 Features Implemented
 
 ### 1. Dashboard (Dashboard.jsx)
+
 - ✅ KPI cards (sales, orders, customers, avg cart)
 - ✅ Sales trend chart (7-day history)
 - ✅ Top products pie chart
@@ -76,6 +81,7 @@ Components/Admin/
 - ✅ Conversion rate, pending orders, daily visits
 
 ### 2. Products Management (Products/)
+
 - ✅ Full CRUD operations
 - ✅ Search by name/SKU
 - ✅ Filter by status, category, stock
@@ -85,6 +91,7 @@ Components/Admin/
 - ✅ Tags support (New, Bestseller, Deal, Featured)
 
 ### 3. Categories (Categories/)
+
 - ✅ Hierarchical categories (parent/child)
 - ✅ Category icons/images
 - ✅ Display ordering
@@ -92,6 +99,7 @@ Components/Admin/
 - ✅ Active/Inactive toggle
 
 ### 4. Orders (Orders/)
+
 - ✅ Order listing with filters
 - ✅ Status workflow (pending → paid → preparing → shipped → delivered)
 - ✅ Customer information
@@ -99,6 +107,7 @@ Components/Admin/
 - ✅ Date filtering
 
 ### 5. Customers (Customers.jsx)
+
 - ✅ Customer profiles
 - ✅ Order history
 - ✅ Total spent tracking
@@ -106,6 +115,7 @@ Components/Admin/
 - ✅ Email and phone contacts
 
 ### 6. Reviews Moderation (Reviews.jsx)
+
 - ✅ Review listing with ratings
 - ✅ Approval/Rejection workflow
 - ✅ Admin responses capability
@@ -113,24 +123,28 @@ Components/Admin/
 - ✅ Filter by rating and status
 
 ### 7. Q&A Management (Questions.jsx)
+
 - ✅ Product questions listing
 - ✅ Response tracking
 - ✅ Public/Private visibility
 - ✅ Author information
 
 ### 8. Support Messages (Messages.jsx)
+
 - ✅ Message inbox
 - ✅ Status workflow (new → in_progress → resolved)
 - ✅ Customer contact info
 - ✅ Quick reply capability
 
 ### 9. Blog (Blog.jsx)
+
 - ✅ Article CRUD
 - ✅ Draft/Published status
 - ✅ View tracking
 - ✅ Category organization
 
 ### 10. Newsletter (Newsletter.jsx)
+
 - ✅ Subscriber management
 - ✅ Campaign creation
 - ✅ KPI tracking (open rate, click rate)
@@ -138,23 +152,27 @@ Components/Admin/
 - ✅ Segmentation by behavior
 
 ### 11. Collections (Collections.jsx)
+
 - ✅ Create featured product collections
 - ✅ Bestsellers section
 - ✅ New arrivals management
 - ✅ Promotional collections
 
 ### 12. Pages (Pages.jsx)
+
 - ✅ Static page management
 - ✅ SEO fields
 - ✅ Draft/Publish workflow
 
 ### 13. Banners (Banners.jsx)
+
 - ✅ Promotional banner creation
 - ✅ Time-based scheduling
 - ✅ Multiple placements
 - ✅ Active/Inactive toggle
 
 ### 14. Settings (Settings/Index.jsx)
+
 - ✅ Store information (name, email, description)
 - ✅ Contact details
 - ✅ Social media links
@@ -165,8 +183,9 @@ Components/Admin/
 ## 🧩 Reusable Components
 
 ### StatCard
+
 ```jsx
-<StatCard 
+<StatCard
   title="Ventes du mois"
   value="450,000 F"
   icon={DollarSign}
@@ -177,44 +196,34 @@ Components/Admin/
 ```
 
 ### DataTable
+
 ```jsx
-<DataTable 
-  columns={columns}
-  data={data}
-  pagination={pagination}
-  emptyMessage="No results"
-/>
+<DataTable columns={columns} data={data} pagination={pagination} emptyMessage="No results" />
 ```
 
 ### SearchFilter
+
 ```jsx
-<SearchFilter 
-  placeholder="Search..."
-  filters={filterOptions}
-  endpoint="/admin/products"
-/>
+<SearchFilter placeholder="Search..." filters={filterOptions} endpoint="/admin/products" />
 ```
 
 ### StatusBadge
+
 ```jsx
 <StatusBadge status="active" />
 <StatusBadge status="pending" size="lg" />
 ```
 
 ### FormField
+
 ```jsx
-<FormField
-  label="Product Name"
-  name="name"
-  type="text"
-  error={errors.name}
-  required
-/>
+<FormField label="Product Name" name="name" type="text" error={errors.name} required />
 ```
 
 ## 🔄 Navigation Structure
 
 **AdminLayout Sidebar Menu:**
+
 1. Dashboard → `/admin/dashboard`
 2. Catalogue
    - Products → `/admin/products`
@@ -238,6 +247,7 @@ Components/Admin/
 ### Required API Endpoints
 
 **Products**
+
 - `GET /api/admin/products` - List with pagination
 - `POST /api/admin/products` - Create
 - `GET /api/admin/products/{id}` - Get single
@@ -245,11 +255,13 @@ Components/Admin/
 - `DELETE /api/admin/products/{id}` - Delete
 
 **Orders**
+
 - `GET /api/admin/orders` - List
 - `GET /api/admin/orders/{id}` - Details
 - `POST /api/admin/orders/{id}/status` - Update status
 
 **Dashboard Stats**
+
 - `GET /api/admin/dashboard/stats` - KPI data
 - `GET /api/admin/dashboard/sales-data` - Chart data
 
@@ -258,6 +270,7 @@ Components/Admin/
 ## 🎨 Tailwind Configuration
 
 Uses **Tailwind CSS v4** with:
+
 - Custom color utilities (forest-green, dark-green, neon-green)
 - Custom scrollbar styling
 - Glassmorphism effects

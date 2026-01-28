@@ -20,7 +20,7 @@ return new class extends Migration
             $table->timestamp('unsubscribed_at')->nullable();
             $table->string('unsubscribe_token')->nullable()->unique();
             $table->timestamps();
-            
+
             $table->index('email');
             $table->index('is_active');
         });

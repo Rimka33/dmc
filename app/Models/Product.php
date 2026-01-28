@@ -192,8 +192,8 @@ class Product extends Model
     {
         return $query->where(function ($q) use ($search) {
             $q->where('name', 'like', "%{$search}%")
-              ->orWhere('description', 'like', "%{$search}%")
-              ->orWhere('sku', 'like', "%{$search}%");
+                ->orWhere('description', 'like', "%{$search}%")
+                ->orWhere('sku', 'like', "%{$search}%");
         });
     }
 
@@ -206,6 +206,7 @@ class Product extends Model
             return $this->images->where('is_primary', true)->first()
                 ?? $this->images->first();
         }
+
         return $this->images()->where('is_primary', true)->first()
             ?? $this->images()->first();
     }

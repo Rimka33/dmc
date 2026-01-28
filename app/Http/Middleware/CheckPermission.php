@@ -15,7 +15,7 @@ class CheckPermission
      */
     public function handle(Request $request, Closure $next, string $permission): Response
     {
-        if (!$request->user()) {
+        if (! $request->user()) {
             return redirect()->route('login');
         }
 
@@ -32,8 +32,8 @@ class CheckPermission
             abort(403, 'Accès administration non autorisé.');
         }
 
-        if (!$request->user()->hasPermission($permission)) {
-            abort(403, 'Accès non autorisé. Permission requise: ' . $permission);
+        if (! $request->user()->hasPermission($permission)) {
+            abort(403, 'Accès non autorisé. Permission requise: '.$permission);
         }
 
         return $next($request);

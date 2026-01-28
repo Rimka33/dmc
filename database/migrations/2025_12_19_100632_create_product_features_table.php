@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('feature', 255);
             $table->integer('sort_order')->default(0);
             $table->timestamps();
-            
+
             // Indexes
             $table->index('product_id');
             $table->index('sort_order');

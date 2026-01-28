@@ -23,13 +23,13 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+        if (! $user || ! Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
                 'email' => ['Les identifiants fournis sont incorrects.'],
             ]);
         }
 
-        if (!$user->is_active) {
+        if (! $user->is_active) {
             return response()->json([
                 'success' => false,
                 'message' => 'Votre compte est désactivé.',
@@ -130,7 +130,7 @@ class AuthController extends Controller
 
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|email|max:255|unique:users,email,' . $user->id,
+            'email' => 'sometimes|required|email|max:255|unique:users,email,'.$user->id,
             'phone' => 'nullable|string|max:50',
             'address' => 'nullable|string',
             'city' => 'nullable|string|max:100',
@@ -159,7 +159,7 @@ class AuthController extends Controller
         ]);
 
         // Vérifier l'ancien mot de passe
-        if (!Hash::check($validated['current_password'], $user->password)) {
+        if (! Hash::check($validated['current_password'], $user->password)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Le mot de passe actuel est incorrect',
@@ -189,7 +189,7 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if (!$user) {
+        if (! $user) {
             return response()->json([
                 'success' => false,
                 'message' => "Nous n'avons pas trouvé d'utilisateur avec cette adresse e-mail.",

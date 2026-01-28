@@ -3,13 +3,18 @@ export default function ChartCard({
   subtitle = null,
   children,
   loading = false,
-  height = "h-80",
-  className = "",
+  height = 'h-80',
+  className = '',
 }) {
   return (
-    <div className={`p-6 rounded-2xl backdrop-blur-xl border border-forest-green/15 shadow-sm bg-white/80 ${className}`}>
+    <div
+      className={`p-6 rounded-2xl backdrop-blur-xl border border-forest-green/15 shadow-sm bg-white/80 ${className}`}
+    >
       <div className="mb-6">
-        <h3 className="text-xl font-bold text-dark-green" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+        <h3
+          className="text-xl font-bold text-dark-green"
+          style={{ fontFamily: 'Montserrat, sans-serif' }}
+        >
           {title}
         </h3>
         {subtitle && <p className="text-sm text-dark-green/60 mt-1">{subtitle}</p>}
@@ -25,5 +30,5 @@ export default function ChartCard({
         )}
       </div>
     </div>
-  )
+  );
 }

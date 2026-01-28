@@ -1,21 +1,20 @@
 <?php
 
+use App\Http\Controllers\Api\AddressController;
+use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CartController;
+use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\ContactController;
+use App\Http\Controllers\Api\HomeController;
+use App\Http\Controllers\Api\NotificationController;
+use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\QuestionController;
+use App\Http\Controllers\Api\ReviewController;
+use App\Http\Controllers\Api\ShopController;
+use App\Http\Controllers\Api\WishlistController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\HomeController;
-use App\Http\Controllers\Api\CategoryController;
-use App\Http\Controllers\Api\ProductController;
-use App\Http\Controllers\Api\ShopController;
-use App\Http\Controllers\Api\CartController;
-use App\Http\Controllers\Api\OrderController;
-use App\Http\Controllers\Api\ContactController;
-use App\Http\Controllers\Api\WishlistController;
-
-use App\Http\Controllers\Api\ReviewController;
-use App\Http\Controllers\Api\QuestionController;
-use App\Http\Controllers\Api\AddressController;
-use App\Http\Controllers\Api\NotificationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,7 +32,7 @@ Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
-    
+
     // Protégé (nécessite token Sanctum)
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
@@ -98,7 +97,7 @@ Route::prefix('orders')->group(function () {
     // Public - Créer une commande
     Route::post('/', [OrderController::class, 'store']);
     Route::get('/{orderNumber}', [OrderController::class, 'show']);
-    
+
     // Protégé - Historique des commandes utilisateur
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('/user/history', [OrderController::class, 'userOrders']);
@@ -174,11 +173,11 @@ Route::post('/newsletter/subscribe', [\App\Http\Controllers\Api\NewsletterContro
 // ============================================================================
 
 Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    
+
     // Dashboard & Statistiques
     Route::get('/dashboard', [\App\Http\Controllers\Api\Admin\DashboardController::class, 'index']);
     Route::get('/dashboard/sales-stats', [\App\Http\Controllers\Api\Admin\DashboardController::class, 'salesStats']);
-    
+
     // Gestion Produits
     Route::prefix('products')->group(function () {
         Route::get('/', [\App\Http\Controllers\Api\Admin\ProductController::class, 'index']);
@@ -189,7 +188,7 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->name('admin.
         Route::post('/{id}/images', [\App\Http\Controllers\Api\Admin\ProductController::class, 'uploadImage']);
         Route::delete('/{productId}/images/{imageId}', [\App\Http\Controllers\Api\Admin\ProductController::class, 'deleteImage']);
     });
-    
+
     // Gestion Catégories
     Route::prefix('categories')->group(function () {
         Route::get('/', [\App\Http\Controllers\Api\Admin\CategoryController::class, 'index']);
@@ -198,7 +197,7 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->name('admin.
         Route::put('/{id}', [\App\Http\Controllers\Api\Admin\CategoryController::class, 'update']);
         Route::delete('/{id}', [\App\Http\Controllers\Api\Admin\CategoryController::class, 'destroy']);
     });
-    
+
     // Gestion Commandes
     Route::prefix('orders')->group(function () {
         Route::get('/', [\App\Http\Controllers\Api\Admin\OrderController::class, 'index']);
@@ -207,7 +206,7 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->name('admin.
         Route::put('/{id}/status', [\App\Http\Controllers\Api\Admin\OrderController::class, 'updateStatus']);
         Route::get('/{id}/history', [\App\Http\Controllers\Api\Admin\OrderController::class, 'statusHistory']);
     });
-    
+
     // Gestion Clients
     Route::prefix('customers')->group(function () {
         Route::get('/', [\App\Http\Controllers\Api\Admin\CustomerController::class, 'index']);
@@ -216,7 +215,7 @@ Route::middleware(['auth:sanctum', 'role:admin'])->prefix('admin')->name('admin.
         Route::post('/{id}/toggle-status', [\App\Http\Controllers\Api\Admin\CustomerController::class, 'toggleStatus']);
         Route::get('/{id}/orders', [\App\Http\Controllers\Api\Admin\CustomerController::class, 'orders']);
     });
-    
+
     // Modération Avis
     Route::prefix('reviews')->group(function () {
         Route::get('/', [\App\Http\Controllers\Api\Admin\ReviewController::class, 'index']);

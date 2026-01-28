@@ -1,9 +1,9 @@
-"use client"
+'use client';
 
 export default function EmptyState({
   icon,
-  title = "Aucune donnée",
-  description = "Aucun élément à afficher pour le moment.",
+  title = 'Aucune donnée',
+  description = 'Aucun élément à afficher pour le moment.',
   action,
   actionLabel,
 }) {
@@ -18,5 +18,5 @@ export default function EmptyState({
         </button>
       )}
     </div>
-  )
+  );
 }

@@ -18,7 +18,7 @@ class AdminCategoryController extends Controller
             ->paginate(10);
 
         return Inertia::render('Admin/Categories/Index', [
-            'categories' => $categories
+            'categories' => $categories,
         ]);
     }
 
@@ -55,7 +55,7 @@ class AdminCategoryController extends Controller
     public function edit(Category $category)
     {
         return Inertia::render('Admin/Categories/Edit', [
-            'category' => $category
+            'category' => $category,
         ]);
     }
 
@@ -63,7 +63,7 @@ class AdminCategoryController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:categories,slug,' . $category->id,
+            'slug' => 'required|string|max:255|unique:categories,slug,'.$category->id,
             'description' => 'nullable|string',
             'icon' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
@@ -90,6 +90,7 @@ class AdminCategoryController extends Controller
     public function destroy(Category $category)
     {
         $category->delete();
+
         return redirect()->route('admin.categories.index')->with('success', 'Catégorie supprimée.');
     }
 }

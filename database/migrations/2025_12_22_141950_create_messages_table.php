@@ -21,7 +21,7 @@ return new class extends Migration
             $table->text('admin_notes')->nullable();
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
-            
+
             $table->index('status');
             $table->index('email');
         });

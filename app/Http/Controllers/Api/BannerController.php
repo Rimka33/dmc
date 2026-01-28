@@ -29,13 +29,13 @@ class BannerController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $banners->map(function($banner) {
+            'data' => $banners->map(function ($banner) {
                 return [
                     'id' => $banner->id,
                     'title' => $banner->title,
                     'type' => $banner->type,
-                    'image' => $banner->image ? asset('storage/' . $banner->image) : null,
-                    'mobile_image' => $banner->mobile_image ? asset('storage/' . $banner->mobile_image) : null,
+                    'image' => $banner->image ? asset('storage/'.$banner->image) : null,
+                    'mobile_image' => $banner->mobile_image ? asset('storage/'.$banner->mobile_image) : null,
                     'link' => $banner->link,
                     'description' => $banner->description,
                     'position' => $banner->position,
@@ -43,8 +43,7 @@ class BannerController extends Controller
                     'button_text' => $banner->button_text,
                     'button_link' => $banner->button_link,
                 ];
-            })
+            }),
         ]);
     }
 }
-

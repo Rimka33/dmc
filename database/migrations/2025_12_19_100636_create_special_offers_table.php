@@ -20,7 +20,7 @@ return new class extends Migration
             $table->integer('total_stock');
             $table->boolean('is_active')->default(true);
             $table->timestamps();
-            
+
             // Indexes
             $table->index('product_id');
             $table->index('is_active');

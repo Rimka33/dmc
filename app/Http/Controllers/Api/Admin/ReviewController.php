@@ -30,8 +30,8 @@ class ReviewController extends Controller
 
         if ($request->has('search')) {
             $query->where(function ($q) use ($request) {
-                $q->where('title', 'like', '%' . $request->search . '%')
-                    ->orWhere('comment', 'like', '%' . $request->search . '%');
+                $q->where('title', 'like', '%'.$request->search.'%')
+                    ->orWhere('comment', 'like', '%'.$request->search.'%');
             });
         }
 
@@ -147,11 +147,11 @@ class ReviewController extends Controller
     private function updateProductRating($productId)
     {
         $product = \App\Models\Product::findOrFail($productId);
-        
+
         $avgRating = ProductReview::where('product_id', $productId)
             ->where('is_approved', true)
             ->avg('rating');
-        
+
         $reviewCount = ProductReview::where('product_id', $productId)
             ->where('is_approved', true)
             ->count();

@@ -5,8 +5,8 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
@@ -86,8 +86,10 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         // Check old role column OR new role relationship
-        if ($this->role === 'admin') return true;
-        
+        if ($this->role === 'admin') {
+            return true;
+        }
+
         return $this->roleModel && $this->roleModel->slug === 'admin';
     }
 
@@ -104,19 +106,26 @@ class User extends Authenticatable
      */
     public function hasPermission(string $permissionSlug): bool
     {
-        if ($this->isAdmin()) return true; // Admin has all permissions
+        if ($this->isAdmin()) {
+            return true;
+        } // Admin has all permissions
 
-        if (!$this->roleModel) return false;
+        if (! $this->roleModel) {
+            return false;
+        }
 
         return $this->roleModel->permissions()->where('slug', $permissionSlug)->exists();
     }
-    
+
     /**
      * Obtenir toutes les permissions de l'utilisateur
      */
     public function getPermissions()
     {
-        if (!$this->roleModel) return collect();
+        if (! $this->roleModel) {
+            return collect();
+        }
+
         return $this->roleModel->permissions->pluck('slug');
     }
 
@@ -125,7 +134,7 @@ class User extends Authenticatable
      */
     public function scopeAdmins($query)
     {
-        return $query->whereHas('roleModel', function($q) {
+        return $query->whereHas('roleModel', function ($q) {
             $q->where('slug', 'admin');
         })->orWhere('role', 'admin');
     }
@@ -135,7 +144,7 @@ class User extends Authenticatable
      */
     public function scopeCustomers($query)
     {
-         return $query->whereHas('roleModel', function($q) {
+        return $query->whereHas('roleModel', function ($q) {
             $q->where('slug', 'customer');
         });
     }
@@ -148,5 +157,3 @@ class User extends Authenticatable
         return $query->where('is_active', true);
     }
 }
-
-

@@ -29,7 +29,7 @@ return new class extends Migration
             $table->string('button_link')->nullable();
             $table->timestamps();
             $table->softDeletes();
-            
+
             $table->index('type');
             $table->index('position');
             $table->index('is_active');

@@ -23,7 +23,7 @@ class CartController extends Controller
     {
         try {
             $cart = $this->cartService->getSummary();
-            
+
             return response()->json([
                 'success' => true,
                 'data' => $cart,

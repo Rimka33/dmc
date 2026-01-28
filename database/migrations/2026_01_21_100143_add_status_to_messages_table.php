@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('messages', function (Blueprint $table) {
-            if (!Schema::hasColumn('messages', 'status')) {
+            if (! Schema::hasColumn('messages', 'status')) {
                 $table->enum('status', ['new', 'read', 'replied', 'archived'])->default('new')->after('content');
                 $table->index('status');
             }

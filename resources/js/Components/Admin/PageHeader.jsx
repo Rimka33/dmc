@@ -1,7 +1,7 @@
-"use client"
+'use client';
 
-import React from "react"
-import { ChevronRight } from "lucide-react"
+import React from 'react';
+import { ChevronRight } from 'lucide-react';
 
 export default function PageHeader({
   title,
@@ -18,7 +18,9 @@ export default function PageHeader({
           {breadcrumbs.map((crumb, idx) => (
             <React.Fragment key={idx}>
               {idx > 0 && <ChevronRight size={14} className="flex-shrink-0" />}
-              <span className={`whitespace-nowrap ${idx === breadcrumbs.length - 1 ? "text-gray-900 font-bold" : ""}`}>
+              <span
+                className={`whitespace-nowrap ${idx === breadcrumbs.length - 1 ? 'text-gray-900 font-bold' : ''}`}
+              >
                 {crumb}
               </span>
             </React.Fragment>
@@ -28,10 +30,17 @@ export default function PageHeader({
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <h1 className="text-2xl sm:text-4xl font-bold text-dark-green tracking-tight truncate" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+          <h1
+            className="text-2xl sm:text-4xl font-bold text-dark-green tracking-tight truncate"
+            style={{ fontFamily: 'Montserrat, sans-serif' }}
+          >
             {title}
           </h1>
-          {subtitle && <p className="text-dark-green/60 mt-2 text-sm sm:text-base font-medium line-clamp-2">{subtitle}</p>}
+          {subtitle && (
+            <p className="text-dark-green/60 mt-2 text-sm sm:text-base font-medium line-clamp-2">
+              {subtitle}
+            </p>
+          )}
         </div>
 
         {action || actionText ? (
@@ -50,5 +59,5 @@ export default function PageHeader({
         ) : null}
       </div>
     </div>
-  )
+  );
 }

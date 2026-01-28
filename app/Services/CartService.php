@@ -19,7 +19,7 @@ class CartService
 
         foreach ($cart as $productId => $quantity) {
             $product = Product::with('images')->find($productId);
-            
+
             if ($product) {
                 $items[] = [
                     'product_id' => $product->id,
@@ -29,10 +29,10 @@ class CartService
                     'original_price' => (float) $product->price,
                     'quantity' => $quantity,
                     'subtotal' => (float) $product->finalPrice * $quantity,
-                    'image' => $product->primaryImage 
+                    'image' => $product->primaryImage
                         ? (str_starts_with($product->primaryImage->image_path, '/') || str_starts_with($product->primaryImage->image_path, 'http')
                             ? asset($product->primaryImage->image_path)
-                            : asset('storage/' . $product->primaryImage->image_path))
+                            : asset('storage/'.$product->primaryImage->image_path))
                         : asset('images/products/default.png'),
                     'stock_quantity' => $product->stock_quantity,
                     'in_stock' => $product->stock_quantity >= $quantity,
@@ -59,11 +59,11 @@ class CartService
 
         if (isset($cart[$productId])) {
             $newQuantity = $cart[$productId] + $quantity;
-            
+
             if ($product->stock_quantity < $newQuantity) {
                 throw new \Exception('Stock insuffisant');
             }
-            
+
             $cart[$productId] = $newQuantity;
         } else {
             $cart[$productId] = $quantity;
@@ -115,6 +115,7 @@ class CartService
     public function clear()
     {
         Session::forget($this->sessionKey);
+
         return [];
     }
 
@@ -124,6 +125,7 @@ class CartService
     public function getTotal()
     {
         $items = $this->getItems();
+
         return array_sum(array_column($items, 'subtotal'));
     }
 
@@ -133,6 +135,7 @@ class CartService
     public function getCount()
     {
         $cart = Session::get($this->sessionKey, []);
+
         return array_sum($cart);
     }
 

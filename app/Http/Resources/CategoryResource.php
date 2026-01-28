@@ -17,7 +17,7 @@ class CategoryResource extends JsonResource
      */
     private function resolveImagePath($path)
     {
-        if (!$path) {
+        if (! $path) {
             return null;
         }
 
@@ -38,7 +38,7 @@ class CategoryResource extends JsonResource
 
         // Si le chemin commence par storage/ (sans /), ajouter / avant
         if (str_starts_with($path, 'storage/')) {
-            return asset('/' . $path);
+            return asset('/'.$path);
         }
 
         // Si le chemin commence par /, utiliser asset() tel quel
@@ -47,7 +47,7 @@ class CategoryResource extends JsonResource
         }
 
         // Sinon, c'est un chemin storage relatif, ajouter /storage/ avant
-        return asset('storage/' . $path);
+        return asset('storage/'.$path);
     }
 
     public function toArray(Request $request): array

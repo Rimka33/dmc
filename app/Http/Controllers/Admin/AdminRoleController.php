@@ -12,15 +12,16 @@ class AdminRoleController extends Controller
     public function index()
     {
         $roles = Role::withCount('users')->with('permissions')->get();
+
         return Inertia::render('Admin/Roles/Index', [
-            'roles' => $roles
+            'roles' => $roles,
         ]);
     }
 
     public function create()
     {
         return Inertia::render('Admin/Roles/Create', [
-            'permissions' => \App\Models\Permission::all()->groupBy('group')
+            'permissions' => \App\Models\Permission::all()->groupBy('group'),
         ]);
     }
 
@@ -29,16 +30,16 @@ class AdminRoleController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:roles,name',
             'permissions' => 'array',
-            'permissions.*' => 'exists:permissions,id'
+            'permissions.*' => 'exists:permissions,id',
         ]);
 
         $role = Role::create([
             'name' => $validated['name'],
             'slug' => \Illuminate\Support\Str::slug($validated['name']),
-            'description' => $request->description ?? ''
+            'description' => $request->description ?? '',
         ]);
 
-        if (!empty($validated['permissions'])) {
+        if (! empty($validated['permissions'])) {
             $role->permissions()->sync($validated['permissions']);
         }
 
@@ -56,7 +57,7 @@ class AdminRoleController extends Controller
         return Inertia::render('Admin/Roles/Edit', [
             'role' => $role,
             'permissions' => \App\Models\Permission::all()->groupBy('group'),
-            'rolePermissions' => $role->permissions->pluck('id')
+            'rolePermissions' => $role->permissions->pluck('id'),
         ]);
     }
 
@@ -67,15 +68,15 @@ class AdminRoleController extends Controller
         }
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255|unique:roles,name,' . $role->id,
+            'name' => 'required|string|max:255|unique:roles,name,'.$role->id,
             'permissions' => 'array',
-            'permissions.*' => 'exists:permissions,id'
+            'permissions.*' => 'exists:permissions,id',
         ]);
 
         $role->update([
             'name' => $validated['name'],
             // On ne change pas le slug pour éviter de casser des références statiques, ou alors on gère avec prudence.
-            'description' => $request->description ?? $role->description
+            'description' => $request->description ?? $role->description,
         ]);
 
         if (isset($validated['permissions'])) {
@@ -84,7 +85,6 @@ class AdminRoleController extends Controller
 
         return redirect()->route('admin.roles.index')->with('success', 'Rôle mis à jour avec succès.');
     }
-
 
     public function destroy(Role $role)
     {

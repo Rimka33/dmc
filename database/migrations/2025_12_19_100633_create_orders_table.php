@@ -32,7 +32,7 @@ return new class extends Migration
             $table->string('shipping_postal_code', 20)->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
-            
+
             // Indexes
             $table->index('order_number');
             $table->index('user_id');

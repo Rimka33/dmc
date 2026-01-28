@@ -12,13 +12,13 @@ class QuestionController extends Controller
         $questions = \App\Models\Question::with('user')
             ->where('product_id', $productId)
             // Uncomment if we only want to show questions with answers or visible ones
-            // ->where('is_visible', true) 
+            // ->where('is_visible', true)
             ->orderBy('created_at', 'desc')
             ->get();
 
         return response()->json([
             'success' => true,
-            'data' => $questions
+            'data' => $questions,
         ]);
     }
 
@@ -38,7 +38,7 @@ class QuestionController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Votre question a été soumise avec succès.',
-            'data' => $question
+            'data' => $question,
         ]);
     }
 }

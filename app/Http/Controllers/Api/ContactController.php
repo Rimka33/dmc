@@ -28,13 +28,14 @@ class ContactController extends Controller
 
             return response()->json([
                 'message' => 'Votre message a bien été envoyé !',
-                'success' => true
+                'success' => true,
             ]);
         } catch (\Exception $e) {
-            \Log::error('Contact Error: ' . $e->getMessage());
+            \Log::error('Contact Error: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Une erreur est survenue sur le serveur. Veuillez réessayer plus tard.'
+                'message' => 'Une erreur est survenue sur le serveur. Veuillez réessayer plus tard.',
             ], 500);
         }
     }
@@ -47,7 +48,7 @@ class ContactController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $messages
+            'data' => $messages,
         ]);
     }
 }

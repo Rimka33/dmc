@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -66,44 +66,44 @@ return new class extends Migration
     {
         // Créer les rôles de base
         $adminRole = DB::table('roles')->insertGetId([
-            'name' => 'Administrateur', 
-            'slug' => 'admin', 
+            'name' => 'Administrateur',
+            'slug' => 'admin',
             'description' => 'Accès complet au système',
-            'created_at' => now(), 'updated_at' => now()
+            'created_at' => now(), 'updated_at' => now(),
         ]);
 
         $managerRole = DB::table('roles')->insertGetId([
-            'name' => 'Gestionnaire Catalogue', 
-            'slug' => 'manager', 
+            'name' => 'Gestionnaire Catalogue',
+            'slug' => 'manager',
             'description' => 'Gestion des produits, catégories et stocks',
-            'created_at' => now(), 'updated_at' => now()
+            'created_at' => now(), 'updated_at' => now(),
         ]);
-        
+
         $customerRole = DB::table('roles')->insertGetId([
-            'name' => 'Client', 
-            'slug' => 'customer', 
+            'name' => 'Client',
+            'slug' => 'customer',
             'description' => 'Utilisateur inscrit standard',
-            'created_at' => now(), 'updated_at' => now()
+            'created_at' => now(), 'updated_at' => now(),
         ]);
 
         // Définir les permissions
         $permissions = [
             // Dashboard
             ['name' => 'Voir le Dashboard', 'slug' => 'dashboard.view', 'group' => 'Dashboard'],
-            
+
             // Catalogue (Produits, Categories, Collections)
             ['name' => 'Voir Produits', 'slug' => 'products.view', 'group' => 'Catalogue'],
             ['name' => 'Créer Produits', 'slug' => 'products.create', 'group' => 'Catalogue'],
             ['name' => 'Modifier Produits', 'slug' => 'products.edit', 'group' => 'Catalogue'],
             ['name' => 'Supprimer Produits', 'slug' => 'products.delete', 'group' => 'Catalogue'],
-            
+
             // Commandes
             ['name' => 'Gérer Commandes', 'slug' => 'orders.manage', 'group' => 'Commandes'],
-            
+
             // Utilisateurs & Rôles
             ['name' => 'Gérer Utilisateurs', 'slug' => 'users.manage', 'group' => 'Système'],
             ['name' => 'Gérer Rôles', 'slug' => 'roles.manage', 'group' => 'Système'],
-            
+
             // Paramètres
             ['name' => 'Gérer Paramètres', 'slug' => 'settings.manage', 'group' => 'Système'],
         ];
@@ -113,20 +113,20 @@ return new class extends Migration
                 'name' => $perm['name'],
                 'slug' => $perm['slug'],
                 'group' => $perm['group'],
-                'created_at' => now(), 'updated_at' => now()
+                'created_at' => now(), 'updated_at' => now(),
             ]);
 
             // Admin a toutes les permissions
             DB::table('role_permission')->insert([
                 'role_id' => $adminRole,
-                'permission_id' => $permId
+                'permission_id' => $permId,
             ]);
 
             // Manager a des permissions spécifiques
             if (in_array($perm['slug'], ['dashboard.view', 'products.view', 'products.create', 'products.edit', 'products.delete', 'orders.manage'])) {
                 DB::table('role_permission')->insert([
                     'role_id' => $managerRole,
-                    'permission_id' => $permId
+                    'permission_id' => $permId,
                 ]);
             }
         }
@@ -137,11 +137,11 @@ return new class extends Migration
         DB::table('users')
             ->where('role', 'admin')
             ->update(['role_id' => $adminRole]);
-            
+
         DB::table('users')
             ->where('role', 'customer')
             ->update(['role_id' => $customerRole]);
-            
+
         // Pour les autres (ex: users créés sans role explicit), mettre customer par défaut
         DB::table('users')
             ->whereNull('role_id')

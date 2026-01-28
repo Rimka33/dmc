@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Page;
-use Illuminate\Http\Request;
 
 class PageController extends Controller
 {
@@ -13,7 +12,7 @@ class PageController extends Controller
         $page = Page::published()->where('slug', $slug)->firstOrFail();
 
         return response()->json([
-            'data' => $page
+            'data' => $page,
         ]);
     }
 }

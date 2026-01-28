@@ -37,13 +37,13 @@ class Banner extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true)
-            ->where(function($q) {
+            ->where(function ($q) {
                 $q->whereNull('start_date')
-                  ->orWhere('start_date', '<=', now());
+                    ->orWhere('start_date', '<=', now());
             })
-            ->where(function($q) {
+            ->where(function ($q) {
                 $q->whereNull('end_date')
-                  ->orWhere('end_date', '>=', now());
+                    ->orWhere('end_date', '>=', now());
             });
     }
 

@@ -21,7 +21,7 @@ return new class extends Migration
             $table->integer('limit')->default(8)->comment('Nombre maximum de produits à afficher');
             $table->boolean('is_active')->default(true);
             $table->timestamps();
-            
+
             // Indexes
             $table->index('slug');
             $table->index('type');
@@ -38,4 +38,3 @@ return new class extends Migration
         Schema::dropIfExists('collections');
     }
 };
-

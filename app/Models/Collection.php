@@ -80,4 +80,3 @@ class Collection extends Model
         return $query->orderBy('sort_order', 'asc')->orderBy('name', 'asc');
     }
 }
-

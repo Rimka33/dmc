@@ -12,24 +12,24 @@ class AdminReviewController extends Controller
     public function index(Request $request)
     {
         $reviews = ProductReview::with(['product', 'user'])
-            ->when($request->search, function($query, $search) {
-                $query->whereHas('product', function($q) use ($search) {
+            ->when($request->search, function ($query, $search) {
+                $query->whereHas('product', function ($q) use ($search) {
                     $q->where('name', 'like', "%{$search}%");
                 })
-                ->orWhereHas('user', function($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%");
-                })
-                ->orWhere('title', 'like', "%{$search}%")
-                ->orWhere('comment', 'like', "%{$search}%");
+                    ->orWhereHas('user', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%");
+                    })
+                    ->orWhere('title', 'like', "%{$search}%")
+                    ->orWhere('comment', 'like', "%{$search}%");
             })
-            ->when($request->rating, function($query, $rating) {
+            ->when($request->rating, function ($query, $rating) {
                 $query->where('rating', $rating);
             })
-            ->when($request->status === 'approved', function($query) {
+            ->when($request->status === 'approved', function ($query) {
                 $query->where('is_approved', true);
             })
-            ->when($request->status === 'pending', function($query) {
+            ->when($request->status === 'pending', function ($query) {
                 $query->where('is_approved', false);
             })
             ->latest()
@@ -38,15 +38,16 @@ class AdminReviewController extends Controller
 
         return Inertia::render('Admin/Reviews', [
             'reviews' => $reviews,
-            'filters' => $request->only(['search', 'rating', 'status'])
+            'filters' => $request->only(['search', 'rating', 'status']),
         ]);
     }
 
     public function show(ProductReview $review)
     {
         $review->load(['product', 'user']);
+
         return Inertia::render('Admin/Reviews/Show', [
-            'review' => $review
+            'review' => $review,
         ]);
     }
 
@@ -72,7 +73,7 @@ class AdminReviewController extends Controller
     {
         $review->update(['is_approved' => true]);
         $this->updateProductRating($review->product_id);
-        
+
         return redirect()->back()->with('success', 'Avis approuvé.');
     }
 
@@ -80,7 +81,7 @@ class AdminReviewController extends Controller
     {
         $review->update(['is_approved' => false]);
         $this->updateProductRating($review->product_id);
-        
+
         return redirect()->back()->with('success', 'Avis rejeté.');
     }
 
@@ -88,16 +89,18 @@ class AdminReviewController extends Controller
     {
         $productId = $review->product_id;
         $review->delete();
-        
+
         // Recalculer la note moyenne du produit
         $this->updateProductRating($productId);
-        
+
         return redirect()->route('admin.reviews.index')->with('success', 'Avis supprimé.');
     }
 
     private function updateProductRating($productId)
     {
-        if (!$productId) return;
+        if (! $productId) {
+            return;
+        }
 
         $approvedReviews = ProductReview::where('product_id', $productId)
             ->where('is_approved', true)

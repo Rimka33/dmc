@@ -4,10 +4,12 @@ export default function Section({
   icon: Icon = null,
   children,
   actions = null,
-  className = "",
+  className = '',
 }) {
   return (
-    <div className={`p-6 rounded-2xl backdrop-blur-xl border border-forest-green/15 shadow-sm bg-white/80 ${className}`}>
+    <div
+      className={`p-6 rounded-2xl backdrop-blur-xl border border-forest-green/15 shadow-sm bg-white/80 ${className}`}
+    >
       {(title || subtitle || actions) && (
         <div className="mb-6 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -18,7 +20,10 @@ export default function Section({
             )}
             <div>
               {title && (
-                <h3 className="text-xl font-bold text-dark-green" style={{ fontFamily: 'Montserrat, sans-serif' }}>
+                <h3
+                  className="text-xl font-bold text-dark-green"
+                  style={{ fontFamily: 'Montserrat, sans-serif' }}
+                >
                   {title}
                 </h3>
               )}
@@ -30,5 +35,5 @@ export default function Section({
       )}
       <div className="relative">{children}</div>
     </div>
-  )
+  );
 }

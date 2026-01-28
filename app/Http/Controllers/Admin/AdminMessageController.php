@@ -11,13 +11,13 @@ class AdminMessageController extends Controller
 {
     public function index(Request $request)
     {
-        $messages = Message::when($request->search, function($query, $search) {
-                $query->where('name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%")
-                      ->orWhere('subject', 'like', "%{$search}%")
-                      ->orWhere('message', 'like', "%{$search}%");
-            })
-            ->when($request->status, function($query, $status) {
+        $messages = Message::when($request->search, function ($query, $search) {
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('subject', 'like', "%{$search}%")
+                ->orWhere('message', 'like', "%{$search}%");
+        })
+            ->when($request->status, function ($query, $status) {
                 $query->where('status', $status);
             })
             ->latest()
@@ -26,7 +26,7 @@ class AdminMessageController extends Controller
 
         return Inertia::render('Admin/Messages', [
             'messages' => $messages,
-            'filters' => $request->only(['search', 'status'])
+            'filters' => $request->only(['search', 'status']),
         ]);
     }
 
@@ -38,7 +38,7 @@ class AdminMessageController extends Controller
         }
 
         return Inertia::render('Admin/Messages/Show', [
-            'message' => $message
+            'message' => $message,
         ]);
     }
 
@@ -51,7 +51,7 @@ class AdminMessageController extends Controller
         ]);
 
         $updateData = ['status' => $validated['status']];
-        
+
         if (isset($validated['admin_notes'])) {
             $updateData['admin_notes'] = $validated['admin_notes'];
         }
@@ -62,7 +62,7 @@ class AdminMessageController extends Controller
             $updateData['status'] = 'replied';
         }
 
-        if ($validated['status'] === 'read' && !$message->read_at) {
+        if ($validated['status'] === 'read' && ! $message->read_at) {
             $updateData['read_at'] = now();
         }
 
@@ -74,28 +74,28 @@ class AdminMessageController extends Controller
     public function markAsRead(Message $message)
     {
         $message->markAsRead();
-        
+
         return redirect()->back()->with('success', 'Message marqué comme lu.');
     }
 
     public function markAsReplied(Message $message)
     {
         $message->markAsReplied();
-        
+
         return redirect()->back()->with('success', 'Message marqué comme répondu.');
     }
 
     public function archive(Message $message)
     {
         $message->archive();
-        
+
         return redirect()->back()->with('success', 'Message archivé.');
     }
 
     public function destroy(Message $message)
     {
         $message->delete();
-        
+
         return redirect()->route('admin.messages.index')->with('success', 'Message supprimé.');
     }
 }

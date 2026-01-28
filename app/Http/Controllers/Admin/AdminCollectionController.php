@@ -21,7 +21,7 @@ class AdminCollectionController extends Controller
 
         return Inertia::render('Admin/Collections/Index', [
             'collections' => $collections,
-            'filters' => $request->only(['search', 'status'])
+            'filters' => $request->only(['search', 'status']),
         ]);
     }
 
@@ -44,7 +44,7 @@ class AdminCollectionController extends Controller
                 ['value' => 'special_offers', 'label' => 'Offres spéciales'],
                 ['value' => 'best_sellers', 'label' => 'Meilleures ventes'],
                 ['value' => 'custom', 'label' => 'Collection personnalisée'],
-            ]
+            ],
         ]);
     }
 
@@ -77,7 +77,7 @@ class AdminCollectionController extends Controller
         $collection = Collection::create($validated);
 
         // Attacher les produits avec leur ordre
-        if (!empty($products)) {
+        if (! empty($products)) {
             $syncData = [];
             foreach ($products as $product) {
                 $syncData[$product['id']] = ['sort_order' => $product['sort_order'] ?? 0];
@@ -90,10 +90,10 @@ class AdminCollectionController extends Controller
 
     public function edit(Collection $collection)
     {
-        $collection->load(['products' => function($query) {
+        $collection->load(['products' => function ($query) {
             $query->with('images')->orderBy('collection_product.sort_order');
         }]);
-        
+
         $products = Product::where('is_active', true)
             ->with('images')
             ->select('id', 'name', 'sku', 'price')
@@ -109,7 +109,7 @@ class AdminCollectionController extends Controller
                 ['value' => 'special_offers', 'label' => 'Offres spéciales'],
                 ['value' => 'best_sellers', 'label' => 'Meilleures ventes'],
                 ['value' => 'custom', 'label' => 'Collection personnalisée'],
-            ]
+            ],
         ]);
     }
 
@@ -117,7 +117,7 @@ class AdminCollectionController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:collections,slug,' . $collection->id,
+            'slug' => 'required|string|max:255|unique:collections,slug,'.$collection->id,
             'description' => 'nullable|string',
             'type' => 'required|in:featured,new,special_offers,best_sellers,custom',
             'sort_order' => 'nullable|integer',
@@ -148,6 +148,7 @@ class AdminCollectionController extends Controller
     public function destroy(Collection $collection)
     {
         $collection->delete();
+
         return redirect()->route('admin.collections.index')->with('success', 'Collection supprimée.');
     }
 }

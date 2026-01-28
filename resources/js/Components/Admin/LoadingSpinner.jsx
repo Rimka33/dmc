@@ -1,16 +1,16 @@
-export default function LoadingSpinner({ size = "md", color = "forest-green" }) {
+export default function LoadingSpinner({ size = 'md', color = 'forest-green' }) {
   const sizeClasses = {
-    sm: "w-4 h-4",
-    md: "w-8 h-8",
-    lg: "w-12 h-12",
-  }
+    sm: 'w-4 h-4',
+    md: 'w-8 h-8',
+    lg: 'w-12 h-12',
+  };
 
   const colorClasses = {
-    "forest-green": "border-forest-green",
-    "neon-green": "border-neon-green",
-    white: "border-white",
-    gray: "border-gray-400",
-  }
+    'forest-green': 'border-forest-green',
+    'neon-green': 'border-neon-green',
+    white: 'border-white',
+    gray: 'border-gray-400',
+  };
 
   return (
     <div className="flex items-center justify-center">
@@ -22,5 +22,5 @@ export default function LoadingSpinner({ size = "md", color = "forest-green" }) 
         <span className="sr-only">Chargement...</span>
       </div>
     </div>
-  )
+  );
 }

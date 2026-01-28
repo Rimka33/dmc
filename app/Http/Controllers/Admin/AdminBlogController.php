@@ -12,11 +12,11 @@ class AdminBlogController extends Controller
 {
     public function index(Request $request)
     {
-        $blogs = Blog::when($request->search, function($query, $search) {
-                $query->where('title', 'like', "%{$search}%")
-                      ->orWhere('excerpt', 'like', "%{$search}%");
-            })
-            ->when($request->status, function($query, $status) {
+        $blogs = Blog::when($request->search, function ($query, $search) {
+            $query->where('title', 'like', "%{$search}%")
+                ->orWhere('excerpt', 'like', "%{$search}%");
+        })
+            ->when($request->status, function ($query, $status) {
                 $query->where('status', $status);
             })
             ->latest()
@@ -25,14 +25,14 @@ class AdminBlogController extends Controller
 
         return Inertia::render('Admin/Blog', [
             'articles' => $blogs,
-            'filters' => $request->only(['search', 'status'])
+            'filters' => $request->only(['search', 'status']),
         ]);
     }
 
     public function create()
     {
         return Inertia::render('Admin/Blog/Create', [
-            'categories' => $this->getCategories()
+            'categories' => $this->getCategories(),
         ]);
     }
 
@@ -79,7 +79,7 @@ class AdminBlogController extends Controller
     {
         return Inertia::render('Admin/Blog/Edit', [
             'article' => $blog,
-            'categories' => $this->getCategories()
+            'categories' => $this->getCategories(),
         ]);
     }
 
@@ -87,7 +87,7 @@ class AdminBlogController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:blogs,slug,' . $blog->id,
+            'slug' => 'required|string|max:255|unique:blogs,slug,'.$blog->id,
             'excerpt' => 'nullable|string',
             'content' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',

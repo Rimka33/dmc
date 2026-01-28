@@ -1,16 +1,16 @@
 import React from 'react';
 import { AlertTriangle, X } from 'lucide-react';
 
-export default function ConfirmDialog({ 
-  isOpen, 
-  title = 'Confirmer', 
-  message = 'Êtes-vous sûr ?', 
-  onConfirm, 
+export default function ConfirmDialog({
+  isOpen,
+  title = 'Confirmer',
+  message = 'Êtes-vous sûr ?',
+  onConfirm,
   onCancel,
   confirmText = 'Confirmer',
   cancelText = 'Annuler',
   isDangerous = false,
-  loading = false
+  loading = false,
 }) {
   if (!isOpen) return null;
 
@@ -41,9 +41,7 @@ export default function ConfirmDialog({
             onClick={onConfirm}
             disabled={loading}
             className={`px-4 py-2 rounded-lg text-white font-medium text-sm transition-colors ${
-              isDangerous
-                ? 'bg-red-600 hover:bg-red-700'
-                : 'bg-forest-green hover:bg-dark-green'
+              isDangerous ? 'bg-red-600 hover:bg-red-700' : 'bg-forest-green hover:bg-dark-green'
             } ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             {loading ? 'Chargement...' : confirmText}

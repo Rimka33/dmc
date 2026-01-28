@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\ProductReview;
-use App\Models\Product;
 use App\Models\Order;
+use App\Models\Product;
+use App\Models\ProductReview;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -155,7 +155,7 @@ class ReviewController extends Controller
             'title' => $request->title ?? 'Avis Boutique',
             'comment' => $request->comment,
             'is_verified_purchase' => true, // On considère qu'un user connecté peut laisser un avis
-            'is_approved' => true, 
+            'is_approved' => true,
         ]);
 
         return response()->json([
@@ -259,14 +259,16 @@ class ReviewController extends Controller
      */
     private function updateProductRating($productId)
     {
-        if (!$productId) return;
+        if (! $productId) {
+            return;
+        }
 
         $product = Product::findOrFail($productId);
-        
+
         $avgRating = ProductReview::where('product_id', $productId)
             ->approved()
             ->avg('rating');
-        
+
         $reviewCount = ProductReview::where('product_id', $productId)
             ->approved()
             ->count();

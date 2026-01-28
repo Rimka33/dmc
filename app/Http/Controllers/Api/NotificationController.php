@@ -73,7 +73,7 @@ class NotificationController extends Controller
     public function markAsRead(Request $request, $id)
     {
         $user = $request->user();
-        
+
         $notification = Notification::where('id', $id)
             ->where('user_id', $user->id)
             ->firstOrFail();
@@ -112,7 +112,7 @@ class NotificationController extends Controller
     public function destroy(Request $request, $id)
     {
         $user = $request->user();
-        
+
         $notification = Notification::where('id', $id)
             ->where('user_id', $user->id)
             ->firstOrFail();

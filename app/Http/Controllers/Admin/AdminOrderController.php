@@ -12,10 +12,10 @@ class AdminOrderController extends Controller
     public function index(Request $request)
     {
         $orders = Order::with('user')
-            ->when($request->search, function($query, $search) {
+            ->when($request->search, function ($query, $search) {
                 $query->where('order_number', 'like', "%{$search}%")
-                      ->orWhere('customer_name', 'like', "%{$search}%")
-                      ->orWhere('customer_email', 'like', "%{$search}%");
+                    ->orWhere('customer_name', 'like', "%{$search}%")
+                    ->orWhere('customer_email', 'like', "%{$search}%");
             })
             ->latest()
             ->paginate(10)
@@ -23,7 +23,7 @@ class AdminOrderController extends Controller
 
         return Inertia::render('Admin/Orders/Index', [
             'orders' => $orders,
-            'filters' => $request->only(['search'])
+            'filters' => $request->only(['search']),
         ]);
     }
 
@@ -31,31 +31,32 @@ class AdminOrderController extends Controller
     {
         $order->load([
             'items.product.images',
-            'user'
+            'user',
         ]);
-        
+
         return Inertia::render('Admin/Orders/Show', [
-            'order' => $order
+            'order' => $order,
         ]);
     }
-    
+
     public function update(Request $request, Order $order)
     {
         $request->validate([
             'status' => 'required|in:pending,processing,shipped,delivered,cancelled',
-            'payment_status' => 'required|in:pending,paid,failed,refunded'
+            'payment_status' => 'required|in:pending,paid,failed,refunded',
         ]);
 
         $order->update($request->only('status', 'payment_status'));
 
         return back()->with('success', 'Commande mise à jour.');
     }
+
     public function downloadInvoice(Order $order)
     {
         $order->load(['items.product', 'user']);
-        
+
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('invoices.order', compact('order'));
-        
+
         return $pdf->download("facture-{$order->order_number}.pdf");
     }
 }

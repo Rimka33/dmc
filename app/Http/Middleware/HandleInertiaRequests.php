@@ -16,9 +16,6 @@ class HandleInertiaRequests extends InertiaMiddleware
 
     /**
      * Determines the current asset version.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return string|null
      */
     public function version(Request $request): ?string
     {
@@ -27,9 +24,6 @@ class HandleInertiaRequests extends InertiaMiddleware
 
     /**
      * Defines the props that are shared by default.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
      */
     public function share(Request $request): array
     {
@@ -41,7 +35,7 @@ class HandleInertiaRequests extends InertiaMiddleware
                     'email' => $request->user()->email,
                     'role' => $request->user()->roleModel ? $request->user()->roleModel->slug : $request->user()->role,
                     'permissions' => $request->user()->getPermissions(),
-                    'avatar' => $request->user()->avatar ? (str_starts_with($request->user()->avatar, 'http') ? $request->user()->avatar : asset('storage/' . $request->user()->avatar)) : null,
+                    'avatar' => $request->user()->avatar ? (str_starts_with($request->user()->avatar, 'http') ? $request->user()->avatar : asset('storage/'.$request->user()->avatar)) : null,
                 ] : null,
             ],
             'admin_notifications' => $request->user() && ($request->user()->isAdmin() || $request->user()->hasPermission('dashboard.view')) ? [

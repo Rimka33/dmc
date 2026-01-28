@@ -26,7 +26,7 @@ class UserResource extends JsonResource
             'city' => $this->city,
             'postal_code' => $this->postal_code,
             'is_active' => $this->is_active,
-            'avatar' => $this->avatar ? (str_starts_with($this->avatar, 'http') ? $this->avatar : asset('storage/' . $this->avatar)) : null,
+            'avatar' => $this->avatar ? (str_starts_with($this->avatar, 'http') ? $this->avatar : asset('storage/'.$this->avatar)) : null,
             'created_at' => $this->created_at?->toISOString(),
             'updated_at' => $this->updated_at?->toISOString(),
         ];

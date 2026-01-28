@@ -17,11 +17,11 @@ return new class extends Migration
             $table->unsignedBigInteger('product_id');
             $table->integer('sort_order')->default(0);
             $table->timestamps();
-            
+
             // Foreign keys
             $table->foreign('collection_id')->references('id')->on('collections')->onDelete('cascade');
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
-            
+
             // Indexes
             $table->index('collection_id');
             $table->index('product_id');
@@ -37,4 +37,3 @@ return new class extends Migration
         Schema::dropIfExists('collection_product');
     }
 };
-

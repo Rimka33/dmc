@@ -4,8 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Product;
-use App\Models\ProductImage;
 use App\Models\ProductFeature;
+use App\Models\ProductImage;
 use App\Models\SpecialOffer;
 use Illuminate\Database\Seeder;
 
@@ -152,7 +152,7 @@ class ProductSeeder extends Seeder
         ProductFeature::create(['product_id' => $product7->id, 'feature' => '3 Mois de Garantie', 'sort_order' => 1]);
         ProductFeature::create(['product_id' => $product7->id, 'feature' => 'Venant des USA', 'sort_order' => 2]);
         ProductFeature::create(['product_id' => $product7->id, 'feature' => 'Livraison Partout au Sénégal', 'sort_order' => 3]);
-        
+
         // Offre spéciale pour MacBook
         SpecialOffer::create([
             'product_id' => $product7->id,
@@ -183,7 +183,7 @@ class ProductSeeder extends Seeder
         ProductFeature::create(['product_id' => $product8->id, 'feature' => '3 Mois de Garantie', 'sort_order' => 1]);
         ProductFeature::create(['product_id' => $product8->id, 'feature' => 'Venant des USA', 'sort_order' => 2]);
         ProductFeature::create(['product_id' => $product8->id, 'feature' => 'Livraison Partout au Sénégal', 'sort_order' => 3]);
-        
+
         // Offre spéciale
         SpecialOffer::create([
             'product_id' => $product8->id,

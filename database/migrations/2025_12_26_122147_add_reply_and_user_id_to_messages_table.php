@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::table('messages', function (Blueprint $table) {
             // user_id already exists, skip it
-            if (!Schema::hasColumn('messages', 'reply')) {
+            if (! Schema::hasColumn('messages', 'reply')) {
                 $table->text('reply')->nullable()->after('content');
             }
-            if (!Schema::hasColumn('messages', 'replied_at')) {
+            if (! Schema::hasColumn('messages', 'replied_at')) {
                 $table->timestamp('replied_at')->nullable()->after('is_read');
             }
         });

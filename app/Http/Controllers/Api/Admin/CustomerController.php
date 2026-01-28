@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
-use App\Models\User;
 use App\Models\Order;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class CustomerController extends Controller
@@ -24,9 +24,9 @@ class CustomerController extends Controller
 
         if ($request->has('search')) {
             $query->where(function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%')
-                    ->orWhere('email', 'like', '%' . $request->search . '%')
-                    ->orWhere('phone', 'like', '%' . $request->search . '%');
+                $q->where('name', 'like', '%'.$request->search.'%')
+                    ->orWhere('email', 'like', '%'.$request->search.'%')
+                    ->orWhere('phone', 'like', '%'.$request->search.'%');
             });
         }
 
@@ -93,9 +93,9 @@ class CustomerController extends Controller
     public function toggleStatus($id)
     {
         $customer = User::where('role', 'customer')->findOrFail($id);
-        
+
         $customer->update([
-            'is_active' => !$customer->is_active,
+            'is_active' => ! $customer->is_active,
         ]);
 
         return response()->json([

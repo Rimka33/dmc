@@ -23,7 +23,7 @@ return new class extends Migration
             $table->decimal('price', 10, 2); // Prix au moment de l'achat
             $table->decimal('subtotal', 10, 2);
             $table->timestamps();
-            
+
             // Indexes
             $table->index('order_id');
             $table->index('product_id');

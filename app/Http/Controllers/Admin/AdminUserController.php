@@ -12,14 +12,14 @@ class AdminUserController extends Controller
     public function index(Request $request)
     {
         $users = User::with('roleModel')
-            ->when($request->search, function($query, $search) {
+            ->when($request->search, function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%")
-                      ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%");
             })
             ->latest()
             ->paginate(10)
             ->withQueryString()
-            ->through(function($user) {
+            ->through(function ($user) {
                 return [
                     'id' => $user->id,
                     'name' => $user->name,
@@ -33,14 +33,14 @@ class AdminUserController extends Controller
 
         return Inertia::render('Admin/Users/Index', [
             'users' => $users,
-            'filters' => $request->only(['search'])
+            'filters' => $request->only(['search']),
         ]);
     }
 
     public function create()
     {
         return Inertia::render('Admin/Users/Create', [
-            'roles' => \App\Models\Role::all(['id', 'name'])
+            'roles' => \App\Models\Role::all(['id', 'name']),
         ]);
     }
 
@@ -51,11 +51,11 @@ class AdminUserController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
             'role_id' => 'required|exists:roles,id',
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
         ]);
 
         $validated['password'] = \Illuminate\Support\Facades\Hash::make($validated['password']);
-        
+
         // Synchro avec l'ancienne colonne role pour compatibilité
         $role = \App\Models\Role::find($validated['role_id']);
         $validated['role'] = $role->slug === 'admin' ? 'admin' : 'customer';
@@ -75,7 +75,7 @@ class AdminUserController extends Controller
                 'role_id' => $user->role_id,
                 'is_active' => $user->is_active,
             ],
-            'roles' => \App\Models\Role::all(['id', 'name'])
+            'roles' => \App\Models\Role::all(['id', 'name']),
         ]);
     }
 
@@ -83,10 +83,10 @@ class AdminUserController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
+            'email' => 'required|email|unique:users,email,'.$user->id,
             'role_id' => 'required|exists:roles,id',
             'password' => 'nullable|string|min:8',
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
         ]);
 
         if ($request->filled('password')) {
@@ -111,10 +111,11 @@ class AdminUserController extends Controller
         }
 
         if ($user->isAdmin() && User::admins()->count() <= 1) {
-             return back()->with('error', 'Impossible de supprimer le dernier administrateur.');
+            return back()->with('error', 'Impossible de supprimer le dernier administrateur.');
         }
 
         $user->delete();
+
         return back()->with('success', 'Utilisateur supprimé.');
     }
 }

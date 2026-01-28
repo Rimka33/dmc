@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Http\Resources\CategoryResource;
 use App\Http\Resources\ProductResource;
 use App\Models\Category;
-use App\Models\Product;
 use App\Models\Collection;
-use App\Models\SpecialOffer;
+use App\Models\Product;
 use App\Models\ProductReview;
+use App\Models\SpecialOffer;
+use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
@@ -28,7 +28,7 @@ class HomeController extends Controller
         $featuredCollection = Collection::where('type', 'featured')
             ->where('is_active', true)
             ->first();
-        
+
         $featuredProducts = collect();
         if ($featuredCollection) {
             $featuredProducts = $featuredCollection->products()
@@ -49,7 +49,7 @@ class HomeController extends Controller
         $newCollection = Collection::where('type', 'new')
             ->where('is_active', true)
             ->first();
-        
+
         $newProducts = collect();
         if ($newCollection) {
             $newProducts = $newCollection->products()
@@ -71,7 +71,7 @@ class HomeController extends Controller
         $specialOffersCollection = Collection::where('type', 'special_offers')
             ->where('is_active', true)
             ->first();
-        
+
         $specialOffers = collect();
         if ($specialOffersCollection) {
             $specialOffers = $specialOffersCollection->products()
@@ -79,15 +79,15 @@ class HomeController extends Controller
                 ->where('is_active', true)
                 ->limit($specialOffersCollection->limit ?? 3)
                 ->get()
-                ->map(function($product) {
+                ->map(function ($product) {
                     return [
                         'id' => $product->id,
                         'product_id' => $product->id,
                         'name' => $product->name,
                         'slug' => $product->slug,
                         'sku' => $product->sku,
-                        'price_formatted' => number_format($product->finalPrice, 0, ',', '.') . ' FCFA',
-                        'old_price_formatted' => $product->hasDiscount ? number_format($product->price, 0, ',', '.') . ' FCFA' : null,
+                        'price_formatted' => number_format($product->finalPrice, 0, ',', '.').' FCFA',
+                        'old_price_formatted' => $product->hasDiscount ? number_format($product->price, 0, ',', '.').' FCFA' : null,
                         'has_discount' => $product->hasDiscount,
                         'discount_percentage' => $product->discount_percentage,
                         'primary_image' => $product->primaryImage ? $product->primaryImage->url : asset('images/products/default.png'),
@@ -108,16 +108,17 @@ class HomeController extends Controller
                 ->where('end_date', '>', now())
                 ->limit(3)
                 ->get()
-                ->map(function($offer) {
+                ->map(function ($offer) {
                     $product = $offer->product;
+
                     return [
                         'id' => $offer->id,
                         'product_id' => $offer->product_id,
                         'name' => $product->name,
                         'slug' => $product->slug,
                         'sku' => $product->sku,
-                        'price_formatted' => number_format($product->finalPrice, 0, ',', '.') . ' FCFA',
-                        'old_price_formatted' => $product->hasDiscount ? number_format($product->price, 0, ',', '.') . ' FCFA' : null,
+                        'price_formatted' => number_format($product->finalPrice, 0, ',', '.').' FCFA',
+                        'old_price_formatted' => $product->hasDiscount ? number_format($product->price, 0, ',', '.').' FCFA' : null,
                         'has_discount' => $product->hasDiscount,
                         'discount_percentage' => $product->discount_percentage,
                         'primary_image' => $product->primaryImage ? $product->primaryImage->url : asset('images/products/default.png'),
@@ -137,7 +138,7 @@ class HomeController extends Controller
         $bestSellersCollection = Collection::where('type', 'best_sellers')
             ->where('is_active', true)
             ->first();
-        
+
         $bestSellers = collect();
         if ($bestSellersCollection) {
             $bestSellers = $bestSellersCollection->products()
@@ -151,14 +152,14 @@ class HomeController extends Controller
         $banners = \App\Models\Banner::active()
             ->orderBy('sort_order')
             ->get()
-            ->map(function($banner) {
+            ->map(function ($banner) {
                 return [
                     'id' => $banner->id,
                     'title' => $banner->title,
                     'type' => $banner->type,
                     'description' => $banner->description,
-                    'image' => $banner->image ? (str_starts_with($banner->image, 'http') ? $banner->image : asset('storage/' . $banner->image)) : null,
-                    'mobile_image' => $banner->mobile_image ? (str_starts_with($banner->mobile_image, 'http') ? $banner->mobile_image : asset('storage/' . $banner->mobile_image)) : null,
+                    'image' => $banner->image ? (str_starts_with($banner->image, 'http') ? $banner->image : asset('storage/'.$banner->image)) : null,
+                    'mobile_image' => $banner->mobile_image ? (str_starts_with($banner->mobile_image, 'http') ? $banner->mobile_image : asset('storage/'.$banner->mobile_image)) : null,
                     'link' => $banner->link,
                     'button_text' => $banner->button_text,
                     'button_link' => $banner->button_link,
@@ -173,14 +174,14 @@ class HomeController extends Controller
             ->latest()
             ->limit(6)
             ->get()
-            ->map(function($review) {
+            ->map(function ($review) {
                 return [
                     'id' => $review->id,
                     'name' => $review->user->name ?? 'Anonyme',
                     'rating' => $review->rating,
                     'comment' => $review->comment,
                     'date' => $review->created_at->locale('fr')->diffForHumans(),
-                    'avatar' => $review->user->avatar ? asset('storage/' . $review->user->avatar) : null,
+                    'avatar' => $review->user->avatar ? asset('storage/'.$review->user->avatar) : null,
                 ];
             });
 
@@ -194,7 +195,7 @@ class HomeController extends Controller
                 '3' => ProductReview::where('is_approved', true)->where('rating', 3)->count(),
                 '2' => ProductReview::where('is_approved', true)->where('rating', 2)->count(),
                 '1' => ProductReview::where('is_approved', true)->where('rating', 1)->count(),
-            ]
+            ],
         ];
 
         return response()->json([
@@ -220,15 +221,15 @@ class HomeController extends Controller
             ->get();
 
         return response()->json([
-            'data' => $specialOffers->map(function($offer) {
+            'data' => $specialOffers->map(function ($offer) {
                 return [
                     'id' => $offer->id,
                     'product_id' => $offer->product_id,
                     'name' => $offer->product->name,
                     'slug' => $offer->product->slug,
                     'sku' => $offer->product->sku,
-                    'price_formatted' => number_format($offer->product->finalPrice, 0, ',', '.') . ' FCFA',
-                    'old_price_formatted' => $offer->product->hasDiscount ? number_format($offer->product->price, 0, ',', '.') . ' FCFA' : null,
+                    'price_formatted' => number_format($offer->product->finalPrice, 0, ',', '.').' FCFA',
+                    'old_price_formatted' => $offer->product->hasDiscount ? number_format($offer->product->price, 0, ',', '.').' FCFA' : null,
                     'has_discount' => $offer->product->hasDiscount,
                     'discount_percentage' => $offer->product->discount_percentage,
                     'primary_image' => $offer->product->primaryImage ? $offer->product->primaryImage->url : asset('images/products/default.png'),
@@ -241,7 +242,7 @@ class HomeController extends Controller
                     'total_stock' => $offer->total_stock,
                     'sold_percentage' => $offer->total_stock > 0 ? (($offer->total_stock - $offer->available_stock) / $offer->total_stock) * 100 : 0,
                 ];
-            })
+            }),
         ]);
     }
 
@@ -260,7 +261,7 @@ class HomeController extends Controller
         // Simuler le succès
         return response()->json([
             'success' => true,
-            'message' => 'Votre message a été envoyé avec succès.'
+            'message' => 'Votre message a été envoyé avec succès.',
         ]);
     }
 }

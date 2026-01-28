@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ProductResource;
 use App\Models\Wishlist;
 use Illuminate\Http\Request;
-use App\Http\Resources\ProductResource;
 
 class WishlistController extends Controller
 {
@@ -77,7 +77,7 @@ class WishlistController extends Controller
             ->where('product_id', $productId)
             ->delete();
 
-        if (!$deleted) {
+        if (! $deleted) {
             return response()->json([
                 'success' => false,
                 'message' => 'Produit non trouvé dans votre liste de souhaits',

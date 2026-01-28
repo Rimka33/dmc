@@ -11,13 +11,13 @@ class AdminSettingController extends Controller
     public function index()
     {
         $settings = \App\Models\Setting::all()->pluck('value', 'key');
-        
+
         return Inertia::render('Admin/Settings/Index', [
             'settings' => $settings,
             'roles' => [
                 ['id' => 1, 'name' => 'Admin', 'permissions' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true]],
                 ['id' => 2, 'name' => 'Editor', 'permissions' => ['create' => true, 'read' => true, 'update' => true, 'delete' => false]],
-            ]
+            ],
         ]);
     }
 
@@ -27,8 +27,10 @@ class AdminSettingController extends Controller
         $group = $request->get('group', 'general');
 
         foreach ($data as $key => $value) {
-            if ($key === 'group') continue;
-            
+            if ($key === 'group') {
+                continue;
+            }
+
             \App\Models\Setting::set($key, $value, $group);
         }
 

@@ -1,8 +1,8 @@
-"use client"
+'use client';
 
-import { useState, useEffect } from "react"
-import { Link, router, usePage } from "@inertiajs/react"
-import { motion, AnimatePresence } from "framer-motion"
+import { useState, useEffect } from 'react';
+import { Link, router, usePage } from '@inertiajs/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -22,142 +22,163 @@ import {
   User,
   Leaf,
   Shield,
-} from "lucide-react"
+} from 'lucide-react';
 
 export default function AdminLayout({ children }) {
-  const { url } = usePage()
-  const { auth } = usePage().props
-  const user = auth?.user
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
-  const [hoveredItem, setHoveredItem] = useState(null)
+  const { url } = usePage();
+  const { auth } = usePage().props;
+  const user = auth?.user;
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [hoveredItem, setHoveredItem] = useState(null);
 
   const hasPermission = (permission) => {
     if (user?.role === 'admin') return true;
     return user?.permissions?.includes(permission);
-  }
+  };
 
   const allNavigations = [
     {
-      name: "Dashboard",
+      name: 'Dashboard',
       icon: LayoutDashboard,
-      href: "/admin/dashboard",
+      href: '/admin/dashboard',
       badge: null,
-      permission: 'dashboard.view'
+      permission: 'dashboard.view',
     },
     {
-      name: "Catalogue",
+      name: 'Catalogue',
       icon: ShoppingBag,
       // Visible if has products.view OR marketing.collections.manage
       groupPermissions: ['products.view', 'marketing.collections.manage'],
       submenu: [
-        { name: "Produits", href: "/admin/products", permission: 'products.view' },
-        { name: "Catégories", href: "/admin/categories", permission: 'products.view' },
-        { name: "Collections", href: "/admin/collections", permission: 'marketing.collections.manage' },
+        { name: 'Produits', href: '/admin/products', permission: 'products.view' },
+        { name: 'Catégories', href: '/admin/categories', permission: 'products.view' },
+        {
+          name: 'Collections',
+          href: '/admin/collections',
+          permission: 'marketing.collections.manage',
+        },
       ],
     },
     {
-      name: "Contenu",
+      name: 'Contenu',
       icon: FileText,
       // Visible if has ANY of below
       groupPermissions: ['content.blog.manage', 'content.pages.manage', 'content.banners.manage'],
       submenu: [
-        { name: "Blog", href: "/admin/blog", permission: 'content.blog.manage' },
-        { name: "Pages", href: "/admin/pages", permission: 'content.pages.manage' },
-        { name: "Bannières", href: "/admin/banners", permission: 'content.banners.manage' },
+        { name: 'Blog', href: '/admin/blog', permission: 'content.blog.manage' },
+        { name: 'Pages', href: '/admin/pages', permission: 'content.pages.manage' },
+        { name: 'Bannières', href: '/admin/banners', permission: 'content.banners.manage' },
       ],
     },
     {
-      name: "Commandes",
+      name: 'Commandes',
       icon: ShoppingCart,
-      href: "/admin/orders",
+      href: '/admin/orders',
       badge: null,
-      permission: 'orders.manage'
+      permission: 'orders.manage',
     },
     {
-      name: "Clients",
+      name: 'Clients',
       icon: Users,
-      href: "/admin/customers",
-      permission: 'customers.view'
+      href: '/admin/customers',
+      permission: 'customers.view',
     },
     {
-      name: "Interactions",
+      name: 'Interactions',
       icon: MessageSquare,
-      groupPermissions: ['interactions.reviews.manage', 'interactions.questions.manage', 'interactions.messages.manage'],
+      groupPermissions: [
+        'interactions.reviews.manage',
+        'interactions.questions.manage',
+        'interactions.messages.manage',
+      ],
       submenu: [
-        { name: "Avis & Notes", href: "/admin/reviews", permission: 'interactions.reviews.manage' },
-        { name: "Questions", href: "/admin/questions", permission: 'interactions.questions.manage' },
-        { name: "Messages", href: "/admin/messages", permission: 'interactions.messages.manage' },
+        { name: 'Avis & Notes', href: '/admin/reviews', permission: 'interactions.reviews.manage' },
+        {
+          name: 'Questions',
+          href: '/admin/questions',
+          permission: 'interactions.questions.manage',
+        },
+        { name: 'Messages', href: '/admin/messages', permission: 'interactions.messages.manage' },
       ],
     },
     {
-      name: "Système",
+      name: 'Système',
       icon: Shield,
       groupPermissions: ['users.manage', 'roles.manage'],
       submenu: [
-        { name: "Utilisateurs", href: "/admin/users", permission: 'users.manage' },
-        { name: "Rôles & Permissions", href: "/admin/roles", permission: 'roles.manage' },
+        { name: 'Utilisateurs', href: '/admin/users', permission: 'users.manage' },
+        { name: 'Rôles & Permissions', href: '/admin/roles', permission: 'roles.manage' },
       ],
     },
     {
-      name: "Newsletter",
+      name: 'Newsletter',
       icon: Mail,
-      href: "/admin/newsletter",
-      permission: 'marketing.newsletter.manage'
+      href: '/admin/newsletter',
+      permission: 'marketing.newsletter.manage',
     },
     {
-      name: "Paramètres",
+      name: 'Paramètres',
       icon: Settings,
-      href: "/admin/settings",
-      permission: 'settings.manage'
+      href: '/admin/settings',
+      permission: 'settings.manage',
     },
-  ]
+  ];
 
-  const navigations = allNavigations.filter(item => {
-    // 1. Check direct permission
-    if (item.permission) {
-      return hasPermission(item.permission);
-    }
-    // 2. Check group permissions (if has any of them)
-    if (item.groupPermissions) {
-      return item.groupPermissions.some(perm => hasPermission(perm));
-    }
-    // 3. Fallback to Admin role if no permissions defined (should not happen with new setup)
-    return user?.role === 'admin';
-  }).map(item => {
-    // Filter submenu items if they have specific permissions
-    if (item.submenu) {
-      return {
-        ...item,
-        submenu: item.submenu.filter(sub => !sub.permission || hasPermission(sub.permission))
-      };
-    }
-    return item;
-  });
+  const navigations = allNavigations
+    .filter((item) => {
+      // 1. Check direct permission
+      if (item.permission) {
+        return hasPermission(item.permission);
+      }
+      // 2. Check group permissions (if has any of them)
+      if (item.groupPermissions) {
+        return item.groupPermissions.some((perm) => hasPermission(perm));
+      }
+      // 3. Fallback to Admin role if no permissions defined (should not happen with new setup)
+      return user?.role === 'admin';
+    })
+    .map((item) => {
+      // Filter submenu items if they have specific permissions
+      if (item.submenu) {
+        return {
+          ...item,
+          submenu: item.submenu.filter((sub) => !sub.permission || hasPermission(sub.permission)),
+        };
+      }
+      return item;
+    });
 
   const handleLogout = () => {
-    localStorage.removeItem('auth_token')
-    router.post("/logout")
-  }
+    localStorage.removeItem('auth_token');
+    router.post('/logout');
+  };
 
   const isMenuActive = (item) => {
-    if (item.href) return url === item.href
+    if (item.href) return url === item.href;
     if (item.submenu) {
-      return item.submenu.some((sub) => url === sub.href)
+      return item.submenu.some((sub) => url === sub.href);
     }
-    return false
-  }
+    return false;
+  };
 
   return (
     <div className="h-screen bg-white flex overflow-hidden font-bai-jamjuree">
       {/* Sidebar */}
       <aside
-        className={`fixed left-0 top-0 h-screen w-20 backdrop-blur-xl border-r border-forest-green/20 z-50 transition-all duration-300 flex flex-col ${isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
+        className={`fixed left-0 top-0 h-screen w-20 backdrop-blur-xl border-r border-forest-green/20 z-50 transition-all duration-300 flex flex-col ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}
         style={{ background: 'rgba(255, 255, 255, 0.98)' }}
       >
         {/* Logo - Fixed Top */}
         <div className="flex-shrink-0 flex items-center justify-center h-20 bg-dark-green relative overflow-hidden">
-          <Link href="/admin/dashboard" className="relative z-10 transition-transform hover:scale-110">
-            <img src="/images/logo.png" alt="DMC" className="w-12 h-12 object-contain filter drop-shadow-[0_0_8px_rgba(0,255,36,0.3)]" />
+          <Link
+            href="/admin/dashboard"
+            className="relative z-10 transition-transform hover:scale-110"
+          >
+            <img
+              src="/images/logo.png"
+              alt="DMC"
+              className="w-12 h-12 object-contain filter drop-shadow-[0_0_8px_rgba(0,255,36,0.3)]"
+            />
           </Link>
           <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-neon-green/30 to-transparent"></div>
         </div>
@@ -167,9 +188,9 @@ export default function AdminLayout({ children }) {
           <div className="h-full overflow-y-auto no-scrollbar px-2">
             <nav className="flex flex-col items-center gap-1">
               {navigations.map((item) => {
-                const Icon = item.icon
-                const isActive = isMenuActive(item)
-                const isHovered = hoveredItem === item.name
+                const Icon = item.icon;
+                const isActive = isMenuActive(item);
+                const isHovered = hoveredItem === item.name;
 
                 return (
                   <div
@@ -181,18 +202,22 @@ export default function AdminLayout({ children }) {
                   >
                     <div className="py-2">
                       <Link
-                        href={item.href || (item.submenu ? item.submenu[0].href : "#")}
-                        className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 relative z-10 ${isActive
-                          ? "bg-forest-green shadow-lg shadow-forest-green/30"
-                          : "hover:bg-forest-green/10"
-                          }`}
+                        href={item.href || (item.submenu ? item.submenu[0].href : '#')}
+                        className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all duration-300 relative z-10 ${
+                          isActive
+                            ? 'bg-forest-green shadow-lg shadow-forest-green/30'
+                            : 'hover:bg-forest-green/10'
+                        }`}
                       >
                         <Icon
                           size={20}
-                          className={`transition-colors ${isActive ? "text-neon-green" : "text-dark-green/60 group-hover:text-forest-green"}`}
+                          className={`transition-colors ${isActive ? 'text-neon-green' : 'text-dark-green/60 group-hover:text-forest-green'}`}
                         />
                         {isActive && (
-                          <motion.div layoutId="activeGlow" className="absolute -inset-1 bg-neon-green blur-md opacity-20 rounded-2xl" />
+                          <motion.div
+                            layoutId="activeGlow"
+                            className="absolute -inset-1 bg-neon-green blur-md opacity-20 rounded-2xl"
+                          />
                         )}
                       </Link>
                     </div>
@@ -207,7 +232,7 @@ export default function AdminLayout({ children }) {
                           transition={{ duration: 0.2 }}
                           className="fixed left-20 z-[100]"
                           style={{
-                            top: `${document.querySelector(`[data-nav-item="${item.name}"]`)?.getBoundingClientRect().top || 0}px`
+                            top: `${document.querySelector(`[data-nav-item="${item.name}"]`)?.getBoundingClientRect().top || 0}px`,
                           }}
                           data-submenu={item.name}
                         >
@@ -217,16 +242,20 @@ export default function AdminLayout({ children }) {
                             {item.submenu ? (
                               <div className="bg-white/95 backdrop-blur-xl border border-forest-green/15 rounded-[2rem] shadow-2xl min-w-[220px] py-4 px-2 border-l-[4px] border-l-forest-green">
                                 <div className="px-5 py-2 mb-2 border-b border-forest-green/5">
-                                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-dark-green/30">{item.name}</span>
+                                  <span className="text-[10px] font-black uppercase tracking-[0.2em] text-dark-green/30">
+                                    {item.name}
+                                  </span>
                                 </div>
                                 <div className="space-y-1 px-1">
                                   {item.submenu.map((sub) => (
                                     <Link
                                       key={sub.name}
                                       href={sub.href}
-                                      className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${url === sub.href ? "bg-forest-green/10 text-forest-green" : "text-dark-green/60 hover:text-dark-green hover:bg-forest-green/5"}`}
+                                      className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${url === sub.href ? 'bg-forest-green/10 text-forest-green' : 'text-dark-green/60 hover:text-dark-green hover:bg-forest-green/5'}`}
                                     >
-                                      <div className={`w-1.5 h-1.5 rounded-full ${url === sub.href ? "bg-forest-green shadow-[0_0_8px_rgba(5,128,49,0.5)]" : "bg-dark-green/10"}`}></div>
+                                      <div
+                                        className={`w-1.5 h-1.5 rounded-full ${url === sub.href ? 'bg-forest-green shadow-[0_0_8px_rgba(5,128,49,0.5)]' : 'bg-dark-green/10'}`}
+                                      ></div>
                                       {sub.name}
                                     </Link>
                                   ))}
@@ -242,7 +271,7 @@ export default function AdminLayout({ children }) {
                       )}
                     </AnimatePresence>
                   </div>
-                )
+                );
               })}
             </nav>
           </div>
@@ -256,7 +285,9 @@ export default function AdminLayout({ children }) {
           >
             <LogOut size={20} />
           </button>
-          <span className="text-[8px] font-black text-dark-green/20 uppercase tracking-tighter">V1.0.4</span>
+          <span className="text-[8px] font-black text-dark-green/20 uppercase tracking-tighter">
+            V1.0.4
+          </span>
         </div>
       </aside>
 
@@ -287,8 +318,12 @@ export default function AdminLayout({ children }) {
 
             <div className="flex items-center gap-3 pl-6 border-l border-forest-green/10">
               <div className="text-right hidden sm:block">
-                <p className="text-sm font-bold text-dark-green font-montserrat">{auth?.user?.name || "Admin"}</p>
-                <p className="text-[10px] font-bold text-dark-green/40 uppercase tracking-widest">Gérant</p>
+                <p className="text-sm font-bold text-dark-green font-montserrat">
+                  {auth?.user?.name || 'Admin'}
+                </p>
+                <p className="text-[10px] font-bold text-dark-green/40 uppercase tracking-widest">
+                  Gérant
+                </p>
               </div>
               <div className="w-10 h-10 rounded-xl bg-forest-green/10 flex items-center justify-center text-forest-green">
                 <User size={20} />
@@ -298,9 +333,7 @@ export default function AdminLayout({ children }) {
         </header>
 
         <main className="flex-1 overflow-y-auto p-8 relative z-10">
-          <div className="max-w-7xl mx-auto">
-            {children}
-          </div>
+          <div className="max-w-7xl mx-auto">{children}</div>
         </main>
 
         <footer className="py-4 text-center text-[10px] font-bold text-dark-green/20 uppercase tracking-[0.3em] border-t border-forest-green/5">
@@ -309,12 +342,13 @@ export default function AdminLayout({ children }) {
       </div>
 
       {/* Background Grid */}
-      <div className="fixed inset-0 pointer-events-none -z-10 opacity-[0.02]"
+      <div
+        className="fixed inset-0 pointer-events-none -z-10 opacity-[0.02]"
         style={{
           backgroundImage: `linear-gradient(#058031 1px, transparent 1px), linear-gradient(90deg, #058031 1px, transparent 1px)`,
-          backgroundSize: '40px 40px'
+          backgroundSize: '40px 40px',
         }}
       ></div>
     </div>
-  )
+  );
 }

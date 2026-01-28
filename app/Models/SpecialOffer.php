@@ -36,7 +36,7 @@ class SpecialOffer extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true)
-                    ->where('end_date', '>', now());
+            ->where('end_date', '>', now());
     }
 
     /**
@@ -47,8 +47,9 @@ class SpecialOffer extends Model
         if ($this->total_stock == 0) {
             return 0;
         }
-        
+
         $sold = $this->total_stock - $this->available_stock;
+
         return round(($sold / $this->total_stock) * 100);
     }
 

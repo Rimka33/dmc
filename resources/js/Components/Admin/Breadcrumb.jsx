@@ -1,6 +1,6 @@
-import React from "react"
-import { Link } from "@inertiajs/react"
-import { ChevronRightIcon, HomeIcon } from "@heroicons/react/24/outline"
+import React from 'react';
+import { Link } from '@inertiajs/react';
+import { ChevronRightIcon, HomeIcon } from '@heroicons/react/24/outline';
 
 export default function Breadcrumb({ items = [] }) {
   return (
@@ -13,7 +13,10 @@ export default function Breadcrumb({ items = [] }) {
         <React.Fragment key={index}>
           <ChevronRightIcon className="w-4 h-4 text-gray-400" />
           {item.href ? (
-            <Link href={item.href} className="text-gray-500 hover:text-forest-green transition-colors">
+            <Link
+              href={item.href}
+              className="text-gray-500 hover:text-forest-green transition-colors"
+            >
               {item.label}
             </Link>
           ) : (
@@ -22,5 +25,5 @@ export default function Breadcrumb({ items = [] }) {
         </React.Fragment>
       ))}
     </nav>
-  )
+  );
 }

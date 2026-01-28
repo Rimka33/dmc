@@ -1,8 +1,6 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -35,19 +33,19 @@ return new class extends Migration
 
         foreach ($permissions as $perm) {
             // Check if permission already exists to act idempotently
-            if (!DB::table('permissions')->where('slug', $perm['slug'])->exists()) {
+            if (! DB::table('permissions')->where('slug', $perm['slug'])->exists()) {
                 $permId = DB::table('permissions')->insertGetId([
                     'name' => $perm['name'],
                     'slug' => $perm['slug'],
                     'group' => $perm['group'],
                     'created_at' => now(),
-                    'updated_at' => now()
+                    'updated_at' => now(),
                 ]);
 
                 if ($adminRole) {
                     DB::table('role_permission')->insertOrIgnore([
                         'role_id' => $adminRole->id,
-                        'permission_id' => $permId
+                        'permission_id' => $permId,
                     ]);
                 }
             }
@@ -63,7 +61,7 @@ return new class extends Migration
             'content.blog.manage', 'content.pages.manage', 'content.banners.manage',
             'interactions.reviews.manage', 'interactions.questions.manage', 'interactions.messages.manage',
             'marketing.newsletter.manage', 'marketing.collections.manage',
-            'customers.view', 'customers.manage'
+            'customers.view', 'customers.manage',
         ];
 
         DB::table('permissions')->whereIn('slug', $slugs)->delete();

@@ -34,7 +34,7 @@ class ProductImage extends Model
     {
         $path = $this->image_path;
 
-        if (!$path) {
+        if (! $path) {
             return asset('images/products/default.png');
         }
 
@@ -53,6 +53,6 @@ class ProductImage extends Model
         }
 
         // Sinon, c'est un fichier stocké dans storage/app/public
-        return asset('storage/' . $path);
+        return asset('storage/'.$path);
     }
 }

@@ -11,14 +11,14 @@ class AdminNewsletterController extends Controller
 {
     public function index(Request $request)
     {
-        $subscriptions = Newsletter::when($request->search, function($query, $search) {
-                $query->where('email', 'like', "%{$search}%")
-                      ->orWhere('name', 'like', "%{$search}%");
-            })
-            ->when($request->status === 'active', function($query) {
+        $subscriptions = Newsletter::when($request->search, function ($query, $search) {
+            $query->where('email', 'like', "%{$search}%")
+                ->orWhere('name', 'like', "%{$search}%");
+        })
+            ->when($request->status === 'active', function ($query) {
                 $query->where('is_active', true);
             })
-            ->when($request->status === 'inactive', function($query) {
+            ->when($request->status === 'inactive', function ($query) {
                 $query->where('is_active', false);
             })
             ->latest('subscribed_at')
@@ -32,7 +32,7 @@ class AdminNewsletterController extends Controller
                 'active' => Newsletter::where('is_active', true)->count(),
                 'inactive' => Newsletter::where('is_active', false)->count(),
             ],
-            'filters' => $request->only(['search', 'status'])
+            'filters' => $request->only(['search', 'status']),
         ]);
     }
 
@@ -51,7 +51,7 @@ class AdminNewsletterController extends Controller
     public function update(Request $request, Newsletter $newsletter)
     {
         $validated = $request->validate([
-            'email' => 'required|email|max:255|unique:newsletter_subscriptions,email,' . $newsletter->id,
+            'email' => 'required|email|max:255|unique:newsletter_subscriptions,email,'.$newsletter->id,
             'name' => 'nullable|string|max:255',
             'is_active' => 'boolean',
         ]);
@@ -68,14 +68,14 @@ class AdminNewsletterController extends Controller
         } else {
             $newsletter->resubscribe();
         }
-        
+
         return redirect()->back()->with('success', 'Statut modifié.');
     }
 
     public function destroy(Newsletter $newsletter)
     {
         $newsletter->delete();
-        
+
         return redirect()->route('admin.newsletter.index')->with('success', 'Abonnement supprimé.');
     }
 
@@ -85,19 +85,19 @@ class AdminNewsletterController extends Controller
             ->select('email', 'name', 'subscribed_at')
             ->get();
 
-        $filename = 'newsletter_subscriptions_' . date('Y-m-d') . '.csv';
-        
+        $filename = 'newsletter_subscriptions_'.date('Y-m-d').'.csv';
+
         $headers = [
             'Content-Type' => 'text/csv',
             'Content-Disposition' => "attachment; filename=\"{$filename}\"",
         ];
 
-        $callback = function() use ($subscriptions) {
+        $callback = function () use ($subscriptions) {
             $file = fopen('php://output', 'w');
-            
+
             // En-têtes
             fputcsv($file, ['Email', 'Nom', 'Date d\'inscription']);
-            
+
             // Données
             foreach ($subscriptions as $subscription) {
                 fputcsv($file, [
@@ -106,7 +106,7 @@ class AdminNewsletterController extends Controller
                     $subscription->subscribed_at->format('Y-m-d H:i:s'),
                 ]);
             }
-            
+
             fclose($file);
         };
 

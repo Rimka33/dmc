@@ -19,7 +19,7 @@ class CategoryController extends Controller
         $query = Category::withCount('products');
 
         if ($request->has('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
+            $query->where('name', 'like', '%'.$request->search.'%');
         }
 
         $categories = $query->orderByRaw('CASE WHEN sort_order = 0 OR sort_order IS NULL THEN 1 ELSE 0 END, sort_order ASC')
@@ -53,17 +53,17 @@ class CategoryController extends Controller
         // Upload icon
         if ($request->hasFile('icon')) {
             $icon = $request->file('icon');
-            $iconName = time() . '_icon_' . Str::random(10) . '.' . $icon->getClientOriginalExtension();
+            $iconName = time().'_icon_'.Str::random(10).'.'.$icon->getClientOriginalExtension();
             $iconPath = $icon->storeAs('categories/icons', $iconName, 'public');
-            $validated['icon'] = 'storage/' . $iconPath;
+            $validated['icon'] = 'storage/'.$iconPath;
         }
 
         // Upload image
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $imageName = time() . '_image_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
+            $imageName = time().'_image_'.Str::random(10).'.'.$image->getClientOriginalExtension();
             $imagePath = $image->storeAs('categories/images', $imageName, 'public');
-            $validated['image'] = 'storage/' . $imagePath;
+            $validated['image'] = 'storage/'.$imagePath;
         }
 
         $category = Category::create($validated);
@@ -118,9 +118,9 @@ class CategoryController extends Controller
             }
 
             $icon = $request->file('icon');
-            $iconName = time() . '_icon_' . Str::random(10) . '.' . $icon->getClientOriginalExtension();
+            $iconName = time().'_icon_'.Str::random(10).'.'.$icon->getClientOriginalExtension();
             $iconPath = $icon->storeAs('categories/icons', $iconName, 'public');
-            $validated['icon'] = 'storage/' . $iconPath;
+            $validated['icon'] = 'storage/'.$iconPath;
         }
 
         // Upload image
@@ -131,9 +131,9 @@ class CategoryController extends Controller
             }
 
             $image = $request->file('image');
-            $imageName = time() . '_image_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
+            $imageName = time().'_image_'.Str::random(10).'.'.$image->getClientOriginalExtension();
             $imagePath = $image->storeAs('categories/images', $imageName, 'public');
-            $validated['image'] = 'storage/' . $imagePath;
+            $validated['image'] = 'storage/'.$imagePath;
         }
 
         $category->update($validated);

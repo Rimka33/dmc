@@ -13,25 +13,25 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             // Vérifier si les colonnes n'existent pas déjà
-            if (!Schema::hasColumn('users', 'role')) {
+            if (! Schema::hasColumn('users', 'role')) {
                 $table->enum('role', ['customer', 'admin'])->default('customer');
             }
-            if (!Schema::hasColumn('users', 'phone')) {
+            if (! Schema::hasColumn('users', 'phone')) {
                 $table->string('phone', 20)->nullable();
             }
-            if (!Schema::hasColumn('users', 'address')) {
+            if (! Schema::hasColumn('users', 'address')) {
                 $table->text('address')->nullable();
             }
-            if (!Schema::hasColumn('users', 'city')) {
+            if (! Schema::hasColumn('users', 'city')) {
                 $table->string('city', 100)->nullable();
             }
-            if (!Schema::hasColumn('users', 'postal_code')) {
+            if (! Schema::hasColumn('users', 'postal_code')) {
                 $table->string('postal_code', 20)->nullable();
             }
-            if (!Schema::hasColumn('users', 'is_active')) {
+            if (! Schema::hasColumn('users', 'is_active')) {
                 $table->boolean('is_active')->default(true);
             }
-            
+
             // Index
             $table->index('role');
             $table->index('is_active');

@@ -16,14 +16,14 @@ class OrderService
     {
         $prefix = 'DMC-';
         $date = now()->format('Ymd');
-        
+
         $lastOrder = Order::whereDate('created_at', today())
             ->latest()
             ->first();
-        
+
         $number = $lastOrder ? intval(substr($lastOrder->order_number, -4)) + 1 : 1;
-        
-        return $prefix . $date . '-' . str_pad($number, 4, '0', STR_PAD_LEFT);
+
+        return $prefix.$date.'-'.str_pad($number, 4, '0', STR_PAD_LEFT);
     }
 
     /**
@@ -35,11 +35,11 @@ class OrderService
             // Vérifier le stock de tous les produits
             foreach ($cartItems as $item) {
                 $product = Product::find($item['product_id']);
-                
-                if (!$product) {
+
+                if (! $product) {
                     throw new \Exception("Produit {$item['product_id']} non trouvé");
                 }
-                
+
                 if ($product->stock_quantity < $item['quantity']) {
                     throw new \Exception("Stock insuffisant pour {$product->name}");
                 }

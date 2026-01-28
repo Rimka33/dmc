@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
-use App\Models\Category;
 use App\Models\Blog;
-use Illuminate\Http\Response;
+use App\Models\Category;
+use App\Models\Product;
 
 class SitemapController extends Controller
 {

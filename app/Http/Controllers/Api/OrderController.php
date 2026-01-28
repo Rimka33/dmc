@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Validator;
 class OrderController extends Controller
 {
     protected $orderService;
+
     protected $cartService;
 
     public function __construct(OrderService $orderService, CartService $cartService)
@@ -109,7 +110,7 @@ class OrderController extends Controller
         try {
             $user = $request->user();
 
-            if (!$user) {
+            if (! $user) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Utilisateur non authentifié',
@@ -144,7 +145,7 @@ class OrderController extends Controller
         try {
             $user = $request->user();
 
-            if (!$user) {
+            if (! $user) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Utilisateur non authentifié',

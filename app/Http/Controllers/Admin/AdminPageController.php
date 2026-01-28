@@ -12,11 +12,11 @@ class AdminPageController extends Controller
 {
     public function index(Request $request)
     {
-        $pages = Page::when($request->search, function($query, $search) {
-                $query->where('title', 'like', "%{$search}%")
-                      ->orWhere('slug', 'like', "%{$search}%");
-            })
-            ->when($request->status, function($query, $status) {
+        $pages = Page::when($request->search, function ($query, $search) {
+            $query->where('title', 'like', "%{$search}%")
+                ->orWhere('slug', 'like', "%{$search}%");
+        })
+            ->when($request->status, function ($query, $status) {
                 $query->where('status', $status);
             })
             ->orderBy('sort_order')
@@ -26,7 +26,7 @@ class AdminPageController extends Controller
 
         return Inertia::render('Admin/Pages', [
             'pages' => $pages,
-            'filters' => $request->only(['search', 'status'])
+            'filters' => $request->only(['search', 'status']),
         ]);
     }
 
@@ -59,7 +59,7 @@ class AdminPageController extends Controller
     public function edit(Page $page)
     {
         return Inertia::render('Admin/Pages/Edit', [
-            'page' => $page
+            'page' => $page,
         ]);
     }
 
@@ -67,7 +67,7 @@ class AdminPageController extends Controller
     {
         $validated = $request->validate([
             'title' => 'required|string|max:255',
-            'slug' => 'required|string|max:255|unique:pages,slug,' . $page->id,
+            'slug' => 'required|string|max:255|unique:pages,slug,'.$page->id,
             'content' => 'required|string',
             'status' => 'required|in:draft,published',
             'meta_title' => 'nullable|string|max:255',

@@ -11,10 +11,10 @@ class AdminBannerController extends Controller
 {
     public function index(Request $request)
     {
-        $banners = Banner::when($request->search, function($query, $search) {
-                $query->where('title', 'like', "%{$search}%");
-            })
-            ->when($request->type, function($query, $type) {
+        $banners = Banner::when($request->search, function ($query, $search) {
+            $query->where('title', 'like', "%{$search}%");
+        })
+            ->when($request->type, function ($query, $type) {
                 $query->where('type', $type);
             })
             ->orderBy('sort_order')
@@ -24,7 +24,7 @@ class AdminBannerController extends Controller
 
         return Inertia::render('Admin/Banners', [
             'banners' => $banners,
-            'filters' => $request->only(['search', 'type'])
+            'filters' => $request->only(['search', 'type']),
         ]);
     }
 
@@ -41,7 +41,7 @@ class AdminBannerController extends Controller
                 ['value' => 'middle', 'label' => 'Milieu de page'],
                 ['value' => 'bottom', 'label' => 'Bas de page'],
                 ['value' => 'popup', 'label' => 'Popup (Modal)'],
-            ]
+            ],
         ]);
     }
 
@@ -94,7 +94,7 @@ class AdminBannerController extends Controller
                 ['value' => 'middle', 'label' => 'Milieu de page'],
                 ['value' => 'bottom', 'label' => 'Bas de page'],
                 ['value' => 'popup', 'label' => 'Popup (Modal)'],
-            ]
+            ],
         ]);
     }
 

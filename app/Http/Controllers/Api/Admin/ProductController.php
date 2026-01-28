@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
-use App\Models\ProductImage;
 use App\Models\ProductFeature;
+use App\Models\ProductImage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -35,8 +35,8 @@ class ProductController extends Controller
 
         if ($request->has('search')) {
             $query->where(function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%')
-                    ->orWhere('sku', 'like', '%' . $request->search . '%');
+                $q->where('name', 'like', '%'.$request->search.'%')
+                    ->orWhere('sku', 'like', '%'.$request->search.'%');
             });
         }
 
@@ -82,7 +82,7 @@ class ProductController extends Controller
         $validated['slug'] = Str::slug($validated['name']);
 
         // Déterminer le statut du stock
-        $validated['stock_status'] = $validated['stock_quantity'] > 10 ? 'in_stock' : 
+        $validated['stock_status'] = $validated['stock_quantity'] > 10 ? 'in_stock' :
             ($validated['stock_quantity'] > 0 ? 'low_stock' : 'out_of_stock');
 
         $product = Product::create($validated);
@@ -128,7 +128,7 @@ class ProductController extends Controller
         $validated = $request->validate([
             'category_id' => 'sometimes|required|exists:categories,id',
             'name' => 'sometimes|required|string|max:255',
-            'sku' => 'nullable|string|max:100|unique:products,sku,' . $id,
+            'sku' => 'nullable|string|max:100|unique:products,sku,'.$id,
             'description' => 'nullable|string',
             'short_description' => 'nullable|string|max:500',
             'price' => 'sometimes|required|numeric|min:0',
@@ -151,7 +151,7 @@ class ProductController extends Controller
 
         // Mettre à jour le statut du stock si la quantité change
         if (isset($validated['stock_quantity'])) {
-            $validated['stock_status'] = $validated['stock_quantity'] > 10 ? 'in_stock' : 
+            $validated['stock_status'] = $validated['stock_quantity'] > 10 ? 'in_stock' :
                 ($validated['stock_quantity'] > 0 ? 'low_stock' : 'out_of_stock');
         }
 
@@ -204,7 +204,7 @@ class ProductController extends Controller
 
         // Upload de l'image
         $image = $request->file('image');
-        $filename = time() . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
+        $filename = time().'_'.Str::random(10).'.'.$image->getClientOriginalExtension();
         $path = $image->storeAs('products', $filename, 'public');
 
         // Si c'est l'image principale, retirer le flag des autres
@@ -215,7 +215,7 @@ class ProductController extends Controller
         // Créer l'entrée
         $productImage = ProductImage::create([
             'product_id' => $id,
-            'image_path' => 'storage/' . $path,
+            'image_path' => 'storage/'.$path,
             'is_primary' => $request->is_primary ?? false,
             'order' => ProductImage::where('product_id', $id)->count(),
         ]);

@@ -16,12 +16,12 @@ class DatabaseSeeder extends Seeder
         $this->command->info('▶ Seeding users...');
         Artisan::call('db:seed', ['--class' => 'UserSeeder', '--force' => true]);
         $this->command->info('✅ Users créés');
-        
-        // Categories  
+
+        // Categories
         $this->command->info('▶ Seeding categories...');
         Artisan::call('db:seed', ['--class' => 'CategorySeeder', '--force' => true]);
         $this->command->info('✅ Categories créées');
-        
+
         // Products
         $this->command->info('▶ Seeding products...');
         Artisan::call('db:seed', ['--class' => 'ProductSeeder', '--force' => true]);
