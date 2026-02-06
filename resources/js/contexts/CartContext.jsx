@@ -9,6 +9,7 @@ export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState({
     items: [],
     count: 0,
+    totalQuantity: 0, // Somme totale des quantités d'articles
     subtotal: 0,
     shipping: 5000,
     tax: 0,
@@ -76,6 +77,7 @@ export const CartProvider = ({ children }) => {
       setCart({
         items: [],
         count: 0,
+        totalQuantity: 0,
         subtotal: 0,
         shipping: 5000,
         tax: 0,

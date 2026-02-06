@@ -152,11 +152,13 @@ class CartService
 
         return [
             'items' => $items,
-            'count' => $this->getCount(),
+            'count' => $this->getCount(), // Nombre de produits distincts
+            'totalQuantity' => $this->getCount(), // Quantité totale d'articles (somme des quantités)
             'subtotal' => $subtotal,
             'shipping' => $shipping,
             'tax' => $tax,
             'total' => $total,
+            'total_formatted' => number_format($total, 0, ',', ' ').' FCFA',
         ];
     }
 }
