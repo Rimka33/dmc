@@ -61,6 +61,34 @@ export default function ProductDetail() {
     window.scrollTo(0, 0);
   }, [id]);
 
+  // Synchronisation en temps réel de la quantité avec le panier
+  useEffect(() => {
+    if (!product || !cart.items) return;
+
+    const existingItem = cart.items.find((item) => item.product_id === product.id);
+
+    // Si le produit est dans le panier et que la quantité locale est différente
+    if (existingItem && existingItem.quantity !== quantity) {
+      // Mettre à jour le panier en temps réel (avec un délai pour éviter trop de requêtes)
+      const timeoutId = setTimeout(() => {
+        updateQuantity(product.id, quantity);
+      }, 500); // Délai de 500ms pour éviter les mises à jour trop fréquentes
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [quantity, product, cart.items]);
+
+  // Initialiser la quantité avec celle du panier si le produit y est déjà
+  useEffect(() => {
+    if (!product || !cart.items) return;
+
+    const existingItem = cart.items.find((item) => item.product_id === product.id);
+
+    if (existingItem && existingItem.quantity !== quantity) {
+      setQuantity(existingItem.quantity);
+    }
+  }, [product, cart.items]); // Ne pas inclure quantity ici pour éviter une boucle infinie
+
   const fetchProduct = async () => {
     try {
       setLoading(true);

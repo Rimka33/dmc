@@ -115,7 +115,13 @@ export default function Checkout() {
     setErrors({});
 
     try {
-      const response = await api.post('/orders', formData);
+      // Ajouter delivery_method aux données
+      const orderData = {
+        ...formData,
+        delivery_method: deliveryMethod,
+      };
+
+      const response = await api.post('/orders', orderData);
 
       if (response.data.success) {
         await clearCart();

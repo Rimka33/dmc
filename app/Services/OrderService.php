@@ -47,7 +47,11 @@ class OrderService
 
             // Calculer les totaux
             $subtotal = array_sum(array_column($cartItems, 'subtotal'));
-            $shipping = $data['shipping_cost'] ?? 5000;
+
+            // Frais de livraison : 0 pour pickup, 5000 pour delivery
+            $deliveryMethod = $data['delivery_method'] ?? 'delivery';
+            $shipping = $deliveryMethod === 'pickup' ? 0 : ($data['shipping_cost'] ?? 5000);
+
             $tax = $data['tax'] ?? 0;
             $discount = $data['discount'] ?? 0;
             $total = $subtotal + $shipping + $tax - $discount;
@@ -65,11 +69,12 @@ class OrderService
                 'discount' => $discount,
                 'total' => $total,
                 'customer_name' => $data['customer_name'],
-                'customer_email' => $data['customer_email'],
+                'customer_email' => $data['customer_email'] ?? null,
                 'customer_phone' => $data['customer_phone'],
-                'shipping_address' => $data['shipping_address'],
+                // Pour pickup, on met une information claire au lieu de null
+                'shipping_address' => $deliveryMethod === 'pickup' ? 'RETRAIT EN BOUTIQUE' : ($data['shipping_address'] ?? null),
                 'shipping_region' => $data['shipping_region'] ?? null,
-                'shipping_city' => $data['shipping_city'],
+                'shipping_city' => $deliveryMethod === 'pickup' ? 'DAROU MOUHTI' : ($data['shipping_city'] ?? null),
                 'shipping_neighborhood' => $data['shipping_neighborhood'] ?? null,
                 'shipping_postal_code' => $data['shipping_postal_code'] ?? null,
                 'notes' => $data['notes'] ?? null,

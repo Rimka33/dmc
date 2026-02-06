@@ -26,10 +26,12 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
             'customer_name' => 'required|string|max:255',
             'customer_email' => 'nullable|email|max:255',
             'customer_phone' => 'required|string|max:50',
+            'delivery_method' => 'nullable|in:delivery,pickup',
             'shipping_address' => 'nullable|string',
             'shipping_region' => 'nullable|string|max:100',
             'shipping_city' => 'nullable|string|max:100',
@@ -37,9 +39,11 @@ class OrderController extends Controller
             'shipping_postal_code' => 'nullable|string|max:20',
             'payment_method' => 'required|in:cash_on_delivery,bank_transfer,mobile_money',
             'notes' => 'nullable|string',
+            'termsAccepted' => 'nullable|boolean',
         ]);
 
         if ($validator->fails()) {
+
             return response()->json([
                 'success' => false,
                 'message' => 'Données invalides',
@@ -77,6 +81,7 @@ class OrderController extends Controller
             ], 201);
 
         } catch (\Exception $e) {
+
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),

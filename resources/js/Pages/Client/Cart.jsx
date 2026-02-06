@@ -41,13 +41,16 @@ export default function Cart() {
       // Construction de la commande simplifiée
       const orderData = {
         customer_name: user.name,
-        customer_email: user.email,
+        customer_email: user.email || null,
         customer_phone: user.phone,
         delivery_method: 'pickup',
         payment_method: 'cash_on_delivery', // Paiement au comptoir par défaut
         notes: 'Commande Express - Retrait Boutique',
         termsAccepted: true, // Auto-acceptation implicite via le confirm
       };
+
+      console.log('📦 Données de commande envoyées:', orderData);
+      console.log('👤 User complet:', user);
 
       const response = await import('../../services/api').then((module) =>
         module.default.post('/orders', orderData)
@@ -61,8 +64,21 @@ export default function Cart() {
       }
     } catch (error) {
       console.error('Erreur commande express:', error);
+      console.error("Détails de l'erreur:", error.response?.data);
+      console.error('Status:', error.response?.status);
+
+      // Afficher l'erreur à l'utilisateur
+      if (error.response?.data?.errors) {
+        const errorMessages = Object.values(error.response.data.errors).flat().join(', ');
+        showNotification(`Erreur de validation: ${errorMessages}`, 'error');
+      } else if (error.response?.data?.message) {
+        showNotification(error.response.data.message, 'error');
+      } else {
+        showNotification('Une erreur est survenue lors de la commande.', 'error');
+      }
+
       // En cas d'erreur (ex: validation), on redirige vers le checkout classique
-      navigate('/checkout', { state: { deliveryMethod } });
+      // navigate('/checkout', { state: { deliveryMethod } });
     } finally {
       setIsProcessing(false);
     }
