@@ -26,7 +26,7 @@ export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { addToCart } = useContext(CartContext);
+  const { cart, addToCart, updateQuantity } = useContext(CartContext);
   const { isInWishlist, toggleWishlist } = useContext(WishlistContext);
   const { authenticated } = useContext(AuthContext);
   const { showNotification } = useNotification();
@@ -167,18 +167,47 @@ export default function ProductDetail() {
 
   const handleAddToCart = async () => {
     setAddingToCart(true);
-    await addToCart(product.id, quantity);
+
+    // Vérifier si le produit est déjà dans le panier
+    const existingItem = cart.items.find((item) => item.product_id === product.id);
+
+    if (existingItem) {
+      // Si le produit existe déjà, mettre à jour avec la nouvelle quantité totale
+      const newQuantity = existingItem.quantity + quantity;
+      await updateQuantity(product.id, newQuantity);
+      showNotification(
+        `Quantité mise à jour : ${newQuantity} article${newQuantity > 1 ? 's' : ''} au total`,
+        'success'
+      );
+    } else {
+      // Sinon, ajouter le produit normalement
+      await addToCart(product.id, quantity);
+    }
+
     setAddingToCart(false);
   };
 
   const handleBuyNow = async () => {
     setAddingToCart(true);
-    const result = await addToCart(product.id, quantity);
+
+    // Vérifier si le produit est déjà dans le panier
+    const existingItem = cart.items.find((item) => item.product_id === product.id);
+
+    let result;
+    if (existingItem) {
+      // Si le produit existe déjà, mettre à jour avec la nouvelle quantité totale
+      const newQuantity = existingItem.quantity + quantity;
+      result = await updateQuantity(product.id, newQuantity);
+    } else {
+      // Sinon, ajouter le produit normalement
+      result = await addToCart(product.id, quantity);
+    }
+
     setAddingToCart(false);
     if (result.success) {
       navigate('/panier');
     } else {
-      alert(result.message);
+      showNotification(result.message || "Erreur lors de l'ajout au panier", 'error');
     }
   };
 
