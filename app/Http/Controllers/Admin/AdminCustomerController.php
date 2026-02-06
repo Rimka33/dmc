@@ -12,7 +12,11 @@ class AdminCustomerController extends Controller
 {
     public function index(Request $request)
     {
-        $customers = User::where('role', 'customer')
+        // On affiche les clients (rôle customer) OU n'importe qui ayant déjà commandé
+        $customers = User::whereHas('roleModel', function ($q) {
+            $q->where('slug', 'customer');
+        })
+            ->orWhereHas('orders')
             ->withCount(['orders' => function ($query) {
                 $query->where('payment_status', 'paid');
             }])
@@ -33,6 +37,8 @@ class AdminCustomerController extends Controller
 
             $customer->total_spent = $totalSpent;
             $customer->total_orders = $customer->orders_count;
+            // Assurer que les champs de localisation sont là
+            $customer->location_preview = $customer->neighborhood ?: $customer->city ?: '-';
 
             return $customer;
         });
@@ -45,8 +51,8 @@ class AdminCustomerController extends Controller
 
     public function show(User $customer)
     {
-        if ($customer->role !== 'customer') {
-            abort(404);
+        if ($customer->role !== 'customer' && ! $customer->isAdmin()) {
+            // Un admin peut aussi être un client
         }
 
         $customer->load('addresses');
@@ -71,5 +77,17 @@ class AdminCustomerController extends Controller
             'orders' => $orders,
             'stats' => $stats,
         ]);
+    }
+
+    public function destroy(User $customer)
+    {
+        // En mode Hybrid, supprimer un client supprime l'utilisateur
+        if ($customer->isAdmin()) {
+            return back()->with('error', 'Impossible de supprimer un administrateur depuis la liste client.');
+        }
+
+        $customer->delete();
+
+        return back()->with('success', 'Client supprimé avec succès.');
     }
 }

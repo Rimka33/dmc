@@ -68,7 +68,9 @@ class OrderService
                 'customer_email' => $data['customer_email'],
                 'customer_phone' => $data['customer_phone'],
                 'shipping_address' => $data['shipping_address'],
+                'shipping_region' => $data['shipping_region'] ?? null,
                 'shipping_city' => $data['shipping_city'],
+                'shipping_neighborhood' => $data['shipping_neighborhood'] ?? null,
                 'shipping_postal_code' => $data['shipping_postal_code'] ?? null,
                 'notes' => $data['notes'] ?? null,
             ]);

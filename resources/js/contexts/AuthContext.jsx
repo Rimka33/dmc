@@ -1,9 +1,11 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import api from '../services/api';
+import { useNotification } from './NotificationContext';
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  const { showNotification } = useNotification();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [authenticated, setAuthenticated] = useState(false);
@@ -28,9 +30,9 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
-  const login = async (email, password, remember = false) => {
+  const login = async (identifier, password, remember = false) => {
     try {
-      const response = await api.post('/auth/login', { email, password, remember });
+      const response = await api.post('/auth/login', { email: identifier, password, remember });
       const { token, user } = response.data.data;
       if (remember) {
         localStorage.setItem('auth_token', token);
@@ -39,6 +41,7 @@ export const AuthProvider = ({ children }) => {
       }
       setUser(user);
       setAuthenticated(true);
+      showNotification(`Ravi de vous revoir, ${user.name} !`, 'success');
       return { success: true };
     } catch (error) {
       return {
@@ -55,6 +58,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('auth_token', token);
       setUser(user);
       setAuthenticated(true);
+      showNotification('Bienvenue chez DMC ! Votre compte a été créé.', 'success');
       return { success: true };
     } catch (error) {
       return {
@@ -74,6 +78,7 @@ export const AuthProvider = ({ children }) => {
       sessionStorage.removeItem('auth_token');
       setUser(null);
       setAuthenticated(false);
+      showNotification('Vous avez été déconnecté.', 'info');
     }
   };
 

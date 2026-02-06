@@ -27,6 +27,8 @@ import Blog from './Client/Blog';
 import BlogPost from './Client/BlogPost';
 import ForgotPassword from './Client/ForgotPassword';
 
+import { NotificationProvider } from '../contexts/NotificationContext';
+
 export default function ClientEntry() {
   return (
     <AuthProvider>

@@ -3,6 +3,7 @@ import MainLayout from '../../Layouts/MainLayout';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
 import { AuthContext } from '../../contexts/AuthContext';
+import { useNotification } from '../../contexts/NotificationContext';
 import {
   MapPin,
   Phone,
@@ -21,6 +22,7 @@ import {
 
 export default function Contact() {
   const { user, authenticated } = useContext(AuthContext);
+  const { showNotification } = useNotification();
   const [data, setData] = useState({
     name: '',
     email: '',
@@ -83,14 +85,12 @@ export default function Contact() {
     } catch (error) {
       if (error.response?.status === 422) {
         setErrors(error.response.data.errors);
+        showNotification('Veuillez remplir correctement tous les champs.', 'warning');
       } else {
         console.error('Contact form error:', error);
         const serverError =
-          error.response?.data?.message ||
-          error.response?.data?.error ||
-          error.message ||
-          'Erreur inconnue';
-        alert("Une erreur est survenue lors de l'envoi du message.\n\nDétails: " + serverError);
+          error.response?.data?.message || "Une erreur est survenue lors de l'envoi du message.";
+        showNotification(serverError, 'error');
       }
     } finally {
       setProcessing(false);

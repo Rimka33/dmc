@@ -4,6 +4,7 @@ import { CartContext } from '../contexts/CartContext';
 import { AuthContext } from '../contexts/AuthContext';
 import { WishlistContext } from '../contexts/WishlistContext';
 import api from '../services/api';
+import { useNotification } from '../contexts/NotificationContext';
 import {
   ShoppingCart,
   User,
@@ -33,6 +34,7 @@ export default function MainLayout({ children }) {
   const { cart } = useContext(CartContext);
   const { user, authenticated, logout } = useContext(AuthContext);
   const { wishlist } = useContext(WishlistContext);
+  const { showNotification } = useNotification();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
@@ -82,17 +84,13 @@ export default function MainLayout({ children }) {
     try {
       const response = await api.post('/newsletter/subscribe', { email: newsletterEmail });
       if (response.data.success) {
-        setNewsletterStatus({ type: 'success', message: response.data.message });
+        showNotification(response.data.message || 'Merci de vous être abonné !', 'success');
         setNewsletterEmail('');
       }
     } catch (error) {
-      setNewsletterStatus({
-        type: 'error',
-        message: error.response?.data?.message || 'Une erreur est survenue.',
-      });
+      showNotification(error.response?.data?.message || 'Une erreur est survenue.', 'error');
     } finally {
       setNewsletterLoading(false);
-      setTimeout(() => setNewsletterStatus({ type: '', message: '' }), 5000);
     }
   };
 
@@ -129,7 +127,7 @@ export default function MainLayout({ children }) {
   };
 
   const selectSuggestion = (product) => {
-    navigate(`/produit/${product.id}`);
+    navigate(`/produit/${product.id}`, { state: { product } });
     setSearchQuery('');
     setShowSuggestions(false);
   };

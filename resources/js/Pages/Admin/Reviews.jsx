@@ -5,9 +5,56 @@ import PageHeader from '../../Components/Admin/PageHeader';
 import SearchFilter from '../../Components/Admin/SearchFilter';
 import DataTable from '../../Components/Admin/DataTable';
 import ActionButtons from '../../Components/Admin/ActionButtons';
+import ConfirmDialog from '../../Components/Admin/ConfirmDialog';
 import { Star, Eye, Check, X } from 'lucide-react';
 
 export default function Reviews({ reviews = {}, filters = {} }) {
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [confirmConfig, setConfirmConfig] = useState({
+    title: '',
+    message: '',
+    onConfirm: () => {},
+  });
+
+  const handleApprove = (id) => {
+    setConfirmConfig({
+      title: 'Approuver cet avis',
+      message: 'Êtes-vous sûr de vouloir approuver cet avis ?',
+      isDangerous: false,
+      onConfirm: () => {
+        router.post(
+          `/admin/reviews/${id}/approve`,
+          {},
+          {
+            preserveScroll: true,
+            onSuccess: () => {
+              router.reload();
+              setShowConfirm(false);
+            },
+          }
+        );
+      },
+    });
+    setShowConfirm(true);
+  };
+
+  const handleDelete = (id) => {
+    setConfirmConfig({
+      title: 'Supprimer cet avis',
+      message: 'Êtes-vous sûr de vouloir supprimer cet avis ?',
+      isDangerous: true,
+      onConfirm: () => {
+        router.delete(`/admin/reviews/${id}`, {
+          preserveScroll: true,
+          onSuccess: () => {
+            router.reload();
+            setShowConfirm(false);
+          },
+        });
+      },
+    });
+    setShowConfirm(true);
+  };
   const filterOptions = [
     {
       key: 'rating',
@@ -107,18 +154,7 @@ export default function Reviews({ reviews = {}, filters = {} }) {
           </button>
           {!row.is_approved && (
             <button
-              onClick={() => {
-                if (confirm('Approuver cet avis ?')) {
-                  router.post(
-                    `/admin/reviews/${value}/approve`,
-                    {},
-                    {
-                      preserveScroll: true,
-                      onSuccess: () => router.reload(),
-                    }
-                  );
-                }
-              }}
+              onClick={() => handleApprove(value)}
               className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
               title="Approuver"
             >
@@ -126,14 +162,7 @@ export default function Reviews({ reviews = {}, filters = {} }) {
             </button>
           )}
           <button
-            onClick={() => {
-              if (confirm('Supprimer cet avis ?')) {
-                router.delete(`/admin/reviews/${value}`, {
-                  preserveScroll: true,
-                  onSuccess: () => router.reload(),
-                });
-              }
-            }}
+            onClick={() => handleDelete(value)}
             className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
             title="Supprimer"
           >
@@ -181,6 +210,16 @@ export default function Reviews({ reviews = {}, filters = {} }) {
           emptyMessage="Aucun avis trouvé"
         />
       </div>
+
+      <ConfirmDialog
+        isOpen={showConfirm}
+        title={confirmConfig.title}
+        message={confirmConfig.message}
+        onConfirm={confirmConfig.onConfirm}
+        onCancel={() => setShowConfirm(false)}
+        isDangerous={confirmConfig.isDangerous}
+        confirmText={confirmConfig.isDangerous ? 'Supprimer' : 'Approuver'}
+      />
     </AdminLayout>
   );
 }

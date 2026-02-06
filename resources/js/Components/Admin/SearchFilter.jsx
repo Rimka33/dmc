@@ -60,8 +60,15 @@ export default function SearchFilter({
           {search && (
             <button
               type="button"
-              onClick={() => setSearch('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              onClick={() => {
+                setSearch('');
+                if (onSearch) {
+                  onSearch('');
+                } else if (endpoint) {
+                  router.get(endpoint, { ...activeFilters, search: null }, { preserveState: true });
+                }
+              }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
             >
               <X size={16} />
             </button>

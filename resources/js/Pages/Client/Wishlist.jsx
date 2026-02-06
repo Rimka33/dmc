@@ -14,8 +14,6 @@ export default function Wishlist() {
     const result = await addToCart(product.id, 1);
     if (result.success) {
       removeFromWishlist(product.id);
-    } else {
-      alert(result.message);
     }
   };
 

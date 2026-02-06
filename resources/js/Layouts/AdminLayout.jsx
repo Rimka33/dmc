@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
+import { useNotification } from '../contexts/NotificationContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard,
@@ -26,10 +27,32 @@ import {
 
 export default function AdminLayout({ children }) {
   const { url } = usePage();
-  const { auth } = usePage().props;
+  const { auth, flash } = usePage().props;
   const user = auth?.user;
+  const { showNotification } = useNotification();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [hoveredItem, setHoveredItem] = useState(null);
+  const [globalSearch, setGlobalSearch] = useState('');
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setGlobalSearch(params.get('search') || '');
+  }, [url]);
+
+  useEffect(() => {
+    if (flash?.success) {
+      showNotification(flash.success, 'success');
+    }
+    if (flash?.error) {
+      showNotification(flash.error, 'error');
+    }
+    if (flash?.warning) {
+      showNotification(flash.warning, 'warning');
+    }
+    if (flash?.info) {
+      showNotification(flash.info, 'info');
+    }
+  }, [flash]);
 
   const hasPermission = (permission) => {
     if (user?.role === 'admin') return true;
@@ -216,7 +239,7 @@ export default function AdminLayout({ children }) {
                         {isActive && (
                           <motion.div
                             layoutId="activeGlow"
-                            className="absolute -inset-1 bg-neon-green blur-md opacity-20 rounded-2xl"
+                            className="absolute -inset-1 blur-md opacity-20 rounded-2xl"
                           />
                         )}
                       </Link>
@@ -283,11 +306,8 @@ export default function AdminLayout({ children }) {
             onClick={handleLogout}
             className="w-12 h-12 rounded-xl flex items-center justify-center text-dark-green/30 hover:text-red-600 hover:bg-red-50 transition-all"
           >
-            <LogOut size={20} />
+            <LogOut size={20} />{' '}
           </button>
-          <span className="text-[8px] font-black text-dark-green/20 uppercase tracking-tighter">
-            V1.0.4
-          </span>
         </div>
       </aside>
 
@@ -305,17 +325,17 @@ export default function AdminLayout({ children }) {
               DMC <span className="text-forest-green font-medium ml-1">Admin</span>
             </h1>
           </div>
-
           <div className="flex items-center gap-6">
-            <div className="hidden md:flex relative group">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-dark-green/30" />
-              <input
-                type="text"
-                placeholder="Recherche..."
-                className="h-10 pl-10 pr-4 bg-gray-50 border border-forest-green/5 rounded-xl text-sm focus:outline-none focus:border-forest-green/20 w-64 transition-all"
+            <Link
+              href="/"
+              className="flex items-center gap-2 px-4 py-2 bg-forest-green/10 text-forest-green hover:bg-forest-green hover:text-white rounded-xl transition-all font-bold text-[10px] uppercase tracking-widest group"
+            >
+              <ExternalLink
+                size={14}
+                className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
               />
-            </div>
-
+              <span className="hidden md:inline">Voir le site</span>
+            </Link>
             <div className="flex items-center gap-3 pl-6 border-l border-forest-green/10">
               <div className="text-right hidden sm:block">
                 <p className="text-sm font-bold text-dark-green font-montserrat">
@@ -337,7 +357,7 @@ export default function AdminLayout({ children }) {
         </main>
 
         <footer className="py-4 text-center text-[10px] font-bold text-dark-green/20 uppercase tracking-[0.3em] border-t border-forest-green/5">
-          &copy; 2025 DMC Boutique - Excellence Excellence
+          &copy; 2025 DAROUL MOUHTY COMPUTER. TOUS DROITS RÉSERVÉS. CONÇU PAR ITEA
         </footer>
       </div>
 

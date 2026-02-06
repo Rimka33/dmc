@@ -14,10 +14,6 @@ class AdminSettingController extends Controller
 
         return Inertia::render('Admin/Settings/Index', [
             'settings' => $settings,
-            'roles' => [
-                ['id' => 1, 'name' => 'Admin', 'permissions' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true]],
-                ['id' => 2, 'name' => 'Editor', 'permissions' => ['create' => true, 'read' => true, 'update' => true, 'delete' => false]],
-            ],
         ]);
     }
 

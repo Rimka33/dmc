@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 import { Link, router } from '@inertiajs/react';
 import PageHeader from '../../../Components/Admin/PageHeader';
@@ -7,12 +7,23 @@ import DataTable from '../../../Components/Admin/DataTable';
 import StatusBadge from '../../../Components/Admin/StatusBadge';
 import ActionButtons from '../../../Components/Admin/ActionButtons';
 import { Plus, Layers, Star, Sparkles, Gift, Award } from 'lucide-react';
+import ConfirmDialog from '../../../Components/Admin/ConfirmDialog';
 
 export default function Index({ collections = {}, filters = {} }) {
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
+
   const handleDelete = (id) => {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette collection ?')) {
-      router.delete(`/admin/collections/${id}`);
-    }
+    setDeletingId(id);
+    setShowConfirm(true);
+  };
+
+  const confirmDelete = () => {
+    if (!deletingId) return;
+    router.delete(`/admin/collections/${deletingId}`, {
+      onSuccess: () => setShowConfirm(false),
+      onFilter: () => setShowConfirm(false),
+    });
   };
 
   const handleAction = (action, collectionId) => {
@@ -236,6 +247,16 @@ export default function Index({ collections = {}, filters = {} }) {
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        isOpen={showConfirm}
+        title="Supprimer la collection"
+        message="Êtes-vous sûr de vouloir supprimer cette collection ? Cette action est irréversible."
+        onConfirm={confirmDelete}
+        onCancel={() => setShowConfirm(false)}
+        confirmText="Supprimer"
+        isDangerous={true}
+      />
     </AdminLayout>
   );
 }

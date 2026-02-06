@@ -21,10 +21,15 @@ export default function FormField({
     'w-full px-5 py-3 bg-white/50 border rounded-2xl focus:ring-2 focus:ring-forest-green/20 focus:border-forest-green focus:bg-white outline-none transition-all text-sm text-dark-green placeholder:text-dark-green/30 font-bold';
   const inputClass = `${baseClass} ${error ? 'border-red-500 bg-red-50/50' : 'border-forest-green/10'} ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`;
 
+  const inputId = name ? `field-${name}` : undefined;
+
   return (
     <div className="space-y-3">
       {label && type !== 'checkbox' && (
-        <label className="block text-[10px] font-black text-dark-green/40 uppercase tracking-[0.2em] ml-1">
+        <label
+          htmlFor={inputId}
+          className="block text-[10px] font-black text-dark-green/40 uppercase tracking-[0.2em] ml-1"
+        >
           {label}
           {required && <span className="text-red-500 ml-1 font-bold">*</span>}
         </label>
@@ -32,6 +37,7 @@ export default function FormField({
 
       {type === 'textarea' ? (
         <textarea
+          id={inputId}
           name={name}
           value={value}
           onChange={onChange}
@@ -43,6 +49,7 @@ export default function FormField({
         />
       ) : type === 'select' ? (
         <select
+          id={inputId}
           name={name}
           value={value}
           onChange={onChange}
@@ -62,6 +69,7 @@ export default function FormField({
           <div className="relative flex items-center">
             <input
               type="checkbox"
+              id={inputId}
               name={name}
               checked={value}
               onChange={onChange}
@@ -76,6 +84,7 @@ export default function FormField({
       ) : (
         <input
           type={type}
+          id={inputId}
           name={name}
           value={value}
           onChange={onChange}

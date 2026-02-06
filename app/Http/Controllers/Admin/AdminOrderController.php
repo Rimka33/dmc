@@ -17,6 +17,12 @@ class AdminOrderController extends Controller
                     ->orWhere('customer_name', 'like', "%{$search}%")
                     ->orWhere('customer_email', 'like', "%{$search}%");
             })
+            ->when($request->status, function ($query, $status) {
+                $query->where('status', $status);
+            })
+            ->when($request->date, function ($query, $date) {
+                $query->whereDate('created_at', $date);
+            })
             ->latest()
             ->paginate(10)
             ->withQueryString();

@@ -16,16 +16,21 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
+        $login = $request->input('email'); // Still calling it 'email' from frontend for now to avoid breaking too much, but it's really an identifier
+        $password = $request->input('password');
+
         $request->validate([
-            'email' => 'required|email',
+            'email' => 'required',
             'password' => 'required',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $login)
+            ->orWhere('phone', $login)
+            ->first();
 
-        if (! $user || ! Hash::check($request->password, $user->password)) {
+        if (! $user || ! Hash::check($password, $user->password)) {
             throw ValidationException::withMessages([
-                'email' => ['Les identifiants fournis sont incorrects.'],
+                'email' => ['Les identifiants fournis sont incorrects (Email ou Téléphone).'],
             ]);
         }
 
@@ -59,16 +64,22 @@ class AuthController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => 'nullable|string|email|max:255|unique:users',
+            'phone' => 'required|string|max:50|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'phone' => 'nullable|string|max:50',
+            'region' => 'nullable|string|max:100',
+            'city' => 'nullable|string|max:100',
+            'neighborhood' => 'nullable|string|max:255',
         ]);
 
         $user = User::create([
             'name' => $validated['name'],
-            'email' => $validated['email'],
+            'email' => $validated['email'] ?? null,
+            'phone' => $validated['phone'],
             'password' => Hash::make($validated['password']),
-            'phone' => $validated['phone'] ?? null,
+            'region' => $validated['region'] ?? null,
+            'city' => $validated['city'] ?? null,
+            'neighborhood' => $validated['neighborhood'] ?? null,
             'role' => 'customer',
             'is_active' => true,
         ]);
@@ -94,15 +105,19 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-        // Révoquer le token actuel
-        if ($request->user()) {
-            $request->user()->currentAccessToken()->delete();
+        // Révoquer le token actuel si applicable (Sanctum token)
+        $user = $request->user();
+        if ($user && $user->currentAccessToken() && method_exists($user->currentAccessToken(), 'delete')) {
+            $user->currentAccessToken()->delete();
         }
 
         // Déconnecter la session web (Inertia)
         \Illuminate\Support\Facades\Auth::guard('web')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+
+        if ($request->hasSession()) {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
 
         return response()->json([
             'success' => true,
@@ -130,10 +145,12 @@ class AuthController extends Controller
 
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|email|max:255|unique:users,email,'.$user->id,
-            'phone' => 'nullable|string|max:50',
+            'email' => 'sometimes|nullable|email|max:255|unique:users,email,'.$user->id,
+            'phone' => 'sometimes|required|string|max:50|unique:users,phone,'.$user->id,
             'address' => 'nullable|string',
+            'region' => 'nullable|string|max:100',
             'city' => 'nullable|string|max:100',
+            'neighborhood' => 'nullable|string|max:255',
             'postal_code' => 'nullable|string|max:20',
         ]);
 

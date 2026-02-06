@@ -16,7 +16,8 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $query = Product::with(['images', 'category'])
-            ->where('is_active', true);
+            ->where('is_active', true)
+            ->inStock();
 
         // Filtres
         if ($request->has('category_id')) {
@@ -39,8 +40,12 @@ class ProductController extends Controller
             });
         }
 
-        if ($request->has('in_stock') && $request->in_stock) {
-            $query->inStock();
+        // Paramètre optionnel pour voir aussi les ruptures (si besoin un jour)
+        if ($request->has('show_out_of_stock') && $request->show_out_of_stock) {
+            // Ne fait rien, on garde le query initial sans inStock() ?
+            // En fait, on a mis inStock() par défaut au début.
+            // Repartons sur un query propre :
+            $query = Product::with(['images', 'category'])->where('is_active', true);
         }
 
         if ($request->has('on_sale')) {
@@ -144,6 +149,7 @@ class ProductController extends Controller
 
         $products = Product::with(['images', 'category'])
             ->where('is_active', true)
+            ->inStock()
             ->where(function ($q) use ($query) {
                 $q->where('name', 'like', '%'.$query.'%')
                     ->orWhere('description', 'like', '%'.$query.'%')

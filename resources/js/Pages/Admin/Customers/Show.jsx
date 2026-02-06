@@ -100,6 +100,23 @@ export default function Show({ customer, orders, stats }) {
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="p-2 bg-gray-50 rounded-lg text-gray-400">
+                    <MapPin size={18} />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">
+                      Localisation Principale
+                    </p>
+                    <p className="text-gray-900 font-bold">
+                      {customer.neighborhood ? `${customer.neighborhood}, ` : ''}
+                      {customer.city}
+                    </p>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                      {customer.region}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-gray-50 rounded-lg text-gray-400">
                     <Calendar size={18} />
                   </div>
                   <div>

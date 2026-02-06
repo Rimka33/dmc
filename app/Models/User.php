@@ -27,6 +27,8 @@ class User extends Authenticatable
         'phone',
         'address',
         'city',
+        'region',
+        'neighborhood',
         'postal_code',
         'is_active',
         'avatar', // Added based on home controller usage

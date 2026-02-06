@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Head } from '@inertiajs/react';
 import MainLayout from '../../Layouts/MainLayout';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { Link, useParams, useNavigate, useLocation } from 'react-router-dom';
 import api from '../../services/api';
 import { CartContext } from '../../contexts/CartContext';
 import { WishlistContext } from '../../contexts/WishlistContext';
 import { AuthContext } from '../../contexts/AuthContext';
+import { useNotification } from '../../contexts/NotificationContext';
 import {
   Star,
   Heart,
@@ -24,16 +25,18 @@ import ShimmerImage from '../../Components/ShimmerImage';
 export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { addToCart } = useContext(CartContext);
   const { isInWishlist, toggleWishlist } = useContext(WishlistContext);
   const { authenticated } = useContext(AuthContext);
+  const { showNotification } = useNotification();
 
-  const [product, setProduct] = useState(null);
+  const [product, setProduct] = useState(location.state?.product || null);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!location.state?.product);
   const [addingToCart, setAddingToCart] = useState(false);
   const [wishlistLoading, setWishlistLoading] = useState(false);
 
@@ -121,9 +124,12 @@ export default function ProductDetail() {
       setQuestionForm('');
       setShowQuestionModal(false);
       fetchQuestions();
-      alert('Question envoyée avec succès !');
+      showNotification('Question envoyée avec succès !', 'success');
     } catch (error) {
-      alert(error.response?.data?.message || "Erreur lors de l'envoi de la question.");
+      showNotification(
+        error.response?.data?.message || "Erreur lors de l'envoi de la question.",
+        'error'
+      );
     } finally {
       setSubmittingQuestion(false);
     }
@@ -131,16 +137,8 @@ export default function ProductDetail() {
 
   const handleToggleWishlist = async () => {
     setWishlistLoading(true);
-    const result = await toggleWishlist(product.id);
+    await toggleWishlist(product.id);
     setWishlistLoading(false);
-    if (!result.success) {
-      if (!authenticated) {
-        alert(result.message);
-        navigate('/mon-compte');
-      } else {
-        alert(result.message);
-      }
-    }
   };
 
   const handleReviewSubmit = async (e) => {
@@ -156,9 +154,12 @@ export default function ProductDetail() {
       setReviewForm({ rating: 5, comment: '' });
       setShowReviewForm(false);
       fetchReviews();
-      alert('Avis publié avec succès !');
+      showNotification('Avis publié avec succès !', 'success');
     } catch (error) {
-      alert(error.response?.data?.message || "Erreur lors de la publication de l'avis.");
+      showNotification(
+        error.response?.data?.message || "Erreur lors de la publication de l'avis.",
+        'error'
+      );
     } finally {
       setSubmittingReview(false);
     }
@@ -166,11 +167,8 @@ export default function ProductDetail() {
 
   const handleAddToCart = async () => {
     setAddingToCart(true);
-    const result = await addToCart(product.id, quantity);
+    await addToCart(product.id, quantity);
     setAddingToCart(false);
-    if (!result.success) {
-      alert(result.message);
-    }
   };
 
   const handleBuyNow = async () => {
@@ -184,14 +182,7 @@ export default function ProductDetail() {
     }
   };
 
-  if (loading)
-    return (
-      <MainLayout>
-        <div className="flex justify-center py-24">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-forest-green"></div>
-        </div>
-      </MainLayout>
-    );
+  // No early return with loading spinner
 
   if (!product)
     return (
@@ -349,9 +340,17 @@ export default function ProductDetail() {
                     </span>
                   )}
                 </div>
-                <div className="text-gray-500 leading-relaxed text-xs mb-6 line-clamp-3">
-                  {product.short_description ||
-                    product.description?.replace(/<[^>]+>/g, '').substring(0, 150) + '...'}
+                <div className="flex items-center gap-3 mb-6">
+                  <div
+                    className={`flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${product.stock_quantity > 0 ? 'bg-forest-green/10 text-forest-green' : 'bg-red-500/10 text-red-500'}`}
+                  >
+                    <div
+                      className={`w-1.5 h-1.5 rounded-full ${product.stock_quantity > 0 ? 'bg-forest-green shadow-[0_0_8px_rgba(5,128,49,0.5)]' : 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)] animate-pulse'}`}
+                    ></div>
+                    {product.stock_quantity > 0
+                      ? `En Stock (${product.stock_quantity})`
+                      : 'Rupture de Stock'}
+                  </div>
                 </div>
 
                 <div className="flex flex-col gap-4">

@@ -1,13 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import { Link, router } from '@inertiajs/react';
 import PageHeader from '../../Components/Admin/PageHeader';
 import DataTable from '../../Components/Admin/DataTable';
 import StatusBadge from '../../Components/Admin/StatusBadge';
 import ActionButtons from '../../Components/Admin/ActionButtons';
+import ConfirmDialog from '../../Components/Admin/ConfirmDialog';
 import { Plus, Image } from 'lucide-react';
 
 export default function Banners({ banners = {} }) {
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
+
+  const handleDelete = (id) => {
+    setDeletingId(id);
+    setShowConfirm(true);
+  };
+
+  const confirmDelete = () => {
+    if (!deletingId) return;
+    router.delete(`/admin/banners/${deletingId}`, {
+      onSuccess: () => setShowConfirm(false),
+      onFinish: () => setShowConfirm(false),
+    });
+  };
   const columns = [
     {
       key: 'title',
@@ -53,9 +69,7 @@ export default function Banners({ banners = {} }) {
             if (action === 'edit') {
               router.get(`/admin/banners/${value}/edit`);
             } else if (action === 'delete') {
-              if (confirm('Êtes-vous sûr de vouloir supprimer cette bannière ?')) {
-                router.delete(`/admin/banners/${value}`);
-              }
+              handleDelete(value);
             }
           }}
         />
@@ -94,6 +108,16 @@ export default function Banners({ banners = {} }) {
           emptyMessage="Aucune bannière trouvée"
         />
       </div>
+
+      <ConfirmDialog
+        isOpen={showConfirm}
+        title="Supprimer la bannière"
+        message="Êtes-vous sûr de vouloir supprimer cette bannière ? Cette action est irréversible."
+        onConfirm={confirmDelete}
+        onCancel={() => setShowConfirm(false)}
+        confirmText="Supprimer"
+        isDangerous={true}
+      />
     </AdminLayout>
   );
 }

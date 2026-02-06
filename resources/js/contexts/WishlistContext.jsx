@@ -1,11 +1,13 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import api from '../services/api';
 import { AuthContext } from './AuthContext';
+import { useNotification } from './NotificationContext';
 
 export const WishlistContext = createContext();
 
 export const WishlistProvider = ({ children }) => {
   const { authenticated } = useContext(AuthContext);
+  const { showNotification } = useNotification();
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -24,6 +26,7 @@ export const WishlistProvider = ({ children }) => {
       setWishlist(response.data.data || []);
     } catch (error) {
       console.error('Error fetching wishlist:', error);
+      showNotification('Impossible de charger votre liste de souhaits.', 'error');
     } finally {
       setLoading(false);
     }
@@ -31,6 +34,10 @@ export const WishlistProvider = ({ children }) => {
 
   const addToWishlist = async (productId) => {
     if (!authenticated) {
+      showNotification(
+        'Veuillez vous connecter pour ajouter à votre liste de souhaits.',
+        'warning'
+      );
       return {
         success: false,
         message: 'Veuillez vous connecter pour ajouter à votre liste de souhaits.',
@@ -40,11 +47,14 @@ export const WishlistProvider = ({ children }) => {
     try {
       const response = await api.post('/wishlist', { product_id: productId });
       await fetchWishlist();
+      showNotification(response.data.message || 'Produit ajouté à vos favoris', 'success');
       return { success: true, message: response.data.message };
     } catch (error) {
+      const message = error.response?.data?.message || "Erreur lors de l'ajout à la liste.";
+      showNotification(message, 'error');
       return {
         success: false,
-        message: error.response?.data?.message || "Erreur lors de l'ajout à la liste.",
+        message: message,
       };
     }
   };
@@ -53,8 +63,10 @@ export const WishlistProvider = ({ children }) => {
     try {
       await api.delete(`/wishlist/${productId}`);
       await fetchWishlist();
+      showNotification('Produit retiré de votre liste de souhaits.', 'info');
       return { success: true, message: 'Produit retiré de la liste.' };
     } catch (error) {
+      showNotification('Erreur lors de la suppression.', 'error');
       return { success: false, message: 'Erreur lors de la suppression.' };
     }
   };

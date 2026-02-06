@@ -40,7 +40,7 @@ function ProductCard({ product, viewMode = 'grid' }) {
   if (viewMode === 'list') {
     return (
       <div className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden group border border-gray-100 flex gap-6 p-5 relative">
-        <Link to={`/produit/${product.id}`} className="flex-shrink-0">
+        <Link to={`/produit/${product.id}`} state={{ product }} className="flex-shrink-0">
           <div className="relative w-56 aspect-square overflow-hidden bg-white rounded-2xl flex-shrink-0">
             <ShimmerImage
               src={product.primary_image}
@@ -56,7 +56,7 @@ function ProductCard({ product, viewMode = 'grid' }) {
           </div>
         </Link>
         <div className="flex flex-col py-2 flex-grow text-left">
-          <Link to={`/produit/${product.id}`} className="group">
+          <Link to={`/produit/${product.id}`} state={{ product }} className="group">
             <div className="mb-1">
               <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">
                 {product.category_name}
@@ -69,7 +69,7 @@ function ProductCard({ product, viewMode = 'grid' }) {
           <StarRating rating={product.rating} count={product.review_count} />
           <div className="text-gray-500 text-sm font-medium line-clamp-2 mb-6 max-w-2xl leading-relaxed">
             {product.description ||
-              "Découvrez ce produit exceptionnel de haute qualité chez DMC SARL."}
+              'Découvrez ce produit exceptionnel de haute qualité chez DMC SARL.'}
           </div>
           <div className="mt-auto flex items-center justify-between">
             <div className="flex items-baseline gap-3">
@@ -95,6 +95,7 @@ function ProductCard({ product, viewMode = 'grid' }) {
               </button>
               <Link
                 to={`/produit/${product.id}`}
+                state={{ product }}
                 className="px-6 py-3 bg-gray-900 text-white rounded-xl font-black text-[11px] uppercase tracking-widest hover:bg-forest-green transition-all"
               >
                 VOIR DETAILS
@@ -111,6 +112,7 @@ function ProductCard({ product, viewMode = 'grid' }) {
       {/* Image Container */}
       <Link
         to={`/produit/${product.id}`}
+        state={{ product }}
         className="relative aspect-square overflow-hidden bg-white mb-1 block overflow-hidden"
       >
         <ShimmerImage
@@ -137,6 +139,7 @@ function ProductCard({ product, viewMode = 'grid' }) {
 
         <Link
           to={`/produit/${product.id}`}
+          state={{ product }}
           className="block mb-1 group-hover:text-forest-green transition-colors"
         >
           <h3 className="text-[11px] font-bold text-gray-800 line-clamp-2 min-h-[1.6rem] leading-snug">
@@ -163,10 +166,7 @@ function ProductCard({ product, viewMode = 'grid' }) {
         onClick={async (e) => {
           e.preventDefault();
           e.stopPropagation();
-          const result = await toggleWishlist(product);
-          if (result && !result.success) {
-            alert(result.message);
-          }
+          await toggleWishlist(product);
         }}
         className="absolute top-3 right-3 z-20 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-gray-400 hover:text-red-500 transition-all opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 duration-300 hover:scale-110"
       >
@@ -497,13 +497,13 @@ export default function Shop() {
                 selectedBrands.length > 0 ||
                 selectedRating ||
                 onSale) && (
-                  <button
-                    onClick={handleResetFilters}
-                    className="text-[10px] font-black text-red-500 uppercase tracking-widest hover:text-red-700 transition-colors flex items-center gap-1"
-                  >
-                    Réinitialiser les filtres
-                  </button>
-                )}
+                <button
+                  onClick={handleResetFilters}
+                  className="text-[10px] font-black text-red-500 uppercase tracking-widest hover:text-red-700 transition-colors flex items-center gap-1"
+                >
+                  Réinitialiser les filtres
+                </button>
+              )}
             </div>
 
             {/* Top Filters Block - Responsive Grid */}
@@ -683,7 +683,7 @@ export default function Shop() {
                           <span
                             className={`text-[10px] font-black uppercase tracking-widest transition-colors mt-0.5 ${selectedRating === stars ? 'text-forest-green' : 'text-gray-400 group-hover:text-forest-green'}`}
                           >
-                            {stars === 5 ? "5 Étoiles" : "& Plus"}
+                            {stars === 5 ? '5 Étoiles' : '& Plus'}
                           </span>
                         </button>
                       ))}
@@ -706,10 +706,11 @@ export default function Shop() {
                     <button
                       key={mode.id}
                       onClick={() => setViewMode(mode.id)}
-                      className={`p-2 rounded-lg transition-all flex items-center justify-center ${viewMode === mode.id
+                      className={`p-2 rounded-lg transition-all flex items-center justify-center ${
+                        viewMode === mode.id
                           ? 'bg-forest-green shadow-lg text-white'
                           : 'text-gray-400 hover:text-gray-600'
-                        }`}
+                      }`}
                     >
                       <mode.icon className={mode.size} />
                     </button>
@@ -810,10 +811,11 @@ export default function Shop() {
                             <button
                               key={page}
                               onClick={() => fetchProducts(page)}
-                              className={`w-10 h-10 rounded-xl font-black text-[11px] transition-all border-2 ${currentPage === page
+                              className={`w-10 h-10 rounded-xl font-black text-[11px] transition-all border-2 ${
+                                currentPage === page
                                   ? 'bg-forest-green border-forest-green text-white shadow-lg shadow-forest-green/20'
                                   : 'bg-white border-gray-100 text-gray-400 hover:border-forest-green hover:text-forest-green'
-                                }`}
+                              }`}
                             >
                               {page}
                             </button>

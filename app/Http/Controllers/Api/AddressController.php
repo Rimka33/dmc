@@ -40,6 +40,7 @@ class AddressController extends Controller
             'city' => 'required|string|max:100',
             'postal_code' => 'nullable|string|max:20',
             'region' => 'nullable|string|max:100',
+            'neighborhood' => 'nullable|string|max:255',
             'is_default' => 'boolean',
         ]);
 
@@ -62,6 +63,7 @@ class AddressController extends Controller
             'city' => $request->city,
             'postal_code' => $request->postal_code,
             'region' => $request->region,
+            'neighborhood' => $request->neighborhood,
             'is_default' => $request->is_default ?? false,
         ]);
 
@@ -85,6 +87,7 @@ class AddressController extends Controller
             'city' => 'sometimes|required|string|max:100',
             'postal_code' => 'nullable|string|max:20',
             'region' => 'nullable|string|max:100',
+            'neighborhood' => 'nullable|string|max:255',
             'is_default' => 'boolean',
         ]);
 

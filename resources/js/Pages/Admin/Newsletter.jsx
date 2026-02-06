@@ -4,9 +4,25 @@ import { router } from '@inertiajs/react';
 import PageHeader from '../../Components/Admin/PageHeader';
 import SearchFilter from '../../Components/Admin/SearchFilter';
 import DataTable from '../../Components/Admin/DataTable';
+import ConfirmDialog from '../../Components/Admin/ConfirmDialog';
 import { Mail, Download, Plus, ToggleLeft, ToggleRight } from 'lucide-react';
 
 export default function Newsletter({ subscriptions = {}, stats = {}, filters = {} }) {
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
+
+  const handleDelete = (id) => {
+    setDeletingId(id);
+    setShowConfirm(true);
+  };
+
+  const confirmDelete = () => {
+    if (!deletingId) return;
+    router.delete(`/admin/newsletter/${deletingId}`, {
+      onSuccess: () => setShowConfirm(false),
+      onFinish: () => setShowConfirm(false),
+    });
+  };
   const filterOptions = [
     {
       key: 'status',
@@ -75,14 +91,7 @@ export default function Newsletter({ subscriptions = {}, stats = {}, filters = {
       align: 'right',
       render: (value) => (
         <button
-          onClick={() => {
-            if (confirm('Supprimer cet abonnement ?')) {
-              router.delete(`/admin/newsletter/${value}`, {
-                preserveScroll: true,
-                onSuccess: () => router.reload(),
-              });
-            }
-          }}
+          onClick={() => handleDelete(value)}
           className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
           title="Supprimer"
         >
@@ -152,6 +161,16 @@ export default function Newsletter({ subscriptions = {}, stats = {}, filters = {
           emptyMessage="Aucun abonné"
         />
       </div>
+
+      <ConfirmDialog
+        isOpen={showConfirm}
+        title="Supprimer l'abonnement"
+        message="Êtes-vous sûr de vouloir supprimer cet abonnement ?"
+        onConfirm={confirmDelete}
+        onCancel={() => setShowConfirm(false)}
+        confirmText="Supprimer"
+        isDangerous={true}
+      />
     </AdminLayout>
   );
 }

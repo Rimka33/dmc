@@ -34,6 +34,7 @@ class HomeController extends Controller
             $featuredProducts = $featuredCollection->products()
                 ->with(['images', 'category'])
                 ->where('is_active', true)
+                ->inStock()
                 ->limit($featuredCollection->limit ?? 8)
                 ->get();
         } else {
@@ -41,6 +42,7 @@ class HomeController extends Controller
             $featuredProducts = Product::with(['images', 'category'])
                 ->where('is_featured', true)
                 ->where('is_active', true)
+                ->inStock()
                 ->limit(8)
                 ->get();
         }
@@ -55,6 +57,7 @@ class HomeController extends Controller
             $newProducts = $newCollection->products()
                 ->with(['images', 'category'])
                 ->where('is_active', true)
+                ->inStock()
                 ->limit($newCollection->limit ?? 8)
                 ->get();
         } else {
@@ -62,6 +65,7 @@ class HomeController extends Controller
             $newProducts = Product::with(['images', 'category'])
                 ->where('is_new', true)
                 ->where('is_active', true)
+                ->inStock()
                 ->latest()
                 ->limit(8)
                 ->get();
@@ -77,6 +81,7 @@ class HomeController extends Controller
             $specialOffers = $specialOffersCollection->products()
                 ->with(['images', 'category', 'features'])
                 ->where('is_active', true)
+                ->inStock()
                 ->limit($specialOffersCollection->limit ?? 3)
                 ->get()
                 ->map(function ($product) {
@@ -144,6 +149,7 @@ class HomeController extends Controller
             $bestSellers = $bestSellersCollection->products()
                 ->with(['images', 'category'])
                 ->where('is_active', true)
+                ->inStock()
                 ->limit($bestSellersCollection->limit ?? 8)
                 ->get();
         }

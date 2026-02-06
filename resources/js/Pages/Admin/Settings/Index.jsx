@@ -16,7 +16,7 @@ import {
   Mail,
 } from 'lucide-react';
 
-export default function SettingsIndex({ settings = {}, roles = [], flash = {} }) {
+export default function SettingsIndex({ settings = {}, flash = {} }) {
   const [activeTab, setActiveTab] = useState('general');
 
   const {
@@ -35,6 +35,7 @@ export default function SettingsIndex({ settings = {}, roles = [], flash = {} })
     instagram_url: settings.instagram_url || '',
     twitter_url: settings.twitter_url || '',
     linkedin_url: settings.linkedin_url || '',
+    maintenance_mode: settings.maintenance_mode === '1' || settings.maintenance_mode === true,
   });
 
   const {
@@ -89,7 +90,6 @@ export default function SettingsIndex({ settings = {}, roles = [], flash = {} })
   const tabs = [
     { key: 'general', label: 'Général', icon: Globe },
     { key: 'payment', label: 'Paiement', icon: DollarSign },
-    { key: 'roles', label: 'Accès', icon: ShieldCheck },
     { key: 'notifications', label: 'Alertes', icon: Bell },
   ];
 
@@ -166,6 +166,15 @@ export default function SettingsIndex({ settings = {}, roles = [], flash = {} })
                     placeholder="Dakar, Sénégal"
                   />
                 </div>
+              </Section>
+
+              <Section title="Maintenance et Accès" icon={Lock}>
+                <FormField
+                  type="checkbox"
+                  label="Activer le Mode Maintenance (Site inaccessible aux clients)"
+                  value={generalData.maintenance_mode}
+                  onChange={(e) => setGeneralData('maintenance_mode', e.target.checked)}
+                />
               </Section>
 
               <Section title="Réseaux Sociaux" icon={Globe}>
@@ -268,45 +277,6 @@ export default function SettingsIndex({ settings = {}, roles = [], flash = {} })
           </div>
         )}
 
-        {/* Roles & Accès */}
-        {activeTab === 'roles' && (
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {roles.map((role) => (
-                <Section key={role.id} title={role.name} icon={ShieldCheck}>
-                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-6 border-b border-gray-50 pb-2">
-                    Autorisations actuelles
-                  </p>
-                  <div className="space-y-3">
-                    {[
-                      { key: 'read', label: 'Consultation' },
-                      { key: 'create', label: 'Création' },
-                      { key: 'update', label: 'Modification' },
-                      { key: 'delete', label: 'Suppression' },
-                    ].map((perm) => (
-                      <div
-                        key={perm.key}
-                        className="flex items-center justify-between p-3.5 bg-gray-50 rounded-xl"
-                      >
-                        <span className="text-xs font-bold text-gray-600 uppercase tracking-tighter">
-                          {perm.label}
-                        </span>
-                        <div
-                          className={`w-9 h-4.5 rounded-full relative transition-colors ${role.permissions?.[perm.key] ? 'bg-forest-green shadow-lg shadow-forest-green/20' : 'bg-gray-200'}`}
-                        >
-                          <div
-                            className={`absolute top-0.5 w-3.5 h-3.5 bg-white rounded-full transition-all ${role.permissions?.[perm.key] ? 'right-0.5' : 'left-0.5'}`}
-                          ></div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </Section>
-              ))}
-            </div>
-          </div>
-        )}
-
         {/* Notifications */}
         {activeTab === 'notifications' && (
           <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -360,20 +330,6 @@ export default function SettingsIndex({ settings = {}, roles = [], flash = {} })
           </div>
         )}
       </div>
-
-      {flash.success && (
-        <div className="fixed bottom-10 right-10 bg-black text-white px-8 py-5 rounded-3xl shadow-2xl border border-neon-green/30 flex items-center gap-4 animate-in fade-in slide-in-from-right-10 duration-500 z-50">
-          <div className="w-12 h-12 bg-neon-green/10 rounded-full flex items-center justify-center text-neon-green border border-neon-green/20 shadow-inner">
-            <CheckCircle size={24} />
-          </div>
-          <div>
-            <p className="font-black text-xs uppercase tracking-[0.1em]">
-              Configuration mise à jour
-            </p>
-            <p className="text-[10px] font-bold text-gray-400">{flash.success}</p>
-          </div>
-        </div>
-      )}
     </AdminLayout>
   );
 }

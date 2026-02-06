@@ -18,13 +18,37 @@ class AdminProductController extends Controller
                 $query->where('name', 'like', "%{$search}%")
                     ->orWhere('sku', 'like', "%{$search}%");
             })
+            ->when($request->category, function ($query, $category) {
+                // Check if it's a slug or ID - usually frontend sends value which might be slug
+                // In Index.jsx options are 'electronics', 'computer' which look like slugs/values.
+                $query->whereHas('category', function ($q) use ($category) {
+                    $q->where('slug', $category)->orWhere('id', $category);
+                });
+            })
+            ->when($request->status, function ($query, $status) {
+                if ($status === 'active') {
+                    $query->where('is_active', true);
+                } elseif ($status === 'inactive') {
+                    $query->where('is_active', false);
+                }
+            })
+            ->when($request->stock, function ($query, $stock) {
+                if ($stock === 'in_stock') {
+                    $query->where('stock_quantity', '>', 5);
+                } elseif ($stock === 'low_stock') {
+                    $query->whereBetween('stock_quantity', [1, 5]);
+                } elseif ($stock === 'out_of_stock') {
+                    $query->where('stock_quantity', '<=', 0);
+                }
+            })
             ->latest()
             ->paginate(10)
             ->withQueryString();
 
         return Inertia::render('Admin/Products/Index', [
             'products' => $products,
-            'filters' => $request->only(['search']),
+            'filters' => $request->only(['search', 'category', 'status', 'stock']),
+            'categories' => Category::select('id', 'name', 'slug')->orderBy('name')->get(),
         ]);
     }
 

@@ -5,9 +5,11 @@ import PageHeader from '../../../Components/Admin/PageHeader';
 import Section from '../../../Components/Admin/Section';
 import FormField from '../../../Components/Admin/FormField';
 import TagInput from '../../../Components/Admin/TagInput';
+import ConfirmDialog from '../../../Components/Admin/ConfirmDialog';
 import { Save, ArrowLeft, Image as ImageIcon, X, Trash2, Star } from 'lucide-react';
 
 export default function Edit({ product, categories = [] }) {
+  const [showConfirm, setShowConfirm] = useState(false);
   // Initialisation des tags (tableau de chaînes)
   const initialTags = product.tags
     ? typeof product.tags === 'string'
@@ -402,11 +404,7 @@ export default function Edit({ product, categories = [] }) {
                 </button>
                 <button
                   type="button"
-                  onClick={() => {
-                    if (confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) {
-                      router.delete(`/admin/products/${product.id}`);
-                    }
-                  }}
+                  onClick={() => setShowConfirm(true)}
                   className="w-full flex items-center justify-center gap-3 px-6 py-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-2xl hover:bg-red-500 hover:text-white transition-all font-black uppercase tracking-widest text-[10px]"
                 >
                   Supprimer le produit
@@ -417,6 +415,19 @@ export default function Edit({ product, categories = [] }) {
           </div>
         </form>
       </div>
+
+      <ConfirmDialog
+        isOpen={showConfirm}
+        title="Supprimer le produit"
+        message="Êtes-vous sûr de vouloir supprimer ce produit ? Cette action est irréversible."
+        onConfirm={() => {
+          setShowConfirm(false);
+          router.delete(`/admin/products/${product.id}`);
+        }}
+        onCancel={() => setShowConfirm(false)}
+        confirmText="Supprimer"
+        isDangerous={true}
+      />
     </AdminLayout>
   );
 }

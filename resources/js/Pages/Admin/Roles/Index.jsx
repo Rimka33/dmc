@@ -1,10 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 import { Link, router } from '@inertiajs/react';
 import PageHeader from '../../../Components/Admin/PageHeader';
 import { Shield, Users, Lock, Plus, Edit, Trash2 } from 'lucide-react';
+import ConfirmDialog from '../../../Components/Admin/ConfirmDialog';
 
 export default function Index({ roles }) {
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
+
+  const handleDelete = (id) => {
+    setDeletingId(id);
+    setShowConfirm(true);
+  };
+
+  const confirmDelete = () => {
+    if (!deletingId) return;
+    router.delete(`/admin/roles/${deletingId}`, {
+      onSuccess: () => setShowConfirm(false),
+      onFinish: () => setShowConfirm(false),
+    });
+  };
   return (
     <AdminLayout>
       <div className="space-y-6">
@@ -84,11 +100,7 @@ export default function Index({ roles }) {
                     </Link>
                     {!['admin', 'manager', 'customer'].includes(role.slug) && (
                       <button
-                        onClick={() => {
-                          if (confirm('Supprimer ce rôle ? Cette action est irréversible.')) {
-                            router.delete(`/admin/roles/${role.id}`);
-                          }
-                        }}
+                        onClick={() => handleDelete(role.id)}
                         className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                         title="Supprimer"
                       >
@@ -102,6 +114,16 @@ export default function Index({ roles }) {
           ))}
         </div>
       </div>
+
+      <ConfirmDialog
+        isOpen={showConfirm}
+        title="Supprimer le rôle"
+        message="Êtes-vous sûr de vouloir supprimer ce rôle ? Cette action est irréversible."
+        onConfirm={confirmDelete}
+        onCancel={() => setShowConfirm(false)}
+        confirmText="Supprimer"
+        isDangerous={true}
+      />
     </AdminLayout>
   );
 }

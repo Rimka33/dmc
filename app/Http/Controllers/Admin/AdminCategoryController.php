@@ -10,15 +10,20 @@ use Inertia\Inertia;
 
 class AdminCategoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $categories = Category::withCount('products')
+            ->when($request->search, function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%");
+            })
             ->orderByRaw('CASE WHEN sort_order = 0 OR sort_order IS NULL THEN 1 ELSE 0 END, sort_order ASC')
             ->orderBy('name', 'asc')
-            ->paginate(10);
+            ->paginate(10)
+            ->withQueryString();
 
         return Inertia::render('Admin/Categories/Index', [
             'categories' => $categories,
+            'filters' => $request->only(['search']),
         ]);
     }
 

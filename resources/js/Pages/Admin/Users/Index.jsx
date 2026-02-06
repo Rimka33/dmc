@@ -1,61 +1,81 @@
 import React, { useState } from 'react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 import { Link, router } from '@inertiajs/react';
-import { Search, User, Trash2, Shield, Edit, Plus, CheckCircle, XCircle } from 'lucide-react';
+import PageHeader from '../../../Components/Admin/PageHeader';
+import SearchFilter from '../../../Components/Admin/SearchFilter';
+import ConfirmDialog from '../../../Components/Admin/ConfirmDialog';
+import { User, Trash2, Shield, Edit, Plus, CheckCircle, XCircle } from 'lucide-react';
 
-export default function Index({ users, filters }) {
-  const [search, setSearch] = useState(filters.search || '');
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    router.get('/admin/users', { search }, { preserveState: true });
-  };
+export default function Index({ users, filters = {} }) {
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
 
   const handleDelete = (id) => {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
-      router.delete(`/admin/users/${id}`);
-    }
+    setDeletingId(id);
+    setShowConfirm(true);
   };
+
+  const confirmDelete = () => {
+    if (!deletingId) return;
+    router.delete(`/admin/users/${deletingId}`, {
+      onSuccess: () => setShowConfirm(false),
+      onFinish: () => setShowConfirm(false),
+    });
+  };
+
+  const filterOptions = [
+    {
+      key: 'role',
+      label: 'Rôle',
+      type: 'select',
+      options: [
+        { label: 'Administrateur', value: 'admin' },
+        { label: 'Client', value: 'customer' },
+      ],
+    },
+    {
+      key: 'status',
+      label: 'Statut',
+      type: 'select',
+      options: [
+        { label: 'Actif', value: 'active' },
+        { label: 'Inactif', value: 'inactive' },
+      ],
+    },
+  ];
 
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">Utilisateurs</h1>
-            <p className="text-gray-500">Gérez les comptes utilisateurs et leurs rôles.</p>
-          </div>
-          <Link
-            href="/admin/users/create"
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-forest-green text-white rounded-xl hover:bg-dark-green transition-all shadow-lg hover:shadow-xl font-bold text-sm uppercase tracking-wider"
-          >
-            <Plus size={18} />
-            Ajouter
-          </Link>
-        </div>
+        <PageHeader
+          title="Utilisateurs"
+          subtitle="Gérez les comptes utilisateurs et leurs rôles."
+          action={
+            <Link
+              href="/admin/users/create"
+              className="flex items-center justify-center gap-2 px-6 py-3 bg-forest-green text-white rounded-xl hover:bg-dark-green transition-all shadow-lg hover:shadow-xl font-bold text-sm uppercase tracking-wider"
+            >
+              <Plus size={18} />
+              Ajouter
+            </Link>
+          }
+        />
+
+        <SearchFilter
+          placeholder="Rechercher par nom ou email..."
+          filters={filterOptions}
+          currentFilters={filters}
+          endpoint="/admin/users"
+        />
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-4 border-b border-gray-100 flex items-center justify-between gap-4">
-            <form onSubmit={handleSearch} className="relative w-full max-w-md text-sm">
-              <Search
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                size={16}
-              />
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Rechercher par nom ou email..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-neon-green focus:border-neon-green outline-none transition-all"
-              />
-            </form>
-          </div>
-
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead className="bg-gray-50 text-gray-500 text-xs uppercase font-bold tracking-wider">
                 <tr>
                   <th className="px-6 py-4">Utilisateur</th>
+                  <th className="px-6 py-4">Téléphone</th>
+                  <th className="px-6 py-4">Localisation</th>
                   <th className="px-6 py-4">Rôle</th>
                   <th className="px-6 py-4">Statut</th>
                   <th className="px-6 py-4">Inscription</th>
@@ -72,8 +92,22 @@ export default function Index({ users, filters }) {
                         </div>
                         <div>
                           <div className="font-bold text-gray-900">{user.name}</div>
-                          <div className="text-xs text-gray-500">{user.email}</div>
+                          <div className="text-xs text-gray-500">{user.email || "Pas d'email"}</div>
                         </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-2 text-gray-700 font-medium">
+                        <Phone size={14} className="text-forest-green" />
+                        {user.phone || '-'}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="text-xs text-gray-600 font-medium">
+                        {user.neighborhood || user.city || '-'}
+                      </div>
+                      <div className="text-[10px] text-gray-400 uppercase tracking-tighter">
+                        {user.region || '-'}
                       </div>
                     </td>
                     <td className="px-6 py-4">
@@ -165,6 +199,16 @@ export default function Index({ users, filters }) {
           </div>
         </div>
       </div>
+
+      <ConfirmDialog
+        isOpen={showConfirm}
+        title="Supprimer l'utilisateur"
+        message="Êtes-vous sûr de vouloir supprimer cet utilisateur ? Cette action est irréversible."
+        onConfirm={confirmDelete}
+        onCancel={() => setShowConfirm(false)}
+        confirmText="Supprimer"
+        isDangerous={true}
+      />
     </AdminLayout>
   );
 }

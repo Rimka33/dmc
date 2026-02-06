@@ -5,9 +5,11 @@ import PageHeader from '../../../Components/Admin/PageHeader';
 import Section from '../../../Components/Admin/Section';
 import FormField from '../../../Components/Admin/FormField';
 import TagInput from '../../../Components/Admin/TagInput';
+import { useNotification } from '../../../contexts/NotificationContext';
 import { Save, ArrowLeft, Image as ImageIcon, X } from 'lucide-react';
 
 export default function Create({ categories = [] }) {
+  const { showNotification } = useNotification();
   const [formData, setFormData] = useState({
     name: '',
     sku: '',
@@ -86,7 +88,7 @@ export default function Create({ categories = [] }) {
         // Redirect is handled by backend but validation errors might keep us here
       },
       onError: (errs) => {
-        console.error('Submission errors:', JSON.stringify(errs, null, 2));
+        showNotification('Veuillez corriger les erreurs dans le formulaire.', 'error');
         setErrors(errs);
         setLoading(false);
       },

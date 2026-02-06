@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import { Link, router } from '@inertiajs/react';
 import PageHeader from '../../Components/Admin/PageHeader';
@@ -6,9 +6,25 @@ import SearchFilter from '../../Components/Admin/SearchFilter';
 import DataTable from '../../Components/Admin/DataTable';
 import StatusBadge from '../../Components/Admin/StatusBadge';
 import ActionButtons from '../../Components/Admin/ActionButtons';
+import ConfirmDialog from '../../Components/Admin/ConfirmDialog';
 import { Plus, FileText } from 'lucide-react';
 
 export default function Blog({ articles = {}, filters = {} }) {
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [deletingId, setDeletingId] = useState(null);
+
+  const handleDelete = (id) => {
+    setDeletingId(id);
+    setShowConfirm(true);
+  };
+
+  const confirmDelete = () => {
+    if (!deletingId) return;
+    router.delete(`/admin/blog/${deletingId}`, {
+      onSuccess: () => setShowConfirm(false),
+      onFinish: () => setShowConfirm(false),
+    });
+  };
   const filterOptions = [
     {
       key: 'status',
@@ -72,9 +88,7 @@ export default function Blog({ articles = {}, filters = {} }) {
             if (action === 'edit') {
               router.get(`/admin/blog/${value}/edit`);
             } else if (action === 'delete') {
-              if (confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) {
-                router.delete(`/admin/blog/${value}`);
-              }
+              handleDelete(value);
             }
           }}
         />
@@ -120,6 +134,16 @@ export default function Blog({ articles = {}, filters = {} }) {
           emptyMessage="Aucun article trouvé"
         />
       </div>
+
+      <ConfirmDialog
+        isOpen={showConfirm}
+        title="Supprimer l'article"
+        message="Êtes-vous sûr de vouloir supprimer cet article ? Cette action est irréversible."
+        onConfirm={confirmDelete}
+        onCancel={() => setShowConfirm(false)}
+        confirmText="Supprimer"
+        isDangerous={true}
+      />
     </AdminLayout>
   );
 }

@@ -179,10 +179,7 @@ function HorizontalProductCard({ product }) {
         onClick={async (e) => {
           e.preventDefault();
           e.stopPropagation();
-          const result = await toggleWishlist(product);
-          if (result && !result.success) {
-            alert(result.message);
-          }
+          await toggleWishlist(product);
         }}
         className="absolute top-3 right-3 z-30 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors"
         title={isInWishlist(product.id) ? 'Retirer des favoris' : 'Ajouter aux favoris'}
@@ -193,7 +190,7 @@ function HorizontalProductCard({ product }) {
       </button>
 
       {/* Main Single Link for the whole card content */}
-      <Link to={`/produit/${product.id}`} className="flex w-full h-full">
+      <Link to={`/produit/${product.id}`} state={{ product }} className="flex w-full h-full">
         {/* Image Section */}
         <div className="w-2/5 relative overflow-hidden bg-gray-50 flex-shrink-0">
           <ShimmerImage
@@ -243,7 +240,7 @@ function ProductCard({ product }) {
 
   return (
     <div className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow overflow-hidden group relative">
-      <Link to={`/produit/${product.id}`} className="flex flex-col h-full">
+      <Link to={`/produit/${product.id}`} state={{ product }} className="flex flex-col h-full">
         <div className="relative aspect-square overflow-hidden bg-white mb-1">
           <ShimmerImage
             src={product.primary_image || '/images/products/default.png'}
@@ -293,10 +290,7 @@ function ProductCard({ product }) {
         onClick={async (e) => {
           e.preventDefault();
           e.stopPropagation();
-          const result = await toggleWishlist(product);
-          if (result && !result.success) {
-            alert(result.message);
-          }
+          await toggleWishlist(product);
         }}
         className="absolute top-2 right-2 z-20 w-8 h-8 rounded-full bg-white shadow-md flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
       >
@@ -455,8 +449,9 @@ export default function Home() {
     reviewStats: { average: 4.2, total: 100, counts: { 5: 95, 4: 5, 3: 0, 2: 0, 1: 0 } },
   });
 
-  const [activeBestSellerCat, setActiveBestSellerCat] = useState('Ordinateurs Portables');
-  const [activeNewProductCat, setActiveNewProductCat] = useState('Ordinateurs Portables');
+  const [activeBestSellerCat, setActiveBestSellerCat] = useState('TOUTES');
+  const [activeNewProductCat, setActiveNewProductCat] = useState('Tous les produits');
+  const [featuredSlideIndex, setFeaturedSlideIndex] = useState(0);
   const [isNewProductDropdownOpen, setIsNewProductDropdownOpen] = useState(false);
   const [currentHeroSlide, setCurrentHeroSlide] = useState(0);
 
@@ -470,6 +465,14 @@ export default function Home() {
 
     return () => clearInterval(interval);
   }, [data.banners]);
+
+  // Auto-slide for featured banner in Nouveautés section
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFeaturedSlideIndex((prev) => (prev === 2 ? 0 : prev + 1));
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   const scroll = (ref, direction) => {
     if (ref.current) {
@@ -538,6 +541,36 @@ export default function Home() {
     fetchData();
   }, []);
 
+  const activeNewProductCategories = [
+    'Tous les produits',
+    ...new Set(
+      (data.newProducts || []).map((p) => p.category_name || p.category?.name).filter(Boolean)
+    ),
+  ];
+
+  const filteredNewProducts = (data.newProducts || []).filter((p) => {
+    if (activeNewProductCat === 'Tous les produits') return true;
+    const prodCat = p.category_name || p.category?.name;
+    return prodCat === activeNewProductCat;
+  });
+
+  // Determine source for "Meilleures Ventes" with fallback to featured products
+  const bestSellersSource =
+    data.bestSellers && data.bestSellers.length > 0
+      ? data.bestSellers
+      : data.featuredProducts || [];
+
+  const bestSellerCategories = [
+    'TOUTES',
+    ...new Set(bestSellersSource.map((p) => p.category_name || p.category?.name).filter(Boolean)),
+  ];
+
+  const filteredBestSellers = bestSellersSource.filter((p) => {
+    if (activeBestSellerCat === 'TOUTES') return true;
+    const prodCat = p.category_name || p.category?.name;
+    return prodCat === activeBestSellerCat;
+  });
+
   const totalSlides = Math.ceil((data.featuredProducts?.length || 0) / itemsPerView);
 
   const nextSlide = () => {
@@ -556,15 +589,15 @@ export default function Home() {
   return (
     <MainLayout>
       <Head>
-        <title>DMC - Boutique Informatique Premium à Dakar, Sénégal</title>
+        <title>DMC - Boutique Informatique à Dakar, Sénégal</title>
         <meta
           name="description"
           content="DMC SARL : Votre expert informatique à Dakar. Vente d'ordinateurs (HP, Dell, Apple), accessoires, maintenance et solutions tech premium au Sénégal."
         />
-        <meta property="og:title" content="DMC - Boutique Informatique Premium" />
+        <meta property="og:title" content="DMC - Boutique Informatique" />
         <meta
           property="og:description"
-          content="Expert informatique à Dakar : Vente, Entretien et Conseil premium."
+          content="Expert informatique à Dakar : Vente, Entretien et Conseil."
         />
         <meta property="og:image" content="/images/logo.png" />
       </Head>
@@ -671,7 +704,7 @@ export default function Home() {
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-1 gap-8 items-center">
                 {/* Hero Text (Fallback) */}
-                <div className="space-y-6 z-10" style={{ marginTop: '5%' }}>
+                <div className="space-y-2 z-10" style={{ marginTop: '3%' }}>
                   <p className="text-neon-green text-lg font-bold uppercase">
                     Chez DAROUL Mouhty COMPUTER - SARL
                   </p>
@@ -903,46 +936,48 @@ export default function Home() {
                       key={index}
                       className="min-w-[280px] md:min-w-[360px] bg-white border border-gray-200 rounded-lg shadow p-3 md:p-4 flex gap-4 snap-start"
                     >
-                      <div className="w-32 flex-shrink-0">
+                      <Link to={`/produit/${offer.id}`} className="w-32 flex-shrink-0 group">
                         <img
                           src={offer.primary_image}
                           alt={offer.name}
-                          className="w-full h-28 object-contain"
+                          className="w-full h-28 object-contain group-hover:scale-105 transition-transform duration-300"
                         />
                         {offer.is_on_sale && (
                           <span className="inline-block mt-2 px-2 py-1 bg-red-600 text-white text-xs font-bold uppercase rounded">
                             SOLDE
                           </span>
                         )}
-                      </div>
+                      </Link>
 
                       <div className="flex-1 flex flex-col justify-between">
-                        <div>
-                          <p className="text-gray-500 text-xs font-bold uppercase">
+                        <Link to={`/produit/${offer.id}`} className="group">
+                          <p className="text-gray-500 text-[10px] font-bold uppercase group-hover:text-forest-green transition-colors">
                             {offer.category_name}
                           </p>
-                          <h3 className="text-xs font-semibold">{offer.name}</h3>
+                          <h3 className="text-xs font-bold group-hover:text-forest-green transition-colors line-clamp-2 leading-tight mb-1">
+                            {offer.name}
+                          </h3>
 
-                          <div className="flex items-center gap-3 mt-2">
-                            <span className="text-xs font-bold text-red-600">
+                          <div className="flex items-center gap-3 mt-1">
+                            <span className="text-sm font-black text-red-600">
                               {offer.price_formatted}
                             </span>
                             {offer.has_discount && (
-                              <span className="px-2 py-1 bg-red-600 text-white text-xs">
+                              <span className="px-1.5 py-0.5 bg-red-600 text-white text-[10px] font-bold rounded">
                                 -{offer.discount_percentage}%
                               </span>
                             )}
                           </div>
 
-                          <ul className="mt-3 space-y-1 text-xs text-gray-600">
-                            {offer.features?.slice(0, 3).map((feature, i) => (
-                              <li key={i} className="flex items-center gap-2">
+                          <ul className="mt-2 space-y-0.5 text-[10px] text-gray-600">
+                            {offer.features?.slice(0, 2).map((feature, i) => (
+                              <li key={i} className="flex items-center gap-1.5">
                                 <Check className="w-3 h-3 text-forest-green" />
-                                <span>{feature}</span>
+                                <span className="truncate">{feature}</span>
                               </li>
                             ))}
                           </ul>
-                        </div>
+                        </Link>
 
                         <div className="mt-4">
                           <div className="mt-2">
@@ -1063,21 +1098,30 @@ export default function Home() {
                   />
                 </button>
                 {isNewProductDropdownOpen && (
-                  <div className="absolute top-full left-16 mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-xl z-50 overflow-hidden py-1">
-                    {['Ordinateurs Portables', 'Ordinateurs Bureau', 'Écrans', 'Accessoires'].map(
-                      (cat) => (
+                  <div className="absolute top-full left-16 mt-2 w-56 bg-white border border-gray-100 rounded-xl shadow-xl z-50 overflow-hidden py-1">
+                    <button
+                      onClick={() => {
+                        setActiveNewProductCat('Tous les produits');
+                        setIsNewProductDropdownOpen(false);
+                      }}
+                      className={`w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors ${activeNewProductCat === 'Tous les produits' ? 'text-forest-green font-bold' : ''}`}
+                    >
+                      Tous les produits
+                    </button>
+                    {activeNewProductCategories
+                      .filter((cat) => cat !== 'Tous les produits')
+                      .map((catName) => (
                         <button
-                          key={cat}
+                          key={catName}
                           onClick={() => {
-                            setActiveNewProductCat(cat);
+                            setActiveNewProductCat(catName);
                             setIsNewProductDropdownOpen(false);
                           }}
-                          className={`w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors ${activeNewProductCat === cat ? 'text-forest-green font-bold' : ''}`}
+                          className={`w-full text-left px-4 py-2 hover:bg-gray-50 transition-colors ${activeNewProductCat === catName ? 'text-forest-green font-bold' : ''}`}
                         >
-                          {cat}
+                          {catName}
                         </button>
-                      )
-                    )}
+                      ))}
                   </div>
                 )}
               </div>
@@ -1111,43 +1155,85 @@ export default function Home() {
                 <p className="text-[10px] font-black text-forest-green uppercase tracking-widest mb-2">
                   NOUVELLES ARRIVAGES
                 </p>
-                <h3 className="text-xl font-bold text-gray-900 uppercase mb-4 leading-tight">
-                  ORDINATEURS PORTABLES
+                <h3 className="text-xl font-bold text-gray-900 uppercase mb-4 leading-tight min-h-[3rem]">
+                  {filteredNewProducts[featuredSlideIndex]?.name || 'NOUVEAUX ARRIVAGES'}
                 </h3>
                 <Link
-                  to="/shop"
+                  to={
+                    filteredNewProducts[featuredSlideIndex]
+                      ? `/produit/${filteredNewProducts[featuredSlideIndex].id}`
+                      : '/shop'
+                  }
                   className="inline-flex items-center gap-2 text-[10px] font-bold text-gray-400 hover:text-forest-green transition-colors group"
                 >
                   Voir Plus
                   <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </Link>
               </div>
-              <div className="relative w-full aspect-[4/5] overflow-hidden">
-                <img
-                  src="/images/home/laptop-feature.png"
-                  alt="Laptop Feature"
-                  className="w-full h-full object-contain"
-                  onError={(e) => (e.target.src = data.newProducts[0]?.primary_image)}
-                />
-                {/* Carousel dots like in image */}
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
-                  <div className="w-1.5 h-1.5 rounded-full bg-forest-green"></div>
-                  <div className="w-1.5 h-1.5 rounded-full bg-gray-200"></div>
-                  <div className="w-1.5 h-1.5 rounded-full bg-gray-200"></div>
+              <div className="relative w-full aspect-[4/5] overflow-hidden rounded-xl">
+                <div
+                  className="flex transition-transform duration-700 h-full"
+                  style={{ transform: `translateX(-${featuredSlideIndex * 100}%)` }}
+                >
+                  {[0, 1, 2].map((i) => (
+                    <div key={i} className="min-w-full h-full flex items-center justify-center p-4">
+                      <img
+                        src={
+                          filteredNewProducts[i]?.primary_image || '/images/home/laptop-feature.png'
+                        }
+                        alt="Featured Product"
+                        className="w-full h-full object-contain"
+                        onError={(e) => (e.target.src = '/images/home/laptop-feature.png')}
+                      />
+                    </div>
+                  ))}
+                </div>
+                {/* Carousel dots */}
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                  {[0, 1, 2].map((i) => (
+                    <button
+                      key={i}
+                      onClick={() => setFeaturedSlideIndex(i)}
+                      className={`w-2 h-2 rounded-full transition-all duration-300 ${featuredSlideIndex === i ? 'bg-forest-green w-4' : 'bg-gray-300'}`}
+                    />
+                  ))}
                 </div>
               </div>
             </div>
 
-            {/* Right: Products Grid (Static 4x2 on desktop, scroll on mobile) */}
+            {/* Right: Products Grid (2 lines of 4 products, paginated) */}
             <div
               ref={newProductsRef}
-              className="lg:col-span-8 grid grid-cols-2 md:grid-cols-4 gap-3"
+              className="lg:col-span-8 flex overflow-x-hidden gap-4 scrollbar-hide snap-x"
             >
-              {loading
-                ? [...Array(8)].map((_, i) => <Skeleton key={i} className="aspect-square w-full" />)
-                : data.newProducts
-                    ?.slice(0, 8)
-                    .map((product, index) => <ProductCard key={index} product={product} />)}
+              {loading ? (
+                <div className="min-w-full grid grid-cols-2 lg:grid-cols-4 gap-3 h-full">
+                  {[...Array(8)].map((_, i) => (
+                    <Skeleton key={i} className="aspect-square w-full" />
+                  ))}
+                </div>
+              ) : filteredNewProducts.length > 0 ? (
+                Array.from({ length: Math.ceil(filteredNewProducts.length / 8) }).map(
+                  (_, slideIndex) => (
+                    <div
+                      key={slideIndex}
+                      className="min-w-full grid grid-cols-2 lg:grid-cols-4 gap-4 snap-start pb-2"
+                    >
+                      {filteredNewProducts
+                        .slice(slideIndex * 8, (slideIndex + 1) * 8)
+                        .map((product, pIndex) => (
+                          <ProductCard key={pIndex} product={product} />
+                        ))}
+                    </div>
+                  )
+                )
+              ) : (
+                <div className="min-w-full flex items-center justify-center py-20 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                  <p className="text-gray-400 font-medium">
+                    Aucun produit trouvé dans cette catégorie.
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -1462,17 +1548,15 @@ export default function Home() {
               </h2>
               <div className="flex items-center gap-4 md:gap-6 justify-between md:justify-end">
                 <div className="flex gap-4 md:gap-6 text-[9px] md:text-[10px] font-black uppercase tracking-widest overflow-x-auto whitespace-nowrap pb-2 md:pb-0 scrollbar-hide">
-                  {['Ordinateurs Portables', 'Ordinateurs Bureau', 'Chargeurs Ordinateurs'].map(
-                    (cat) => (
-                      <button
-                        key={cat}
-                        onClick={() => setActiveBestSellerCat(cat)}
-                        className={`${activeBestSellerCat === cat ? 'text-forest-green underline decoration-2 underline-offset-8 shrink-0' : 'text-gray-400 hover:text-gray-600 shrink-0'}`}
-                      >
-                        {cat}
-                      </button>
-                    )
-                  )}
+                  {bestSellerCategories.map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => setActiveBestSellerCat(cat)}
+                      className={`${activeBestSellerCat === cat ? 'text-forest-green underline decoration-2 underline-offset-8 shrink-0' : 'text-gray-400 hover:text-gray-600 shrink-0'}`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
                 </div>
                 <div className="flex gap-1 shrink-0">
                   <button
@@ -1503,10 +1587,7 @@ export default function Home() {
                       <Skeleton className="aspect-square w-full" />
                     </div>
                   ))
-                : (data.bestSellers && data.bestSellers.length > 0
-                    ? data.bestSellers
-                    : data.featuredProducts || []
-                  ).map((product, index) => (
+                : filteredBestSellers.map((product, index) => (
                     <div key={index} className="min-w-[45%] md:min-w-[19%] snap-start">
                       <ProductCard product={product} />
                     </div>

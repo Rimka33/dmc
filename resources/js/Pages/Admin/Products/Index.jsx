@@ -6,18 +6,28 @@ import SearchFilter from '../../../Components/Admin/SearchFilter';
 import DataTable from '../../../Components/Admin/DataTable';
 import StatusBadge from '../../../Components/Admin/StatusBadge';
 import ActionButtons from '../../../Components/Admin/ActionButtons';
+import ConfirmDialog from '../../../Components/Admin/ConfirmDialog';
 import { Plus, ShoppingBag } from 'lucide-react';
 
-export default function Index({ products, filters = {} }) {
+export default function Index({ products, filters = {}, categories = [] }) {
   const [search, setSearch] = useState(filters.search || '');
   const [deletingId, setDeletingId] = useState(null);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const handleDelete = (id) => {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce produit ? Cette action est irréversible.')) {
-      router.delete(`/admin/products/${id}`, {
-        onSuccess: () => setDeletingId(null),
-      });
-    }
+    setDeletingId(id);
+    setShowConfirm(true);
+  };
+
+  const confirmDelete = () => {
+    if (!deletingId) return;
+    router.delete(`/admin/products/${deletingId}`, {
+      onSuccess: () => {
+        setShowConfirm(false);
+        setDeletingId(null);
+      },
+      onFinish: () => setShowConfirm(false),
+    });
   };
 
   const handleAction = (action, productId) => {
@@ -53,10 +63,7 @@ export default function Index({ products, filters = {} }) {
       key: 'category',
       label: 'Catégorie',
       type: 'select',
-      options: [
-        { label: 'Électronique', value: 'electronics' },
-        { label: 'Informatique', value: 'computer' },
-      ],
+      options: categories.map((c) => ({ label: c.name, value: c.slug || c.id })),
     },
     {
       key: 'stock',
@@ -211,6 +218,16 @@ export default function Index({ products, filters = {} }) {
           emptyMessage="Aucun produit trouvé. Créez votre premier produit !"
         />
       </div>
+
+      <ConfirmDialog
+        isOpen={showConfirm}
+        title="Supprimer le produit"
+        message="Êtes-vous sûr de vouloir supprimer ce produit ? Cette action est irréversible."
+        onConfirm={confirmDelete}
+        onCancel={() => setShowConfirm(false)}
+        confirmText="Supprimer"
+        isDangerous={true}
+      />
     </AdminLayout>
   );
 }

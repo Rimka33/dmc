@@ -3,6 +3,7 @@ import MainLayout from '../../Layouts/MainLayout';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { CartContext } from '../../contexts/CartContext';
 import { AuthContext } from '../../contexts/AuthContext';
+import { useNotification } from '../../contexts/NotificationContext';
 import api from '../../services/api';
 import {
   User,
@@ -23,13 +24,33 @@ export default function Checkout() {
   const { deliveryMethod } = location.state || { deliveryMethod: 'delivery' };
   const { cart, clearCart, loading: cartLoading } = useContext(CartContext);
   const { user, authenticated } = useContext(AuthContext);
+  const { showNotification } = useNotification();
+
+  const SENEGAL_REGIONS = [
+    'Dakar',
+    'Thiès',
+    'Saint-Louis',
+    'Diourbel',
+    'Louga',
+    'Tambacounda',
+    'Kaolack',
+    'Kolda',
+    'Ziguinchor',
+    'Matam',
+    'Fatick',
+    'Kaffrine',
+    'Sédhiou',
+    'Kédougou',
+  ];
 
   const [formData, setFormData] = useState({
     customer_name: '',
     customer_email: '',
     customer_phone: '',
     shipping_address: '',
+    shipping_region: '',
     shipping_city: '',
+    shipping_neighborhood: '',
     shipping_postal_code: '',
     payment_method: 'cash_on_delivery',
     notes: '',
@@ -48,7 +69,9 @@ export default function Checkout() {
         customer_email: user.email || prev.customer_email,
         customer_phone: user.phone || prev.customer_phone,
         shipping_address: user.address || prev.shipping_address,
+        shipping_region: user.region || prev.shipping_region,
         shipping_city: user.city || prev.shipping_city,
+        shipping_neighborhood: user.neighborhood || prev.shipping_neighborhood,
         shipping_postal_code: user.postal_code || prev.shipping_postal_code,
       }));
     }
@@ -72,8 +95,20 @@ export default function Checkout() {
     e.preventDefault();
 
     if (!formData.termsAccepted) {
-      alert('Vous devez accepter les termes et conditions.');
+      showNotification('Vous devez accepter les termes et conditions.', 'warning');
       return;
+    }
+
+    // Vérifier l'adresse si livraison
+    if (deliveryMethod === 'delivery' && !formData.ship_to_different_address) {
+      if (!user?.address && !user?.neighborhood && !user?.city) {
+        showNotification(
+          "Vous n'avez pas enregistré d'adresse. Veuillez remplir une adresse de livraison.",
+          'warning'
+        );
+        setFormData((prev) => ({ ...prev, ship_to_different_address: true }));
+        return;
+      }
     }
 
     setProcessing(true);
@@ -89,8 +124,12 @@ export default function Checkout() {
     } catch (error) {
       if (error.response?.status === 422) {
         setErrors(error.response.data.errors);
+        showNotification('Veuillez corriger les erreurs dans le formulaire.', 'error');
       } else {
-        alert(error.response?.data?.message || 'Une erreur est survenue lors de la commande.');
+        showNotification(
+          error.response?.data?.message || 'Une erreur est survenue lors de la commande.',
+          'error'
+        );
       }
     } finally {
       setProcessing(false);
@@ -237,10 +276,14 @@ export default function Checkout() {
                     </div>
 
                     <div className="md:col-span-2">
-                      <label className="block text-xs font-bold text-gray-700 uppercase mb-2 tracking-wider">
+                      <label
+                        htmlFor="checkout-name"
+                        className="block text-xs font-bold text-gray-700 uppercase mb-2 tracking-wider"
+                      >
                         Nom complet <span className="text-red-500">*</span>
                       </label>
                       <input
+                        id="checkout-name"
                         type="text"
                         name="customer_name"
                         value={formData.customer_name}
@@ -255,15 +298,19 @@ export default function Checkout() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-gray-700 uppercase mb-2 tracking-wider">
+                      <label
+                        htmlFor="checkout-phone"
+                        className="block text-xs font-bold text-gray-700 uppercase mb-2 tracking-wider"
+                      >
                         Téléphone <span className="text-red-500">*</span>
                       </label>
                       <input
+                        id="checkout-phone"
                         type="tel"
                         name="customer_phone"
                         value={formData.customer_phone}
                         onChange={handleChange}
-                        placeholder="ex: +221 77 000 00 00"
+                        placeholder="ex: 77 000 00 00"
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-forest-green focus:outline-none transition-colors"
                         required
                       />
@@ -273,17 +320,20 @@ export default function Checkout() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-bold text-gray-700 uppercase mb-2 tracking-wider">
-                        Adresse e-mail <span className="text-red-500">*</span>
+                      <label
+                        htmlFor="checkout-email"
+                        className="block text-xs font-bold text-gray-700 uppercase mb-2 tracking-wider"
+                      >
+                        Adresse e-mail (Optionnel)
                       </label>
                       <input
+                        id="checkout-email"
                         type="email"
                         name="customer_email"
                         value={formData.customer_email}
                         onChange={handleChange}
-                        placeholder="ex: jean.dupont@email.com"
+                        placeholder="ex: email@exemple.com"
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-forest-green focus:outline-none transition-colors"
-                        required
                       />
                       {errors.customer_email && (
                         <p className="text-red-500 text-xs mt-1">{errors.customer_email[0]}</p>
@@ -321,11 +371,35 @@ export default function Checkout() {
 
                             {!formData.ship_to_different_address && (
                               <div className="ml-8 p-4 bg-gray-50 rounded-xl text-gray-600 text-xs leading-relaxed border border-dashed border-gray-200">
-                                <p className="font-bold text-gray-900 mb-1">
-                                  Adresse de livraison :
+                                <p className="font-bold text-gray-900 mb-1 font-bold">
+                                  Précisions de livraison :
                                 </p>
-                                {user.address || 'Aucune adresse enregistrée'},{' '}
-                                {user.city || 'Dakar'}
+                                {user.region && (
+                                  <p>
+                                    <strong>Région:</strong> {user.region}
+                                  </p>
+                                )}
+                                {user.city && (
+                                  <p>
+                                    <strong>Ville:</strong> {user.city}
+                                  </p>
+                                )}
+                                {user.neighborhood && (
+                                  <p>
+                                    <strong>Quartier:</strong> {user.neighborhood}
+                                  </p>
+                                )}
+                                {user.address && (
+                                  <p>
+                                    <strong>Adresse:</strong> {user.address}
+                                  </p>
+                                )}
+                                {!user.address && !user.neighborhood && (
+                                  <p className="text-red-500 italic">
+                                    Aucune adresse enregistrée. Veuillez utiliser une nouvelle
+                                    adresse ci-dessous.
+                                  </p>
+                                )}
                               </div>
                             )}
 
@@ -360,32 +434,45 @@ export default function Checkout() {
                         )}
 
                         {(formData.ship_to_different_address || !authenticated) && (
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 animate-in fade-in slide-in-from-top-4 duration-300">
-                            <div className="md:col-span-2">
-                              <label className="block text-xs font-bold text-gray-700 uppercase mb-2 tracking-wider">
-                                Adresse précise <span className="text-red-500">*</span>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6 animate-in fade-in slide-in-from-top-4 duration-300">
+                            <div>
+                              <label
+                                htmlFor="checkout-region"
+                                className="block text-xs font-bold text-gray-700 uppercase mb-2 tracking-wider"
+                              >
+                                Région <span className="text-red-500">*</span>
                               </label>
-                              <input
-                                type="text"
-                                name="shipping_address"
-                                placeholder="Rue, quartier, numéro de porte, points de repère..."
-                                value={formData.shipping_address}
+                              <select
+                                id="checkout-region"
+                                name="shipping_region"
+                                value={formData.shipping_region}
                                 onChange={handleChange}
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-forest-green focus:outline-none transition-colors"
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-forest-green focus:outline-none transition-colors bg-white"
                                 required={deliveryMethod === 'delivery'}
-                              />
-                              {errors.shipping_address && (
+                              >
+                                <option value="">Choisir...</option>
+                                {SENEGAL_REGIONS.map((region) => (
+                                  <option key={region} value={region}>
+                                    {region}
+                                  </option>
+                                ))}
+                              </select>
+                              {errors.shipping_region && (
                                 <p className="text-red-500 text-xs mt-1">
-                                  {errors.shipping_address[0]}
+                                  {errors.shipping_region[0]}
                                 </p>
                               )}
                             </div>
 
                             <div>
-                              <label className="block text-xs font-bold text-gray-700 uppercase mb-2 tracking-wider">
+                              <label
+                                htmlFor="checkout-city"
+                                className="block text-xs font-bold text-gray-700 uppercase mb-2 tracking-wider"
+                              >
                                 Ville <span className="text-red-500">*</span>
                               </label>
                               <input
+                                id="checkout-city"
                                 type="text"
                                 name="shipping_city"
                                 value={formData.shipping_city}
@@ -402,17 +489,52 @@ export default function Checkout() {
                             </div>
 
                             <div>
-                              <label className="block text-xs font-bold text-gray-700 uppercase mb-2 tracking-wider">
-                                Code postal
+                              <label
+                                htmlFor="checkout-neighborhood"
+                                className="block text-xs font-bold text-gray-700 uppercase mb-2 tracking-wider"
+                              >
+                                Quartier <span className="text-red-500">*</span>
                               </label>
                               <input
+                                id="checkout-neighborhood"
                                 type="text"
-                                name="shipping_postal_code"
-                                value={formData.shipping_postal_code}
+                                name="shipping_neighborhood"
+                                value={formData.shipping_neighborhood}
                                 onChange={handleChange}
-                                placeholder="ex: 10000"
+                                placeholder="ex: Médina"
                                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-forest-green focus:outline-none transition-colors"
+                                required={deliveryMethod === 'delivery'}
                               />
+                              {errors.shipping_neighborhood && (
+                                <p className="text-red-500 text-xs mt-1">
+                                  {errors.shipping_neighborhood[0]}
+                                </p>
+                              )}
+                            </div>
+
+                            <div className="md:col-span-3">
+                              <label
+                                htmlFor="checkout-address"
+                                className="block text-xs font-bold text-gray-700 uppercase mb-2 tracking-wider"
+                              >
+                                Adresse précise (Rue, Porte, Points de repère...){' '}
+                                <span className="text-red-500">*</span>
+                              </label>
+                              <input
+                                id="checkout-address"
+                                type="text"
+                                name="shipping_address"
+                                placeholder="ex: Rue FA 22, villa n°12, à côté de la boulangerie..."
+                                value={formData.shipping_address}
+                                onChange={handleChange}
+                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-forest-green focus:outline-none transition-colors"
+                                required={deliveryMethod === 'delivery'}
+                              />
+                              {errors.shipping_address && (
+                                <p className="text-red-500 text-xs mt-1">
+                                  {errors.shipping_address[0]}
+                                </p>
+                              )}
                             </div>
                           </div>
                         )}
@@ -420,10 +542,14 @@ export default function Checkout() {
                     )}
 
                     <div className="md:col-span-2">
-                      <label className="block text-xs font-bold text-gray-700 uppercase mb-2 tracking-wider">
+                      <label
+                        htmlFor="checkout-notes"
+                        className="block text-xs font-bold text-gray-700 uppercase mb-2 tracking-wider"
+                      >
                         Notes de commande (optionnel)
                       </label>
                       <textarea
+                        id="checkout-notes"
                         name="notes"
                         value={formData.notes}
                         onChange={handleChange}
@@ -574,7 +700,7 @@ export default function Checkout() {
                         required
                       />
                       <span className="text-xs text-gray-600">
-                        J'ai lu et j'accepte les{' '}
+                        J&apos;ai lu et j&apos;accepte les{' '}
                         <Link to="/termes" className="text-forest-green underline font-bold">
                           termes et conditions
                         </Link>{' '}

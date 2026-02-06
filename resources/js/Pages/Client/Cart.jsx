@@ -1,14 +1,16 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import MainLayout from '../../Layouts/MainLayout';
 import { Link, useNavigate } from 'react-router-dom';
 import { CartContext } from '../../contexts/CartContext';
 import { AuthContext } from '../../contexts/AuthContext';
+import { useNotification } from '../../contexts/NotificationContext';
 import { Trash2, ShoppingBag, Truck, Store, Loader } from 'lucide-react';
 import ShimmerImage from '../../Components/ShimmerImage';
 
 export default function Cart() {
   const { user } = useContext(AuthContext);
   const { cart, updateQuantity, removeFromCart, clearCart, loading } = useContext(CartContext);
+  const { showNotification } = useNotification();
   const [couponCode, setCouponCode] = useState('');
   const [deliveryMethod, setDeliveryMethod] = useState('delivery'); // 'delivery' or 'pickup'
   const navigate = useNavigate();
@@ -19,7 +21,7 @@ export default function Cart() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const applyCoupon = () => {
-    alert('Fonctionnalité de coupon bientôt disponible !');
+    showNotification('Fonctionnalité de coupon bientôt disponible !', 'info');
   };
 
   const proceedToCheckout = async () => {
@@ -53,6 +55,7 @@ export default function Cart() {
 
       if (response.data.success) {
         await clearCart();
+        showNotification('Commande express confirmée !', 'success');
         // Redirection vers "Mes Commandes" comme demandé par l'utilisateur
         navigate('/mes-commandes');
       }
@@ -67,21 +70,15 @@ export default function Cart() {
 
   const handleRemove = async (productId) => {
     setIsUpdating(true);
-    const result = await removeFromCart(productId);
+    await removeFromCart(productId);
     setIsUpdating(false);
-    if (!result.success) {
-      alert('Erreur lors de la suppression');
-    }
   };
 
   const handleUpdateQuantity = async (productId, newQuantity) => {
     if (newQuantity < 1) return;
     setIsUpdating(true);
-    const result = await updateQuantity(productId, newQuantity);
+    await updateQuantity(productId, newQuantity);
     setIsUpdating(false);
-    if (!result.success) {
-      alert('Erreur lors de la mise à jour');
-    }
   };
 
   if (loading && (!cart.items || cart.items.length === 0)) {
@@ -363,7 +360,9 @@ export default function Cart() {
                         <Truck className="w-5 h-5 text-forest-green" />
                         <div className="flex-1">
                           <span className="text-xs font-bold text-gray-900 block">Livraison</span>
-                          <span className="text-[10px] text-gray-500">5.000 F CFA</span>
+                          <span className="text-[10px] text-gray-500">
+                            dépendra de votre position
+                          </span>
                         </div>
                       </label>
 

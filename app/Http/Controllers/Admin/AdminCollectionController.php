@@ -14,6 +14,17 @@ class AdminCollectionController extends Controller
     public function index(Request $request)
     {
         $collections = Collection::withCount('products')
+            ->when($request->search, function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            })
+            ->when($request->status, function ($query, $status) {
+                if ($status === 'active') {
+                    $query->where('is_active', true);
+                } elseif ($status === 'inactive') {
+                    $query->where('is_active', false);
+                }
+            })
             ->orderByRaw('CASE WHEN sort_order = 0 OR sort_order IS NULL THEN 1 ELSE 0 END, sort_order ASC')
             ->orderBy('name', 'asc')
             ->paginate(10)

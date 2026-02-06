@@ -24,6 +24,7 @@ Route::middleware(['auth:sanctum', 'permission:admin.access'])->prefix('admin')-
 
     // Routes réservées strictement aux Admins (Système & Clients)
     Route::middleware(['role:admin'])->group(function () {
+        Route::get('users/search', [\App\Http\Controllers\Admin\AdminUserController::class, 'search'])->name('users.search');
         Route::resource('users', \App\Http\Controllers\Admin\AdminUserController::class);
         Route::resource('roles', \App\Http\Controllers\Admin\AdminRoleController::class);
         Route::get('/settings', [\App\Http\Controllers\Admin\AdminSettingController::class, 'index'])->name('settings.index');

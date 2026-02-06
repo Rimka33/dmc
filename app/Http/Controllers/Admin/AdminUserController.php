@@ -12,9 +12,30 @@ class AdminUserController extends Controller
     public function index(Request $request)
     {
         $users = User::with('roleModel')
+            ->whereHas('roleModel', function ($q) {
+                $q->where('slug', '!=', 'customer');
+            })
             ->when($request->search, function ($query, $search) {
                 $query->where('name', 'like', "%{$search}%")
                     ->orWhere('email', 'like', "%{$search}%");
+            })
+            ->when($request->role, function ($query, $role) {
+                if ($role === 'admin') {
+                    $query->where('role', 'admin');
+                } elseif ($role === 'customer') {
+                    $query->where('role', 'customer');
+                }
+                // Support for role_id if passed
+                elseif (is_numeric($role)) {
+                    $query->where('role_id', $role);
+                }
+            })
+            ->when($request->status, function ($query, $status) {
+                if ($status === 'active') {
+                    $query->where('is_active', true);
+                } elseif ($status === 'inactive') {
+                    $query->where('is_active', false);
+                }
             })
             ->latest()
             ->paginate(10)
@@ -24,6 +45,10 @@ class AdminUserController extends Controller
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
+                    'phone' => $user->phone,
+                    'city' => $user->city,
+                    'region' => $user->region,
+                    'neighborhood' => $user->neighborhood,
                     'role' => $user->roleModel ? $user->roleModel->name : ($user->role === 'admin' ? 'Administrateur' : 'Client'),
                     'role_id' => $user->role_id,
                     'is_active' => $user->is_active,
@@ -33,14 +58,25 @@ class AdminUserController extends Controller
 
         return Inertia::render('Admin/Users/Index', [
             'users' => $users,
-            'filters' => $request->only(['search']),
+            'filters' => $request->only(['search', 'role', 'status']),
         ]);
+    }
+
+    public function search(Request $request)
+    {
+        $search = $request->get('q');
+        $users = User::where('name', 'like', "%{$search}%")
+            ->orWhere('phone', 'like', "%{$search}%")
+            ->limit(10)
+            ->get(['id', 'name', 'phone', 'email', 'address', 'city', 'region', 'neighborhood']);
+
+        return response()->json($users);
     }
 
     public function create()
     {
         return Inertia::render('Admin/Users/Create', [
-            'roles' => \App\Models\Role::all(['id', 'name']),
+            'roles' => \App\Models\Role::all(['id', 'name', 'slug']),
         ]);
     }
 
@@ -48,21 +84,56 @@ class AdminUserController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8',
+            'phone' => 'required|string|max:20',
+            'email' => $request->filled('email') ? 'nullable|email|unique:users,email,'.$request->user_id : 'nullable',
+            'password' => $request->user_id ? 'nullable|string|min:8' : 'required|string|min:8',
             'role_id' => 'required|exists:roles,id',
             'is_active' => 'boolean',
+            'address' => 'nullable|string',
+            'city' => 'nullable|string',
+            'region' => 'nullable|string',
+            'neighborhood' => 'nullable|string',
         ]);
 
-        $validated['password'] = \Illuminate\Support\Facades\Hash::make($validated['password']);
+        // Vérification manuelle de l'unicité du téléphone si pas d'ID (ou si l'ID ne correspond pas)
+        if (! $request->user_id) {
+            $existingUser = User::where('phone', $validated['phone'])->first();
+            if ($existingUser) {
+                $user = $existingUser;
+            }
+        } else {
+            $user = User::find($request->user_id);
+        }
 
-        // Synchro avec l'ancienne colonne role pour compatibilité
+        $data = [
+            'name' => $validated['name'],
+            'email' => $validated['email'] ?? null,
+            'phone' => $validated['phone'],
+            'address' => $validated['address'],
+            'city' => $validated['city'],
+            'region' => $validated['region'],
+            'neighborhood' => $validated['neighborhood'],
+            'is_active' => $validated['is_active'] ?? true,
+            'role_id' => $validated['role_id'],
+        ];
+
+        if ($request->filled('password')) {
+            $data['password'] = \Illuminate\Support\Facades\Hash::make($request->password);
+        }
+
+        // Synchro avec l'ancienne colonne role
         $role = \App\Models\Role::find($validated['role_id']);
-        $validated['role'] = $role->slug === 'admin' ? 'admin' : 'customer';
+        $data['role'] = $role->slug === 'admin' ? 'admin' : 'customer';
 
-        User::create($validated);
+        if (isset($user)) {
+            $user->update($data);
+            $msg = 'Utilisateur mis à jour avec succès (Rôle assigné).';
+        } else {
+            User::create($data);
+            $msg = 'Nouvel utilisateur créé avec succès.';
+        }
 
-        return redirect()->route('admin.users.index')->with('success', 'Utilisateur créé avec succès.');
+        return redirect()->route('admin.users.index')->with('success', $msg);
     }
 
     public function edit(User $user)
@@ -72,7 +143,12 @@ class AdminUserController extends Controller
                 'id' => $user->id,
                 'name' => $user->name,
                 'email' => $user->email,
+                'phone' => $user->phone,
                 'role_id' => $user->role_id,
+                'address' => $user->address,
+                'city' => $user->city,
+                'region' => $user->region,
+                'neighborhood' => $user->neighborhood,
                 'is_active' => $user->is_active,
             ],
             'roles' => \App\Models\Role::all(['id', 'name']),
@@ -83,23 +159,38 @@ class AdminUserController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,'.$user->id,
+            'phone' => 'required|string|max:20',
+            'email' => 'nullable|email|unique:users,email,'.$user->id,
             'role_id' => 'required|exists:roles,id',
             'password' => 'nullable|string|min:8',
             'is_active' => 'boolean',
+            'address' => 'nullable|string',
+            'city' => 'nullable|string',
+            'region' => 'nullable|string',
+            'neighborhood' => 'nullable|string',
         ]);
 
+        $data = [
+            'name' => $validated['name'],
+            'email' => $validated['email'] ?? null,
+            'phone' => $validated['phone'],
+            'address' => $validated['address'],
+            'city' => $validated['city'],
+            'region' => $validated['region'],
+            'neighborhood' => $validated['neighborhood'],
+            'is_active' => $validated['is_active'] ?? true,
+            'role_id' => $validated['role_id'],
+        ];
+
         if ($request->filled('password')) {
-            $validated['password'] = \Illuminate\Support\Facades\Hash::make($validated['password']);
-        } else {
-            unset($validated['password']);
+            $data['password'] = \Illuminate\Support\Facades\Hash::make($request->password);
         }
 
         // Synchro avec l'ancienne colonne role
         $role = \App\Models\Role::find($validated['role_id']);
-        $validated['role'] = $role->slug === 'admin' ? 'admin' : 'customer';
+        $data['role'] = $role->slug === 'admin' ? 'admin' : 'customer';
 
-        $user->update($validated);
+        $user->update($data);
 
         return redirect()->route('admin.users.index')->with('success', 'Utilisateur mis à jour avec succès.');
     }
@@ -112,6 +203,17 @@ class AdminUserController extends Controller
 
         if ($user->isAdmin() && User::admins()->count() <= 1) {
             return back()->with('error', 'Impossible de supprimer le dernier administrateur.');
+        }
+
+        // Si l'utilisateur est aussi un client (a des commandes), on retire juste son rôle staff
+        if ($user->orders()->exists()) {
+            $customerRole = \App\Models\Role::where('slug', 'customer')->first();
+            $user->update([
+                'role_id' => $customerRole->id,
+                'role' => 'customer',
+            ]);
+
+            return back()->with('success', 'Rôle staff retiré. L\'utilisateur est conservé en tant que client (commandes existantes).');
         }
 
         $user->delete();
