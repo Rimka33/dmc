@@ -4,18 +4,18 @@ import { X, CheckCircle2, AlertCircle, Info, AlertTriangle } from 'lucide-react'
 const Notification = ({ message, type = 'success', onClose, duration = 4000 }) => {
   const [isExiting, setIsExiting] = useState(false);
 
+  const handleClose = () => {
+    setIsExiting(true);
+    setTimeout(onClose, 300); // Match animation duration
+  };
+
   useEffect(() => {
     const timer = setTimeout(() => {
       handleClose();
     }, duration);
 
     return () => clearTimeout(timer);
-  }, [duration]);
-
-  const handleClose = () => {
-    setIsExiting(true);
-    setTimeout(onClose, 300); // Match animation duration
-  };
+  }, [duration, handleClose]);
 
   const icons = {
     success: <CheckCircle2 className="w-5 h-5 text-emerald-500" />,

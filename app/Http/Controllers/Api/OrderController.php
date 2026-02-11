@@ -26,6 +26,10 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
+        // Nettoyer le téléphone (retirer les espaces)
+        if ($request->has('customer_phone')) {
+            $request->merge(['customer_phone' => str_replace(' ', '', $request->input('customer_phone'))]);
+        }
 
         $validator = Validator::make($request->all(), [
             'customer_name' => 'required|string|max:255',

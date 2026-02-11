@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import MainLayout from '../../Layouts/MainLayout';
 import { Link, useNavigate } from 'react-router-dom';
 import { CartContext } from '../../contexts/CartContext';
@@ -49,9 +49,6 @@ export default function Cart() {
         termsAccepted: true, // Auto-acceptation implicite via le confirm
       };
 
-      console.log('📦 Données de commande envoyées:', orderData);
-      console.log('👤 User complet:', user);
-
       const response = await import('../../services/api').then((module) =>
         module.default.post('/orders', orderData)
       );
@@ -59,14 +56,10 @@ export default function Cart() {
       if (response.data.success) {
         await clearCart();
         showNotification('Commande express confirmée !', 'success');
-        // Redirection vers "Mes Commandes" comme demandé par l'utilisateur
-        navigate('/mes-commandes');
+        // Redirection vers la page de confirmation spécifique
+        navigate(`/checkout/received?order=${response.data.data.order_number}`);
       }
     } catch (error) {
-      console.error('Erreur commande express:', error);
-      console.error("Détails de l'erreur:", error.response?.data);
-      console.error('Status:', error.response?.status);
-
       // Afficher l'erreur à l'utilisateur
       if (error.response?.data?.errors) {
         const errorMessages = Object.values(error.response.data.errors).flat().join(', ');
@@ -188,7 +181,7 @@ export default function Cart() {
               <div className="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
                 <ShoppingBag className="w-12 h-12 text-gray-300" />
               </div>
-              <h2 className="text-3xl font-black text-gray-900 mb-3 uppercase">
+              <h2 className="text-2xl font-black text-gray-900 mb-3 uppercase">
                 Votre panier est vide
               </h2>
               <p className="text-gray-500 mb-8 max-w-md mx-auto">
@@ -196,7 +189,7 @@ export default function Cart() {
               </p>
               <Link
                 to="/shop"
-                className="inline-block px-10 py-4 bg-forest-green text-white font-bold uppercase rounded-lg shadow-lg hover:bg-dark-green hover:-translate-y-1 transition-all"
+                className="inline-block px-8 py-4 bg-forest-green text-white font-bold uppercase rounded-lg shadow-lg hover:bg-dark-green hover:-translate-y-1 transition-all"
               >
                 Continuer vos achats
               </Link>
@@ -449,6 +442,10 @@ export default function Cart() {
           <div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
             onClick={() => setShowConfirmModal(false)}
+            onKeyDown={(e) => e.key === 'Escape' && setShowConfirmModal(false)}
+            role="button"
+            tabIndex={-1}
+            aria-label="Fermer le modal"
           ></div>
 
           {/* Modal Content */}

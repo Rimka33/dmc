@@ -24,6 +24,7 @@ import {
   Leaf,
   Shield,
 } from 'lucide-react';
+import AdminNotifications from '../Components/Admin/AdminNotifications';
 
 export default function AdminLayout({ children }) {
   const { url } = usePage();
@@ -326,6 +327,7 @@ export default function AdminLayout({ children }) {
             </h1>
           </div>
           <div className="flex items-center gap-6">
+            <AdminNotifications />
             <Link
               href="/"
               className="flex items-center gap-2 px-4 py-2 bg-forest-green/10 text-forest-green hover:bg-forest-green hover:text-white rounded-xl transition-all font-bold text-[10px] uppercase tracking-widest group"

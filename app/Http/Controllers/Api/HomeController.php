@@ -154,6 +154,27 @@ class HomeController extends Controller
                 ->get();
         }
 
+        // 5b. Collections personnalisées
+        $customCollections = Collection::where('type', 'custom')
+            ->where('is_active', true)
+            ->ordered()
+            ->get()
+            ->map(function ($collection) {
+                return [
+                    'id' => $collection->id,
+                    'name' => $collection->name,
+                    'description' => $collection->description,
+                    'products' => ProductResource::collection(
+                        $collection->products()
+                            ->with(['images', 'category'])
+                            ->where('is_active', true)
+                            ->inStock()
+                            ->limit($collection->limit ?? 8)
+                            ->get()
+                    ),
+                ];
+            });
+
         // 6. Bannières (tous types et positions)
         $banners = \App\Models\Banner::active()
             ->orderBy('sort_order')
@@ -210,6 +231,7 @@ class HomeController extends Controller
             'newProducts' => ProductResource::collection($newProducts),
             'specialOffers' => $specialOffers,
             'bestSellers' => ProductResource::collection($bestSellers),
+            'customCollections' => $customCollections,
             'banners' => $banners,
             'reviews' => $reviews,
             'reviewStats' => $reviewStats,

@@ -738,9 +738,7 @@ export default function Shop() {
 
             {/* Products Grid */}
             {loading && products.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-32">
-                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-forest-green"></div>
-              </div>
+              <div className="flex flex-col items-center justify-center py-32"></div>
             ) : (
               <div
                 className={

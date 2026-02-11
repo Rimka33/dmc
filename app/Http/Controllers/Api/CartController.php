@@ -66,7 +66,7 @@ class CartController extends Controller
                 'message' => 'Produit ajouté au panier',
                 'data' => $this->cartService->getSummary(),
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),

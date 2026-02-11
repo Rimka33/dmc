@@ -239,13 +239,13 @@ function ProductCard({ product }) {
   const { addToCart } = useContext(CartContext);
 
   return (
-    <div className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow overflow-hidden group relative">
+    <div className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow overflow-hidden group relative h-full flex flex-col">
       <Link to={`/produit/${product.id}`} state={{ product }} className="flex flex-col h-full">
-        <div className="relative aspect-square overflow-hidden bg-white mb-1">
+        <div className="relative aspect-square overflow-hidden bg-white mb-0.5">
           <ShimmerImage
             src={product.primary_image || '/images/products/default.png'}
             alt={product.name}
-            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-3"
+            className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 p-5"
             fallback={'/images/products/default.png'}
           />
 
@@ -256,29 +256,29 @@ function ProductCard({ product }) {
           )}
         </div>
 
-        <div className="flex flex-col flex-grow text-left px-3 pb-3">
-          <p className="text-[8px] text-gray-400 uppercase font-bold tracking-wider mb-0.5 leading-none">
+        <div className="flex flex-col flex-grow text-left px-2.5 pb-2.5">
+          <p className="text-[7.5px] text-gray-400 uppercase font-bold tracking-wider mb-0.5 leading-none">
             {product.category_name}
           </p>
-          <h3 className="text-[11px] font-bold text-gray-800 mb-1 line-clamp-2 min-h-[1.6rem] leading-snug group-hover:text-forest-green transition-colors">
+          <h3 className="text-[10px] font-bold text-gray-800 mb-0.5 line-clamp-2 min-h-[1.5rem] leading-snug group-hover:text-forest-green transition-colors">
             {product.name}
           </h3>
 
-          <div className="flex items-center gap-1 mb-1">
+          <div className="flex items-center gap-1 mb-0.5">
             {[...Array(5)].map((_, i) => (
               <Star
                 key={i}
-                className={`w-2.5 h-2.5 ${i < Math.floor(product.rating || 5) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200 fill-gray-200'}`}
+                className={`w-2 h-2 ${i < Math.floor(product.rating || 5) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200 fill-gray-200'}`}
               />
             ))}
           </div>
 
           <div className="mt-auto flex items-baseline gap-1.5">
-            <span className="text-[11px] font-black text-forest-green">
+            <span className="text-[10px] font-black text-forest-green">
               {product.price_formatted}
             </span>
             {product.has_discount && (
-              <span className="text-[9px] text-gray-400 line-through font-bold">
+              <span className="text-[8px] text-gray-400 line-through font-bold">
                 {product.old_price_formatted}
               </span>
             )}
@@ -444,6 +444,7 @@ export default function Home() {
     specialOffers: [],
     newProducts: [],
     bestSellers: [],
+    customCollections: [],
     banners: [],
     reviews: [],
     reviewStats: { average: 4.2, total: 100, counts: { 5: 95, 4: 5, 3: 0, 2: 0, 1: 0 } },
@@ -508,6 +509,7 @@ export default function Home() {
           specialOffers: response.data.specialOffers || [],
           newProducts: response.data.newProducts?.data || response.data.newProducts || [],
           bestSellers: response.data.bestSellers?.data || response.data.bestSellers || [],
+          customCollections: response.data.customCollections || [],
           banners: response.data.banners || [],
           reviews: response.data.reviews || [],
           reviewStats: response.data.reviewStats || {
@@ -996,7 +998,7 @@ export default function Home() {
                             <button
                               onClick={(e) => {
                                 e.preventDefault();
-                                addToCart(offer.product || offer);
+                                addToCart(offer.product_id || offer.id);
                               }}
                               className="w-2/3 px-3 py-2 text-xs bg-forest-green text-white  rounded hover:bg-dark-green transition-colors"
                             >
@@ -1579,21 +1581,71 @@ export default function Home() {
             </div>
             <div
               ref={bestSellersRef}
-              className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x pt-2"
+              className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x pt-2 px-1"
             >
               {loading
-                ? [...Array(5)].map((_, i) => (
-                    <div key={i} className="min-w-[45%] md:min-w-[19%] snap-start">
+                ? [...Array(6)].map((_, i) => (
+                    <div key={i} className="w-[45%] md:w-[15%] flex-shrink-0 snap-start">
                       <Skeleton className="aspect-square w-full" />
                     </div>
                   ))
                 : filteredBestSellers.map((product, index) => (
-                    <div key={index} className="min-w-[45%] md:min-w-[19%] snap-start">
+                    <div
+                      key={index}
+                      className="w-[45%] md:w-[15%] flex-shrink-0 snap-start flex flex-col"
+                    >
                       <ProductCard product={product} />
                     </div>
                   ))}
             </div>
           </div>
+
+          {/* Custom Collections */}
+          {(data.customCollections || []).map((collection) => (
+            <div
+              key={collection.id}
+              className="max-w-6xl mx-auto pb-12 md:pb-24 px-4 overflow-hidden"
+            >
+              <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 md:mb-8 gap-4">
+                <div>
+                  <h2 className="text-xl md:text-2xl font-black text-gray-900 uppercase tracking-tight">
+                    {collection.name}
+                  </h2>
+                  {collection.description && (
+                    <p className="text-xs text-gray-400 font-medium uppercase tracking-widest mt-1">
+                      {collection.description}
+                    </p>
+                  )}
+                </div>
+                <div className="flex items-center gap-4">
+                  <Link
+                    to="/shop"
+                    className="text-[10px] font-black text-forest-green hover:text-dark-green uppercase tracking-[0.2em] transition-colors"
+                  >
+                    Voir Tout →
+                  </Link>
+                </div>
+              </div>
+              <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x pt-2">
+                {collection.products.length > 0 ? (
+                  collection.products.map((product, index) => (
+                    <div
+                      key={index}
+                      className="w-[45%] md:w-[15%] flex-shrink-0 snap-start flex flex-col"
+                    >
+                      <ProductCard product={product} />
+                    </div>
+                  ))
+                ) : (
+                  <div className="w-full py-10 text-center bg-gray-50 rounded-2xl border border-dashed border-gray-200">
+                    <p className="text-gray-400 text-xs font-bold uppercase">
+                      Aucun produit dans cette collection
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
 
           {/* Bottom Banners */}
           {data.banners

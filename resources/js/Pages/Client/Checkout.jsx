@@ -60,6 +60,7 @@ export default function Checkout() {
 
   const [processing, setProcessing] = useState(false);
   const [errors, setErrors] = useState({});
+  const [isOrderPlaced, setIsOrderPlaced] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -78,10 +79,13 @@ export default function Checkout() {
   }, [user]);
 
   useEffect(() => {
+    // Si la commande vient d'être passée, on ne redirige pas vers le panier
+    if (isOrderPlaced) return;
+
     if (!cartLoading && cart.items.length === 0) {
       navigate('/panier');
     }
-  }, [cart, cartLoading, navigate]);
+  }, [cart, cartLoading, navigate, isOrderPlaced]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -124,6 +128,8 @@ export default function Checkout() {
       const response = await api.post('/orders', orderData);
 
       if (response.data.success) {
+        // Empêcher la redirection vers le panier via le useEffect
+        setIsOrderPlaced(true);
         await clearCart();
         navigate(`/checkout/received?order=${response.data.data.order_number}`);
       }

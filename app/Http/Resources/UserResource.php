@@ -24,6 +24,8 @@ class UserResource extends JsonResource
             'phone' => $this->phone,
             'address' => $this->address,
             'city' => $this->city,
+            'region' => $this->region,
+            'neighborhood' => $this->neighborhood,
             'postal_code' => $this->postal_code,
             'is_active' => $this->is_active,
             'avatar' => $this->avatar ? (str_starts_with($this->avatar, 'http') ? $this->avatar : asset('storage/'.$this->avatar)) : null,

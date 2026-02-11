@@ -16,8 +16,11 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        $login = $request->input('email'); // Still calling it 'email' from frontend for now to avoid breaking too much, but it's really an identifier
+        // Nettoyer l'identifiant (retirer les espaces pour le téléphone)
+        $login = str_replace(' ', '', $request->input('email'));
         $password = $request->input('password');
+
+        $request->merge(['email' => $login]); // Mettre à jour la requête pour la validation
 
         $request->validate([
             'email' => 'required',
@@ -62,6 +65,11 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
+        // Nettoyer le téléphone (retirer les espaces)
+        if ($request->has('phone')) {
+            $request->merge(['phone' => str_replace(' ', '', $request->input('phone'))]);
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'nullable|string|email|max:255|unique:users',
@@ -142,6 +150,11 @@ class AuthController extends Controller
     public function updateProfile(Request $request)
     {
         $user = $request->user();
+
+        // Nettoyer le téléphone si présent
+        if ($request->has('phone')) {
+            $request->merge(['phone' => str_replace(' ', '', $request->input('phone'))]);
+        }
 
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255',

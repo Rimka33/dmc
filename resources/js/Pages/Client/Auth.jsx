@@ -127,11 +127,6 @@ export default function Auth({ defaultMode = 'login' }) {
               <h2 className="text-xl font-black mb-4 uppercase italic tracking-tighter">
                 {mode === 'login' ? 'Content de vous revoir !' : 'Bienvenue chez DMC'}
               </h2>
-              <p className="text-white/70 text-[10px] uppercase font-bold tracking-widest leading-relaxed">
-                Leader de l'informatique au Sénégal
-                <br />
-                La qualité au meilleur prix
-              </p>
             </div>
           </div>
 

@@ -6,7 +6,7 @@ import Section from '../../../Components/Admin/Section';
 import FormField from '../../../Components/Admin/FormField';
 import TagInput from '../../../Components/Admin/TagInput';
 import { useNotification } from '../../../contexts/NotificationContext';
-import { Save, ArrowLeft, Image as ImageIcon, X } from 'lucide-react';
+import { Save, ArrowLeft, Image as ImageIcon, X, Star } from 'lucide-react';
 
 export default function Create({ categories = [] }) {
   const { showNotification } = useNotification();
@@ -21,6 +21,7 @@ export default function Create({ categories = [] }) {
     is_active: true,
     tags: [],
     images: [],
+    primary_image_index: 0,
   });
 
   const [imagePreview, setImagePreview] = useState([]);
@@ -43,22 +44,54 @@ export default function Create({ categories = [] }) {
     files.forEach((file) => {
       const reader = new FileReader();
       reader.onload = (event) => {
-        setImagePreview((prev) => [
-          ...prev,
-          {
-            id: Math.random(),
-            src: event.target.result,
-            type: file.type.startsWith('video/') ? 'video' : 'image',
-            file: file,
-          },
-        ]);
+        setImagePreview((prev) => {
+          const isFirst = prev.length === 0;
+          return [
+            ...prev,
+            {
+              id: Math.random(),
+              src: event.target.result,
+              type: file.type.startsWith('video/') ? 'video' : 'image',
+              file: file,
+              is_primary: isFirst,
+            },
+          ];
+        });
       };
       reader.readAsDataURL(file);
     });
   };
 
+  const handleSetPrimary = (id) => {
+    setImagePreview((prev) => {
+      const newList = prev.map((img) => ({
+        ...img,
+        is_primary: img.id === id,
+      }));
+      const newIndex = newList.findIndex((img) => img.id === id);
+      setFormData((f) => ({ ...f, primary_image_index: newIndex }));
+      return newList;
+    });
+  };
+
   const removeImage = (id) => {
-    setImagePreview((prev) => prev.filter((img) => img.id !== id));
+    setImagePreview((prev) => {
+      const imgToRemove = prev.find((img) => img.id === id);
+      const newList = prev.filter((img) => img.id !== id);
+
+      // Si on supprime l'image principale, on en définit une nouvelle (la première restante)
+      if (imgToRemove?.is_primary && newList.length > 0) {
+        newList[0].is_primary = true;
+        setFormData((f) => ({ ...f, primary_image_index: 0 }));
+      } else if (newList.length === 0) {
+        setFormData((f) => ({ ...f, primary_image_index: 0 }));
+      } else {
+        // Recalculer l'index de la principale
+        const newIndex = newList.findIndex((img) => img.is_primary);
+        setFormData((f) => ({ ...f, primary_image_index: newIndex }));
+      }
+      return newList;
+    });
   };
 
   const handleSubmit = (e) => {
@@ -259,31 +292,57 @@ export default function Create({ categories = [] }) {
               </label>
 
               {imagePreview.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {imagePreview.map((img) => (
-                    <div key={img.id} className="relative group">
-                      {img.type === 'video' ? (
-                        <video
-                          src={img.src}
-                          className="w-full aspect-square object-cover rounded-lg border border-gray-200"
-                          controls
-                        />
-                      ) : (
-                        <img
-                          src={img.src}
-                          alt="preview"
-                          className="w-full aspect-square object-cover rounded-lg border border-gray-200"
-                        />
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => removeImage(img.id)}
-                        className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between ml-1">
+                    <p className="text-[10px] font-black text-forest-green uppercase tracking-[0.2em]">
+                      Médias Uploadés
+                    </p>
+                    <p className="text-[9px] font-bold text-forest-green uppercase italic">
+                      * Cliquez sur l'étoile pour définir l'image principale
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {imagePreview.map((img) => (
+                      <div
+                        key={img.id}
+                        className={`relative group rounded-xl overflow-hidden border-2 aspect-square transition-all ${
+                          img.is_primary ? 'border-neon-green shadow-lg' : 'border-forest-green/10'
+                        }`}
                       >
-                        <X size={16} />
-                      </button>
-                    </div>
-                  ))}
+                        {img.type === 'video' ? (
+                          <video src={img.src} className="w-full h-full object-cover" muted />
+                        ) : (
+                          <img src={img.src} alt="preview" className="w-full h-full object-cover" />
+                        )}
+                        <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                        <div className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md p-2 flex justify-center gap-3 border-t border-forest-green/10 transition-all duration-300">
+                          {!img.is_primary && (
+                            <button
+                              type="button"
+                              onClick={() => handleSetPrimary(img.id)}
+                              className="w-8 h-8 flex items-center justify-center bg-forest-green/5 text-forest-green rounded-lg hover:bg-neon-green hover:text-dark-green transition-all"
+                              title="Définir comme principale"
+                            >
+                              <Star size={16} />
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => removeImage(img.id)}
+                            className="w-8 h-8 flex items-center justify-center bg-red-50 text-red-500 rounded-lg hover:bg-red-500 hover:text-white transition-all shadow-sm"
+                            title="Supprimer"
+                          >
+                            <X size={16} />
+                          </button>
+                        </div>
+                        {img.is_primary && (
+                          <div className="absolute top-2 left-2 bg-neon-green text-dark-green text-[8px] px-2 py-1 rounded-full uppercase font-black shadow-sm tracking-widest">
+                            Principale
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

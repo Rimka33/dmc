@@ -182,25 +182,25 @@ export default function MainLayout({ children }) {
                   className="text-white/80 hover:text-neon-green transition-all relative group hidden sm:block"
                 >
                   <Heart className="w-5 h-5" />
-                  {wishlist.length > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 bg-neon-green text-black text-[9px] font-black rounded-full w-4 h-4 flex items-center justify-center border border-dark-green">
-                      {wishlist.length}
-                    </span>
-                  )}
+                  <span
+                    className={`absolute -top-1.5 -right-1.5 bg-neon-green text-black text-[9px] font-black rounded-full w-4 h-4 flex items-center justify-center border border-dark-green transition-all duration-300 ${wishlist.length > 0 ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`}
+                  >
+                    {wishlist.length}
+                  </span>
                 </Link>
 
                 <div className="flex items-center gap-4">
-                  {authenticated && ordersCount > 0 && (
+                  <div className="flex items-center gap-4 relative">
                     <Link
                       to="/mes-commandes"
-                      className="text-white/80 hover:text-neon-green transition-all relative group"
+                      className={`text-white/80 hover:text-neon-green transition-all relative group ${authenticated && ordersCount > 0 ? 'block' : 'hidden'}`}
                     >
                       <Package className="w-5 h-5" />
                       <span className="absolute -top-1.5 -right-1.5 bg-blue-500 text-white text-[9px] font-black rounded-full w-4 h-4 flex items-center justify-center border border-dark-green">
                         {ordersCount}
                       </span>
                     </Link>
-                  )}
+                  </div>
 
                   <Link
                     to="/panier"
@@ -213,11 +213,11 @@ export default function MainLayout({ children }) {
                   >
                     <div className="relative">
                       <ShoppingCart className="w-5 h-5 text-white group-hover:text-neon-green transition-all" />
-                      {(cart.totalQuantity || 0) > 0 && (
-                        <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] font-black rounded-full min-w-[18px] h-[18px] flex items-center justify-center border-2 border-dark-green animate-pulse">
-                          {cart.totalQuantity || 0}
-                        </span>
-                      )}
+                      <span
+                        className={`absolute -top-2 -right-2 bg-red-600 text-white text-[10px] font-black rounded-full min-w-[18px] h-[18px] flex items-center justify-center border-2 border-dark-green animate-pulse transition-all duration-300 ${(cart.totalQuantity || 0) > 0 ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`}
+                      >
+                        {cart.totalQuantity || 0}
+                      </span>
                     </div>
                     <div className="hidden md:flex flex-col items-start leading-none">
                       <span className="text-[9px] font-black text-white/40 uppercase tracking-widest mb-1">
@@ -322,15 +322,17 @@ export default function MainLayout({ children }) {
                         key={cat.id}
                         to={`/categorie/${cat.slug}`}
                         onClick={() => setCategoriesOpen(false)}
-                        className="flex items-center gap-4 px-6 py-3.5 hover:bg-forest-green hover:text-white text-gray-700 transition-all font-bold text-sm group"
+                        className="flex items-center gap-4 px-6 py-3.5 hover:bg-forest-green hover:text-green-500 text-gray-700 transition-all font-bold text-sm group"
                       >
-                        <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-white/10 transition-colors">
+                        <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-green-500 transition-colors">
                           <img
                             src={resolveCategoryImage(cat)}
                             alt=""
-                            className="w-5 h-5 object-contain group-hover:brightness-0 group-hover:invert transition-all"
+                            className="w-5 h-5 object-contain"
                             onError={(e) => {
-                              e.target.src = '/images/icons/default.svg';
+                              if (e.target.src !== '/images/icons/default.svg') {
+                                e.target.src = '/images/icons/default.svg';
+                              }
                             }}
                           />
                         </div>
@@ -528,7 +530,9 @@ export default function MainLayout({ children }) {
                             alt=""
                             className="w-8 h-8 mb-2"
                             onError={(e) => {
-                              e.target.src = '/images/icons/default.svg';
+                              if (e.target.src !== '/images/icons/default.svg') {
+                                e.target.src = '/images/icons/default.svg';
+                              }
                             }}
                           />
                           <span className="text-[9px] font-bold text-center text-gray-600 line-clamp-1 truncate">
@@ -564,7 +568,9 @@ export default function MainLayout({ children }) {
         )}
       </header>
 
-      <main className="flex-1 relative z-10">{children}</main>
+      <main className="flex-1 relative z-10" key={location.pathname}>
+        {children}
+      </main>
 
       <footer className="relative pt-10 pb-6 overflow-hidden bg-dark-green text-white">
         <div className="absolute inset-0 z-0">
@@ -778,9 +784,6 @@ export default function MainLayout({ children }) {
               <h3 className="text-[12px] font-black uppercase tracking-tight mb-4 border-b border-white/10 pb-1">
                 NEWSLETTER
               </h3>
-              <p className="opacity-70 leading-relaxed text-[10px]">
-                Bénéficiez de 15 % de réduction sur votre premier achat !
-              </p>
 
               {newsletterStatus.message && (
                 <div

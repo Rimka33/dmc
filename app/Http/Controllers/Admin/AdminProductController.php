@@ -108,11 +108,12 @@ class AdminProductController extends Controller
 
         // 5. Gestion des Images
         if ($request->hasFile('images')) {
+            $primaryIndex = $request->input('primary_image_index', 0);
             foreach ($request->file('images') as $index => $image) {
                 $path = $image->store('products', 'public');
                 $product->images()->create([
                     'image_path' => $path,
-                    'is_primary' => $index === 0,
+                    'is_primary' => (int) $primaryIndex === (int) $index,
                     'sort_order' => $index,
                 ]);
             }

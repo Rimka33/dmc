@@ -39,9 +39,7 @@ export default function CheckoutReceived() {
   if (loading) {
     return (
       <MainLayout>
-        <div className="flex justify-center py-24">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-forest-green"></div>
-        </div>
+        <div className="py-24"></div>
       </MainLayout>
     );
   }
@@ -50,9 +48,11 @@ export default function CheckoutReceived() {
     return (
       <MainLayout>
         <div className="py-24 text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Commande non trouvée</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+            <span>Commande non trouvée</span>
+          </h2>
           <Link to="/" className="text-forest-green font-bold underline">
-            Retour à l'accueil
+            <span>Retour à l'accueil</span>
           </Link>
         </div>
       </MainLayout>
@@ -75,8 +75,12 @@ export default function CheckoutReceived() {
           <div className="w-20 h-20 bg-neon-green rounded-full flex items-center justify-center mb-4 shadow-2xl">
             <Check className="w-10 h-10 text-black" strokeWidth={3} />
           </div>
-          <h1 className="text-2xl font-black text-white uppercase mb-2 tracking-tight">Merci !</h1>
-          <p className="text-white/80 text-lg">Votre commande a été confirmée</p>
+          <h1 className="text-2xl font-black text-white uppercase mb-2 tracking-tight">
+            <span>Merci !</span>
+          </h1>
+          <p className="text-white/80 text-lg">
+            <span>Votre commande a été confirmée</span>
+          </p>
         </div>
       </div>
 

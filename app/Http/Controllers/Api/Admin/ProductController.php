@@ -7,6 +7,7 @@ use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use App\Models\ProductFeature;
 use App\Models\ProductImage;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -156,6 +157,10 @@ class ProductController extends Controller
         }
 
         $product->update($validated);
+
+        if (isset($validated['stock_status']) && in_array($validated['stock_status'], ['low_stock', 'out_of_stock'])) {
+            NotificationService::notifyLowStock($product);
+        }
 
         // Mettre à jour les features
         if ($request->has('features')) {

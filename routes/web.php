@@ -14,6 +14,10 @@ use Inertia\Inertia;
 Route::middleware(['auth:sanctum', 'permission:admin.access'])->prefix('admin')->name('admin.')->group(function () {
     // Dashboard (Accessible par Admin et Manager)
     Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/notifications', [\App\Http\Controllers\Admin\AdminNotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/mark-all-as-read', [\App\Http\Controllers\Admin\AdminNotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
+    Route::post('/notifications/{id}/read', [\App\Http\Controllers\Admin\AdminNotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
+    Route::delete('/notifications/{id}', [\App\Http\Controllers\Admin\AdminNotificationController::class, 'destroy'])->name('notifications.destroy');
 
     // CRUD Produits & Catégories (Accessible par Manager)
     Route::resource('products', \App\Http\Controllers\Admin\AdminProductController::class);

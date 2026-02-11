@@ -14,7 +14,26 @@ import {
   Map,
   Globe,
   AlertCircle,
+  Building,
+  Flag,
 } from 'lucide-react';
+
+const SENEGAL_REGIONS = [
+  'Dakar',
+  'Thiès',
+  'Saint-Louis',
+  'Diourbel',
+  'Louga',
+  'Tambacounda',
+  'Kaolack',
+  'Kolda',
+  'Ziguinchor',
+  'Matam',
+  'Fatick',
+  'Kaffrine',
+  'Sédhiou',
+  'Kédougou',
+];
 
 export default function UserDashboard() {
   const { user, authenticated, loading, setUser } = useContext(AuthContext);
@@ -26,6 +45,8 @@ export default function UserDashboard() {
     email: '',
     phone: '',
     address: '',
+    region: '',
+    neighborhood: '',
     city: '',
     postal_code: '',
   });
@@ -46,6 +67,8 @@ export default function UserDashboard() {
         email: user.email || '',
         phone: user.phone || '',
         address: user.address || '',
+        region: user.region || '',
+        neighborhood: user.neighborhood || '',
         city: user.city || '',
         postal_code: user.postal_code || '',
       });
@@ -275,15 +298,53 @@ export default function UserDashboard() {
                       </div>
                       <div className="space-y-2">
                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                          Région
+                        </label>
+                        <div className="relative group">
+                          <Flag className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-forest-green transition-colors" />
+                          <select
+                            value={profileData.region}
+                            onChange={(e) =>
+                              setProfileData({ ...profileData, region: e.target.value })
+                            }
+                            className="w-full pl-12 pr-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-forest-green focus:outline-none transition-all font-bold text-gray-900 appearance-none"
+                          >
+                            <option value="">Sélectionner une région</option>
+                            {SENEGAL_REGIONS.map((r) => (
+                              <option key={r} value={r}>
+                                {r}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
                           Ville
                         </label>
                         <div className="relative group">
-                          <Globe className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-forest-green transition-colors" />
+                          <Building className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-forest-green transition-colors" />
                           <input
                             type="text"
                             value={profileData.city}
                             onChange={(e) =>
                               setProfileData({ ...profileData, city: e.target.value })
+                            }
+                            className="w-full pl-12 pr-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-forest-green focus:outline-none transition-all font-bold text-gray-900"
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                          Quartier
+                        </label>
+                        <div className="relative group">
+                          <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 group-focus-within:text-forest-green transition-colors" />
+                          <input
+                            type="text"
+                            value={profileData.neighborhood}
+                            onChange={(e) =>
+                              setProfileData({ ...profileData, neighborhood: e.target.value })
                             }
                             className="w-full pl-12 pr-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl focus:bg-white focus:border-forest-green focus:outline-none transition-all font-bold text-gray-900"
                           />

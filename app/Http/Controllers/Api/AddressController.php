@@ -32,6 +32,11 @@ class AddressController extends Controller
      */
     public function store(Request $request)
     {
+        // Nettoyer le téléphone
+        if ($request->has('phone')) {
+            $request->merge(['phone' => str_replace(' ', '', $request->input('phone'))]);
+        }
+
         $validator = Validator::make($request->all(), [
             'label' => 'required|string|max:50',
             'full_name' => 'required|string|max:255',
@@ -79,6 +84,11 @@ class AddressController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // Nettoyer le téléphone
+        if ($request->has('phone')) {
+            $request->merge(['phone' => str_replace(' ', '', $request->input('phone'))]);
+        }
+
         $validator = Validator::make($request->all(), [
             'label' => 'sometimes|required|string|max:50',
             'full_name' => 'sometimes|required|string|max:255',

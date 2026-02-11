@@ -1,0 +1,466 @@
+﻿
+> lint
+> eslint "resources/js/**/*.{js,jsx}"
+
+
+C:\laragon\www\DMC\resources\js\Components\Admin\AdminNotifications.jsx
+  168:21  error  Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  168:21  error  Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  244:28  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                    react/no-unescaped-entities
+
+C:\laragon\www\DMC\resources\js\Components\Admin\ConfirmDialog.jsx
+  2:25  warning  'X' is defined but never used  no-unused-vars
+
+C:\laragon\www\DMC\resources\js\Components\Admin\StatCard.jsx
+  10:3  warning  'color' is assigned a value but never used  no-unused-vars
+
+C:\laragon\www\DMC\resources\js\Components\Admin\TagInput.jsx
+  9:3  warning  'allowNew' is assigned a value but never used  no-unused-vars
+
+C:\laragon\www\DMC\resources\js\Components\BannerPopup.jsx
+   12:5   error    Error: Cannot access variable before it is declared
+
+`fetchPopupBanner` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+  10 |
+  11 |   useEffect(() => {
+> 12 |     fetchPopupBanner();
+     |     ^^^^^^^^^^^^^^^^ `fetchPopupBanner` accessed before it is declared
+  13 |   }, []);
+  14 |
+  15 |   const fetchPopupBanner = async () => {
+
+  13 |   }, []);
+  14 |
+> 15 |   const fetchPopupBanner = async () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 16 |     try {
+     | ^^^^^^^^^
+> 17 |       const response = await api.get('/banners', {
+     ÔÇª
+     | ^^^^^^^^^
+> 38 |     }
+     | ^^^^^^^^^
+> 39 |   };
+     | ^^^^^ `fetchPopupBanner` is declared here
+  40 |
+  41 |   const handleClose = () => {
+  42 |     setIsClosing(true);  react-hooks/immutability
+   13:6   warning  React Hook useEffect has a missing dependency: 'fetchPopupBanner'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+   61:7   error    Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            jsx-a11y/click-events-have-key-events
+   61:7   error    Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         jsx-a11y/no-static-element-interactions
+  103:25  warning  'e' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             no-unused-vars
+
+C:\laragon\www\DMC\resources\js\Components\Notification.jsx
+   9:7  error    Error: Cannot access variable before it is declared
+
+`handleClose` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+   7 |   useEffect(() => {
+   8 |     const timer = setTimeout(() => {
+>  9 |       handleClose();
+     |       ^^^^^^^^^^^ `handleClose` accessed before it is declared
+  10 |     }, duration);
+  11 |
+  12 |     return () => clearTimeout(timer);
+
+  13 |   }, [duration]);
+  14 |
+> 15 |   const handleClose = () => {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 16 |     setIsExiting(true);
+     | ^^^^^^^^^^^^^^^^^^^^^^^
+> 17 |     setTimeout(onClose, 300); // Match animation duration
+     | ^^^^^^^^^^^^^^^^^^^^^^^
+> 18 |   };
+     | ^^^^^ `handleClose` is declared here
+  19 |
+  20 |   const icons = {
+  21 |     success: <CheckCircle2 className="w-5 h-5 text-emerald-500" />,  react-hooks/immutability
+  13:6  warning  React Hook useEffect has a missing dependency: 'handleClose'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               react-hooks/exhaustive-deps
+
+C:\laragon\www\DMC\resources\js\Layouts\AdminLayout.jsx
+  15:3   warning  'X' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     no-unused-vars
+  16:3   warning  'Bell' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+  21:3   warning  'ChevronDown' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           no-unused-vars
+  22:3   warning  'Search' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                no-unused-vars
+  24:3   warning  'Leaf' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+  36:10  warning  'globalSearch' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 no-unused-vars
+  40:5   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  38 |   useEffect(() => {
+  39 |     const params = new URLSearchParams(window.location.search);
+> 40 |     setGlobalSearch(params.get('search') || '');
+     |     ^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  41 |   }, [url]);
+  42 |
+  43 |   useEffect(() => {  react-hooks/set-state-in-effect
+  56:6   warning  React Hook useEffect has a missing dependency: 'showNotification'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               react-hooks/exhaustive-deps
+
+C:\laragon\www\DMC\resources\js\Layouts\MainLayout.jsx
+   25:3   warning  'Phone' is defined but never used                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+   50:28  warning  'setNewsletterStatus' is assigned a value but never used                                                                                                                                                                                                                                                                                                           no-unused-vars
+  675:17  error    The href attribute requires a valid value to be accessible. Provide a valid, navigable address as the href value. If you cannot provide a valid href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+  682:17  error    The href attribute requires a valid value to be accessible. Provide a valid, navigable address as the href value. If you cannot provide a valid href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+  704:22  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                    react/no-unescaped-entities
+  750:17  error    The href attribute requires a valid value to be accessible. Provide a valid, navigable address as the href value. If you cannot provide a valid href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+  756:17  error    The href attribute requires a valid value to be accessible. Provide a valid, navigable address as the href value. If you cannot provide a valid href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+  762:17  error    The href attribute requires a valid value to be accessible. Provide a valid, navigable address as the href value. If you cannot provide a valid href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+  768:17  error    The href attribute requires a valid value to be accessible. Provide a valid, navigable address as the href value. If you cannot provide a valid href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+  774:17  error    The href attribute requires a valid value to be accessible. Provide a valid, navigable address as the href value. If you cannot provide a valid href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Auth\Login.jsx
+  62:15  error  A form label must be associated with a control                                                 jsx-a11y/label-has-associated-control
+  88:19  error  The autoFocus prop should not be used, as it can reduce usability and accessibility for users  jsx-a11y/no-autofocus
+  95:15  error  A form label must be associated with a control                                                 jsx-a11y/label-has-associated-control
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Banners.jsx
+  9:16  warning  'Image' is defined but never used  no-unused-vars
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Banners\Create.jsx
+  141:21  error  A form label must be associated with a control                   jsx-a11y/label-has-associated-control
+  184:21  error  A form label must be associated with a control                   jsx-a11y/label-has-associated-control
+  293:21  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Banners\Edit.jsx
+  147:21  error  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  190:21  error  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Blog.jsx
+  10:16  warning  'FileText' is defined but never used  no-unused-vars
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Categories\Create.jsx
+   53:17  error  A form label must be associated with a control                   jsx-a11y/label-has-associated-control
+   72:17  error  A form label must be associated with a control                   jsx-a11y/label-has-associated-control
+   94:15  error  A form label must be associated with a control                   jsx-a11y/label-has-associated-control
+  106:15  error  A form label must be associated with a control                   jsx-a11y/label-has-associated-control
+  131:17  error  A form label must be associated with a control                   jsx-a11y/label-has-associated-control
+  131:79  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Categories\Edit.jsx
+   61:17  error  A form label must be associated with a control                   jsx-a11y/label-has-associated-control
+   79:17  error  A form label must be associated with a control                   jsx-a11y/label-has-associated-control
+   98:15  error  A form label must be associated with a control                   jsx-a11y/label-has-associated-control
+  109:15  error  A form label must be associated with a control                   jsx-a11y/label-has-associated-control
+  156:17  error  A form label must be associated with a control                   jsx-a11y/label-has-associated-control
+  156:79  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Categories\Index.jsx
+  14:10  warning  'search' is assigned a value but never used     no-unused-vars
+  14:18  warning  'setSearch' is assigned a value but never used  no-unused-vars
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Collections\Create.jsx
+   35:6   warning  React Hook useEffect has missing dependencies: 'data.name' and 'setData'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  109:17  error    A form label must be associated with a control                                                                                jsx-a11y/label-has-associated-control
+  128:17  error    A form label must be associated with a control                                                                                jsx-a11y/label-has-associated-control
+  151:17  error    A form label must be associated with a control                                                                                jsx-a11y/label-has-associated-control
+  170:17  error    A form label must be associated with a control                                                                                jsx-a11y/label-has-associated-control
+  186:15  error    A form label must be associated with a control                                                                                jsx-a11y/label-has-associated-control
+  198:17  error    A form label must be associated with a control                                                                                jsx-a11y/label-has-associated-control
+  198:79  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                               react/no-unescaped-entities
+  243:36  warning  'index' is defined but never used                                                                                             no-unused-vars
+  288:27  error    A form label must be associated with a control                                                                                jsx-a11y/label-has-associated-control
+  324:15  error    A form label must be associated with a control                                                                                jsx-a11y/label-has-associated-control
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Collections\Edit.jsx
+   40:6   warning  React Hook useEffect has a missing dependency: 'setData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   99:17  error    A form label must be associated with a control                                                              jsx-a11y/label-has-associated-control
+  118:17  error    A form label must be associated with a control                                                              jsx-a11y/label-has-associated-control
+  141:17  error    A form label must be associated with a control                                                              jsx-a11y/label-has-associated-control
+  158:17  error    A form label must be associated with a control                                                              jsx-a11y/label-has-associated-control
+  174:15  error    A form label must be associated with a control                                                              jsx-a11y/label-has-associated-control
+  186:17  error    A form label must be associated with a control                                                              jsx-a11y/label-has-associated-control
+  186:79  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                             react/no-unescaped-entities
+  231:36  warning  'index' is defined but never used                                                                           no-unused-vars
+  276:27  error    A form label must be associated with a control                                                              jsx-a11y/label-has-associated-control
+  312:15  error    A form label must be associated with a control                                                              jsx-a11y/label-has-associated-control
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Collections\Index.jsx
+    9:16  warning  'Layers' is defined but never used                               no-unused-vars
+  164:90  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Customers.jsx
+   7:8   warning  'ActionButtons' is defined but never used  no-unused-vars
+   8:16  warning  'DollarSign' is defined but never used     no-unused-vars
+   8:28  warning  'ShoppingCart' is defined but never used   no-unused-vars
+   9:8   warning  'Section' is defined but never used        no-unused-vars
+  64:23  warning  'row' is defined but never used            no-unused-vars
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Dashboard.jsx
+   3:10  warning  'useState' is defined but never used                             no-unused-vars
+  98:66  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Messages.jsx
+  7:15  warning  'Mail' is defined but never used  no-unused-vars
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Messages\Show.jsx
+  7:21  warning  'Mail' is defined but never used  no-unused-vars
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Newsletter.jsx
+  8:26  warning  'Plus' is defined but never used  no-unused-vars
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Notifications.jsx
+   20:11  warning  'auth' is assigned a value but never used                        no-unused-vars
+  200:23  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Orders\Index.jsx
+   3:10  warning  'Link' is defined but never used                no-unused-vars
+   9:10  warning  'Eye' is defined but never used                 no-unused-vars
+   9:15  warning  'Download' is defined but never used            no-unused-vars
+  12:10  warning  'search' is assigned a value but never used     no-unused-vars
+  12:18  warning  'setSearch' is assigned a value but never used  no-unused-vars
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Orders\Show.jsx
+    1:17  warning  'useState' is defined but never used                                                                                                                                                   no-unused-vars
+    3:16  warning  'router' is defined but never used                                                                                                                                                     no-unused-vars
+   54:15  error    Using target="_blank" without rel="noreferrer" (which implies rel="noopener") is a security risk in older browsers: see https://mathiasbynens.github.io/rel-noopener/#recommendations  react/jsx-no-target-blank
+  216:19  error    A form label must be associated with a control                                                                                                                                         jsx-a11y/label-has-associated-control
+  238:19  error    A form label must be associated with a control                                                                                                                                         jsx-a11y/label-has-associated-control
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Pages.jsx
+  10:16  warning  'FileText' is defined but never used  no-unused-vars
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Products\Create.jsx
+  265:15  error  A form label must be associated with a control                   jsx-a11y/label-has-associated-control
+  301:38  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  301:60  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Products\Edit.jsx
+  129:6   warning  React Hook useEffect has a missing dependency: 'setData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  252:40  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                             react/no-unescaped-entities
+  252:62  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                             react/no-unescaped-entities
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Products\Index.jsx
+  13:10  warning  'search' is assigned a value but never used     no-unused-vars
+  13:18  warning  'setSearch' is assigned a value but never used  no-unused-vars
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Products\Show.jsx
+    7:48  warning  'Tag' is defined but never used                                              no-unused-vars
+    7:73  warning  'Video' is defined but never used                                            no-unused-vars
+  116:27  error    Media elements such as <audio> and <video> must have a <track> for captions  jsx-a11y/media-has-caption
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Questions.jsx
+  7:30  warning  'CheckCircle' is defined but never used  no-unused-vars
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Questions\Show.jsx
+  7:21  warning  'MessageSquare' is defined but never used  no-unused-vars
+  7:42  warning  'Eye' is defined but never used            no-unused-vars
+  7:47  warning  'EyeOff' is defined but never used         no-unused-vars
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Reviews.jsx
+  7:8  warning  'ActionButtons' is defined but never used  no-unused-vars
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Reviews\Show.jsx
+   55:19  error  A form label must be associated with a control                   jsx-a11y/label-has-associated-control
+  208:32  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Roles\Create.jsx
+   1:17  warning  'useState' is defined but never used            no-unused-vars
+  65:17  error    A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  92:23  error    A form label must have accessible text          jsx-a11y/label-has-associated-control
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Roles\Edit.jsx
+   1:17  warning  'useState' is defined but never used            no-unused-vars
+  65:17  error    A form label must be associated with a control  jsx-a11y/label-has-associated-control
+  92:23  error    A form label must have accessible text          jsx-a11y/label-has-associated-control
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Settings\Index.jsx
+   8:3   warning  'Settings' is defined but never used        no-unused-vars
+  13:3   warning  'CheckCircle' is defined but never used     no-unused-vars
+  15:3   warning  'ShieldCheck' is defined but never used     no-unused-vars
+  16:3   warning  'Mail' is defined but never used            no-unused-vars
+  19:56  warning  'flash' is assigned a value but never used  no-unused-vars
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Users\Create.jsx
+   69:52  warning  'clearErrors' is assigned a value but never used                 no-unused-vars
+  429:71  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  429:78  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  438:21  error    A form label must have accessible text                           jsx-a11y/label-has-associated-control
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Users\Edit.jsx
+  243:21  error  A form label must have accessible text  jsx-a11y/label-has-associated-control
+
+C:\laragon\www\DMC\resources\js\Pages\Admin\Users\Index.jsx
+  101:26  error  'Phone' is not defined  react/jsx-no-undef
+
+C:\laragon\www\DMC\resources\js\Pages\ClientEntry.jsx
+  30:10  warning  'NotificationProvider' is defined but never used  no-unused-vars
+
+C:\laragon\www\DMC\resources\js\Pages\Client\About.jsx
+  88:59  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  94:29  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\laragon\www\DMC\resources\js\Pages\Client\Auth.jsx
+   77:14  warning  'err' is defined but never used                                  no-unused-vars
+  100:14  warning  'err' is defined but never used                                  no-unused-vars
+  185:23  error    A form label must be associated with a control                   jsx-a11y/label-has-associated-control
+  200:25  error    A form label must be associated with a control                   jsx-a11y/label-has-associated-control
+  304:23  error    A form label must be associated with a control                   jsx-a11y/label-has-associated-control
+  319:25  error    A form label must be associated with a control                   jsx-a11y/label-has-associated-control
+  339:25  error    A form label must be associated with a control                   jsx-a11y/label-has-associated-control
+  356:25  error    A form label must be associated with a control                   jsx-a11y/label-has-associated-control
+  376:25  error    A form label must be associated with a control                   jsx-a11y/label-has-associated-control
+  391:25  error    A form label must be associated with a control                   jsx-a11y/label-has-associated-control
+  409:25  error    A form label must be associated with a control                   jsx-a11y/label-has-associated-control
+  434:25  error    A form label must be associated with a control                   jsx-a11y/label-has-associated-control
+  489:28  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\laragon\www\DMC\resources\js\Pages\Client\Blog.jsx
+  18:6   warning  React Hook useEffect has a missing dependency: 'fetchPosts'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  81:47  error    Comments inside children section of tag should be placed inside braces                                         react/jsx-no-comment-textnodes
+
+C:\laragon\www\DMC\resources\js\Pages\Client\BlogPost.jsx
+    6:26  warning  'Clock' is defined but never used                                                                             no-unused-vars
+    6:44  warning  'Tag' is defined but never used                                                                               no-unused-vars
+   19:6   warning  React Hook useEffect has a missing dependency: 'fetchPost'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  183:20  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                               react/no-unescaped-entities
+  216:29  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                               react/no-unescaped-entities
+
+C:\laragon\www\DMC\resources\js\Pages\Client\Cart.jsx
+  1:39  warning  'useEffect' is defined but never used  no-unused-vars
+
+C:\laragon\www\DMC\resources\js\Pages\Client\Category.jsx
+    9:3   warning  'Search' is defined but never used                                                                                    no-unused-vars
+   12:3   warning  'Filter' is defined but never used                                                                                    no-unused-vars
+   13:3   warning  'LayoutGrid' is defined but never used                                                                                no-unused-vars
+   14:3   warning  'ChevronDown' is defined but never used                                                                               no-unused-vars
+   16:3   warning  'Tag' is defined but never used                                                                                       no-unused-vars
+   19:3   warning  'Check' is defined but never used                                                                                     no-unused-vars
+  125:10  warning  'loadingMore' is assigned a value but never used                                                                      no-unused-vars
+  188:6   warning  React Hook useEffect has a missing dependency: 'fetchCategoryData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\laragon\www\DMC\resources\js\Pages\Client\Checkout.jsx
+  16:3  warning  'ShoppingBag' is defined but never used  no-unused-vars
+
+C:\laragon\www\DMC\resources\js\Pages\Client\CheckoutReceived.jsx
+   24:6   warning  React Hook useEffect has a missing dependency: 'fetchOrder'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   55:29  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                react/no-unescaped-entities
+  279:25  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                react/no-unescaped-entities
+
+C:\laragon\www\DMC\resources\js\Pages\Client\Contact.jsx
+    8:3   warning  'MapPin' is defined but never used                                                                                                                                                                                                                                                                                                                                 no-unused-vars
+    9:3   warning  'Phone' is defined but never used                                                                                                                                                                                                                                                                                                                                  no-unused-vars
+   11:3   warning  'Send' is defined but never used                                                                                                                                                                                                                                                                                                                                   no-unused-vars
+   19:3   warning  'ArrowRight' is defined but never used                                                                                                                                                                                                                                                                                                                             no-unused-vars
+  155:90  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                    react/no-unescaped-entities
+  293:31  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                    react/no-unescaped-entities
+  310:19  error    The href attribute requires a valid value to be accessible. Provide a valid, navigable address as the href value. If you cannot provide a valid href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+  385:77  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                                                                                                    react/no-unescaped-entities
+  385:91  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                                                                                                    react/no-unescaped-entities
+
+C:\laragon\www\DMC\resources\js\Pages\Client\ForgotPassword.jsx
+  87:17  error  A form label must be associated with a control  jsx-a11y/label-has-associated-control
+
+C:\laragon\www\DMC\resources\js\Pages\Client\Home.jsx
+    32:7   error    Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+    32:7   error    Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+    58:15  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                    react/no-unescaped-entities
+    58:36  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                    react/no-unescaped-entities
+   111:10  warning  'Countdown' is defined but never used                                                                                                                                                              no-unused-vars
+   171:11  warning  'addToCart' is assigned a value but never used                                                                                                                                                     no-unused-vars
+   239:11  warning  'addToCart' is assigned a value but never used                                                                                                                                                     no-unused-vars
+   340:7   error    Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+   340:7   error    Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+   383:15  error    A form label must be associated with a control                                                                                                                                                     jsx-a11y/label-has-associated-control
+   399:19  error    img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                                                                                          jsx-a11y/alt-text
+   589:6   warning  React Hook useEffect has a missing dependency: 'nextSlide'. Either include it or remove the dependency array                                                                                       react-hooks/exhaustive-deps
+  1029:68  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                    react/no-unescaped-entities
+  1308:26  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                    react/no-unescaped-entities
+  1308:51  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                    react/no-unescaped-entities
+  1308:78  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                    react/no-unescaped-entities
+  1489:27  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                    react/no-unescaped-entities
+  1489:43  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                    react/no-unescaped-entities
+  1529:27  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                    react/no-unescaped-entities
+  1529:40  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                    react/no-unescaped-entities
+
+C:\laragon\www\DMC\resources\js\Pages\Client\Orders.jsx
+   12:3   warning  'Clock' is defined but never used                                                                            no-unused-vars
+   13:3   warning  'CheckCircle2' is defined but never used                                                                     no-unused-vars
+   14:3   warning  'AlertCircle' is defined but never used                                                                      no-unused-vars
+   19:11  warning  'user' is assigned a value but never used                                                                    no-unused-vars
+   30:6   warning  React Hook useEffect has a missing dependency: 'navigate'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  193:23  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                              react/no-unescaped-entities
+
+C:\laragon\www\DMC\resources\js\Pages\Client\PrivacyPolicy.jsx
+   82:34  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+   82:45  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  100:37  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  106:27  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\laragon\www\DMC\resources\js\Pages\Client\ProductDetail.jsx
+   11:3   warning  'Star' is defined but never used                                                                                                                         no-unused-vars
+   20:3   warning  'Check' is defined but never used                                                                                                                        no-unused-vars
+   21:3   warning  'MessageCircle' is defined but never used                                                                                                                no-unused-vars
+   39:10  warning  'loading' is assigned a value but never used                                                                                                             no-unused-vars
+   62:6   warning  React Hook useEffect has missing dependencies: 'fetchProduct', 'fetchQuestions', and 'fetchReviews'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+   79:6   warning  React Hook useEffect has a missing dependency: 'updateQuantity'. Either include it or remove the dependency array                                        react-hooks/exhaustive-deps
+   90:6   warning  React Hook useEffect has a missing dependency: 'quantity'. Either include it or remove the dependency array                                              react-hooks/exhaustive-deps
+  312:21  error    Media elements such as <audio> and <video> must have a <track> for captions                                                                              jsx-a11y/media-has-caption
+  350:27  error    Media elements such as <audio> and <video> must have a <track> for captions                                                                              jsx-a11y/media-has-caption
+  696:27  error    A form label must be associated with a control                                                                                                           jsx-a11y/label-has-associated-control
+  713:27  error    A form label must be associated with a control                                                                                                           jsx-a11y/label-has-associated-control
+  774:79  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                          react/no-unescaped-entities
+  774:96  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                          react/no-unescaped-entities
+  781:31  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                          react/no-unescaped-entities
+  781:48  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                          react/no-unescaped-entities
+  861:28  error    `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                          react/no-unescaped-entities
+  901:21  error    A form label must be associated with a control                                                                                                           jsx-a11y/label-has-associated-control
+
+C:\laragon\www\DMC\resources\js\Pages\Client\Returns.jsx
+   91:37  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+   97:27  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  104:71  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\laragon\www\DMC\resources\js\Pages\Client\Shop.jsx
+  304:6   warning  React Hook useEffect has a missing dependency: 'fetchProducts'. Either include it or remove the dependency array                                                                                   react-hooks/exhaustive-deps
+  513:17  error    Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  513:17  error    Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  528:17  error    Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  528:17  error    Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  543:17  error    Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  543:17  error    Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  558:17  error    Visible, non-interactive elements with click handlers must have at least one keyboard listener                                                                                                     jsx-a11y/click-events-have-key-events
+  558:17  error    Avoid non-native interactive elements. If using native HTML is not possible, add an appropriate role and support for tabbing, mouse, keyboard, and touch inputs to an interactive content element  jsx-a11y/no-static-element-interactions
+  606:27  error    A form label must be associated with a control                                                                                                                                                     jsx-a11y/label-has-associated-control
+  618:27  error    A form label must be associated with a control                                                                                                                                                     jsx-a11y/label-has-associated-control
+
+C:\laragon\www\DMC\resources\js\Pages\Client\Terms.jsx
+   97:59  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+  103:29  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\laragon\www\DMC\resources\js\Pages\Client\UserDashboard.jsx
+   15:3   warning  'Globe' is defined but never used                                                                            no-unused-vars
+   76:6   warning  React Hook useEffect has a missing dependency: 'navigate'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  154:47  error    Comments inside children section of tag should be placed inside braces                                       react/jsx-no-comment-textnodes
+  223:23  error    A form label must be associated with a control                                                               jsx-a11y/label-has-associated-control
+  238:23  error    A form label must be associated with a control                                                               jsx-a11y/label-has-associated-control
+  257:23  error    A form label must be associated with a control                                                               jsx-a11y/label-has-associated-control
+  286:25  error    A form label must be associated with a control                                                               jsx-a11y/label-has-associated-control
+  300:25  error    A form label must be associated with a control                                                               jsx-a11y/label-has-associated-control
+  322:25  error    A form label must be associated with a control                                                               jsx-a11y/label-has-associated-control
+  338:25  error    A form label must be associated with a control                                                               jsx-a11y/label-has-associated-control
+  354:25  error    A form label must be associated with a control                                                               jsx-a11y/label-has-associated-control
+  396:23  error    A form label must be associated with a control                                                               jsx-a11y/label-has-associated-control
+  410:23  error    A form label must be associated with a control                                                               jsx-a11y/label-has-associated-control
+  424:23  error    A form label must be associated with a control                                                               jsx-a11y/label-has-associated-control
+
+C:\laragon\www\DMC\resources\js\Pages\Client\Wishlist.jsx
+  146:23  error  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\laragon\www\DMC\resources\js\contexts\AuthContext.jsx
+   1:53  warning  'useContext' is defined but never used  no-unused-vars
+  21:18  warning  'error' is defined but never used       no-unused-vars
+
+C:\laragon\www\DMC\resources\js\contexts\WishlistContext.jsx
+  20:6   warning  React Hook useEffect has a missing dependency: 'fetchWishlist'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  68:14  warning  'error' is defined but never used                                                                                 no-unused-vars
+
+Ô£û 265 problems (160 errors, 105 warnings)
+  1 error and 0 warnings potentially fixable with the `--fix` option.
+

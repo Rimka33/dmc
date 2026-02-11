@@ -44,9 +44,7 @@ export default function Orders() {
   if (loading)
     return (
       <MainLayout>
-        <div className="flex justify-center py-24">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-forest-green"></div>
-        </div>
+        <div className="py-24"></div>
       </MainLayout>
     );
 
@@ -80,9 +78,7 @@ export default function Orders() {
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-7xl mx-auto">
           {ordersLoading ? (
-            <div className="flex justify-center py-24">
-              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-forest-green"></div>
-            </div>
+            <div className="py-24"></div>
           ) : orders.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 animate-in fade-in slide-in-from-bottom-4 duration-700">
               {orders.map((order) => (

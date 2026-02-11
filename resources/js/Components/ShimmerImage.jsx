@@ -24,10 +24,9 @@ export default function ShimmerImage({
         alt={alt}
         className={`${className} transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
         onLoad={() => setLoaded(true)}
-        onError={(e) => {
+        onError={() => {
           if (!errored) {
             setErrored(true);
-            e.target.src = fallback;
           }
         }}
         {...props}

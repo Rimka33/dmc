@@ -100,10 +100,15 @@ class OrderService
                 // Mettre à jour le statut du stock
                 if ($product->stock_quantity <= 0) {
                     $product->update(['stock_status' => 'out_of_stock']);
+                    NotificationService::notifyLowStock($product);
                 } elseif ($product->stock_quantity <= 10) {
                     $product->update(['stock_status' => 'low_stock']);
+                    NotificationService::notifyLowStock($product);
                 }
             }
+
+            // Notifier les administrateurs
+            NotificationService::notifyNewOrder($order->load('items'));
 
             return $order;
         });

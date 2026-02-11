@@ -8,9 +8,15 @@ export default function BannerPopup() {
   const [isVisible, setIsVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
-  useEffect(() => {
-    fetchPopupBanner();
-  }, []);
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      setIsVisible(false);
+      if (banner) {
+        localStorage.setItem('dismissed_banner_id', String(banner.id));
+      }
+    }, 300);
+  };
 
   const fetchPopupBanner = async () => {
     try {
@@ -38,15 +44,9 @@ export default function BannerPopup() {
     }
   };
 
-  const handleClose = () => {
-    setIsClosing(true);
-    setTimeout(() => {
-      setIsVisible(false);
-      if (banner) {
-        localStorage.setItem('dismissed_banner_id', String(banner.id));
-      }
-    }, 300);
-  };
+  useEffect(() => {
+    fetchPopupBanner();
+  }, [fetchPopupBanner]);
 
   if (!isVisible || !banner) return null;
 
@@ -81,7 +81,9 @@ export default function BannerPopup() {
                 alt={banner.title}
                 className="w-full h-auto object-cover"
                 onError={(e) => {
-                  e.target.src = '/images/placeholder.png';
+                  if (e.target.src !== '/images/placeholder.png') {
+                    e.target.src = '/images/placeholder.png';
+                  }
                 }}
               />
               {banner.description && (
@@ -98,9 +100,7 @@ export default function BannerPopup() {
               src={imageUrl}
               alt={banner.title}
               className="w-full h-auto object-cover"
-              onError={(e) => {
-                e.target.src = '/images/placeholder.png';
-              }}
+              onError={(e) => {}}
             />
             {banner.description && (
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
