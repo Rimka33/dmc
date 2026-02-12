@@ -12,10 +12,10 @@ class DatabaseSeeder extends Seeder
         $this->command->info('🌱 Démarrage du seeding de la base de données...');
         $this->command->line('');
 
-        // Users
-        $this->command->info('▶ Seeding users...');
-        Artisan::call('db:seed', ['--class' => 'UserSeeder', '--force' => true]);
-        $this->command->info('✅ Users créés');
+        // Admin
+        $this->command->info('▶ Seeding admin...');
+        Artisan::call('db:seed', ['--class' => 'AdminUserSeeder', '--force' => true]);
+        $this->command->info('✅ Admin créé');
 
         // Categories
         $this->command->info('▶ Seeding categories...');
