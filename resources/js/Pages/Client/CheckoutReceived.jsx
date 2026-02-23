@@ -274,14 +274,14 @@ export default function CheckoutReceived() {
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               to="/"
-              className="w-full sm:w-auto px-6 py-3 bg-gray-900 text-white font-bold uppercase rounded-lg hover:bg-black transition-all shadow-lg text-center"
+              className="w-full sm:w-auto px-6 py-3 bg-[#058031] text-white font-bold uppercase rounded-lg hover:bg-black transition-all shadow-lg text-center"
             >
               Retour à l'accueil
             </Link>
             {authenticated && (
               <Link
                 to="/mes-commandes"
-                className="w-full sm:w-auto px-6 py-3 border-2 border-forest-green text-forest-green font-bold uppercase rounded-lg hover:bg-forest-green hover:text-white transition-all text-center"
+                className="w-full sm:w-auto px-6 py-3 border-2 border-[#058031] text-[#058031] font-bold uppercase rounded-lg hover:bg-[#058031] hover:text-white transition-all text-center"
               >
                 Mes commandes
               </Link>

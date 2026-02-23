@@ -141,37 +141,47 @@ export default function MainLayout({ children }) {
   return (
     <div className="min-h-screen flex flex-col font-sans bg-gray-50">
       <header className="sticky top-0 z-50 w-full shadow-2xl">
-        <div className="py-2.5 bg-dark-green border-b border-white/5">
+        <div className="py-5 bg-dark-green border-b border-white/5">
           <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-6">
-                <div className="hidden lg:flex items-center gap-2">
-                  <span className="text-white/40 font-black uppercase tracking-[0.2em] text-[10px]">
-                    Support:
-                  </span>
-                  <a
-                    href="tel:+221772367777"
-                    className="text-neon-green font-black text-xs hover:text-white transition-colors"
-                  >
-                    +221 77 236 77 77
-                  </a>
-                </div>
-                <div className="flex items-center gap-4">
-                  <button className="flex items-center gap-2 text-white/70 hover:text-neon-green transition-all group">
-                    <MapPin className="w-4 h-4 text-neon-green" />
-                    <span className="text-[10px] font-bold uppercase tracking-wider">
-                      Showroom Dakar
+            <div className="flex items-center justify-between relative">
+              <div className="flex items-center gap-10">
+                {/* Localiser la Boutique */}
+                <button className="flex items-center gap-3 text-white hover:text-neon-green transition-all group">
+                  <MapPin className="w-6 h-6 text-white group-hover:text-neon-green" />
+                  <div className="flex flex-col items-start leading-tight text-left">
+                    <span className="text-[10px] font-bold uppercase tracking-wider">Localiser</span>
+                    <span className="text-[10px] font-bold uppercase tracking-wider">la boutique</span>
+                  </div>
+                </button>
+
+                {/* Parler au commercial */}
+                <div className="hidden lg:flex items-center gap-3">
+                  <Phone className="w-6 h-6 text-white" />
+                  <div className="flex flex-col items-start leading-tight text-left">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-white">
+                      Parler au
                     </span>
-                  </button>
+                    <div className="flex items-center gap-1">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-white">
+                        Commercial :
+                      </span>
+                      <a
+                        href="tel:+221772367777"
+                        className="text-[10px] font-bold text-neon-green hover:text-white transition-colors"
+                      >
+                        +(221) 77 236 77 77
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 md:static md:translate-x-0 md:translate-y-0">
+              <div className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2">
                 <Link to="/" className="block">
                   <img
                     src="/images/logo.png"
                     alt="DMC Logo"
-                    className="h-8 md:h-12 w-auto object-contain brightness-110"
+                    className="h-10 md:h-16 w-auto object-contain brightness-110"
                   />
                 </Link>
               </div>
@@ -264,7 +274,7 @@ export default function MainLayout({ children }) {
                             <User className="w-4 h-4 text-gray-400" /> Mon Profil
                           </Link>
                           {user?.role === 'admin' ||
-                          (user?.permissions && user.permissions.length > 0) ? (
+                            (user?.permissions && user.permissions.length > 0) ? (
                             <a
                               href="/admin/dashboard"
                               className="flex items-center gap-3 px-5 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-forest-green font-bold transition-all border-t border-gray-50"
@@ -322,9 +332,9 @@ export default function MainLayout({ children }) {
                         key={cat.id}
                         to={`/categorie/${cat.slug}`}
                         onClick={() => setCategoriesOpen(false)}
-                        className="flex items-center gap-4 px-6 py-3.5 hover:bg-forest-green hover:text-green-500 text-gray-700 transition-all font-bold text-sm group"
+                        className="flex items-center gap-4 px-6 py-3.5 hover:bg-forest-green hover:text-[rgba(5,128,49,1)] text-gray-700 transition-all font-bold text-sm group"
                       >
-                        <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center group-hover:bg-green-500 transition-colors">
+                        <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center transition-colors">
                           <img
                             src={resolveCategoryImage(cat)}
                             alt=""
@@ -346,7 +356,7 @@ export default function MainLayout({ children }) {
                   <div className="mt-4 px-6 pt-4 border-t border-gray-100 sticky bottom-0 bg-white">
                     <Link
                       to="/shop"
-                      className="block w-full py-3 bg-gray-900 text-white text-center rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-black transition-all"
+                      className="block w-full py-3 bg-[#058031] text-white text-center rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-[#046627] transition-all"
                     >
                       Voir tout le catalogue
                     </Link>
@@ -787,11 +797,10 @@ export default function MainLayout({ children }) {
 
               {newsletterStatus.message && (
                 <div
-                  className={`text-[10px] font-bold p-2 rounded animate-in fade-in slide-in-from-top-1 duration-300 ${
-                    newsletterStatus.type === 'success'
-                      ? 'bg-green-50 text-green-700'
-                      : 'bg-red-50 text-red-700'
-                  }`}
+                  className={`text-[10px] font-bold p-2 rounded animate-in fade-in slide-in-from-top-1 duration-300 ${newsletterStatus.type === 'success'
+                    ? 'bg-green-50 text-green-700'
+                    : 'bg-red-50 text-red-700'
+                    }`}
                 >
                   {newsletterStatus.message}
                 </div>

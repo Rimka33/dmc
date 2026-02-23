@@ -203,7 +203,7 @@ function HorizontalProductCard({ product }) {
 
         {/* Content Section */}
         <div className="flex-1 p-5 flex flex-col justify-center text-left">
-          <div className="flex items-center gap-1 mb-2">
+          <div className="flex items-center gap-1 mb-0.5">
             {[...Array(5)].map((_, i) => (
               <Star
                 key={i}
@@ -213,11 +213,11 @@ function HorizontalProductCard({ product }) {
             <span className="text-[10px] text-gray-400 ml-1">({product.review_count || 0})</span>
           </div>
 
-          <h3 className="text-sm font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-forest-green transition-colors leading-tight">
+          <h3 className="text-sm font-bold text-gray-900 mb-0.5 line-clamp-2 group-hover:text-forest-green transition-colors leading-tight">
             {product.name}
           </h3>
 
-          <div className="flex items-baseline gap-2 mt-auto">
+          <div className="flex items-baseline gap-2 mt-0.5">
             <span className="text-base font-black text-forest-green">
               {product.price_formatted}
             </span>
@@ -273,7 +273,7 @@ function ProductCard({ product }) {
             ))}
           </div>
 
-          <div className="mt-auto flex items-baseline gap-1.5">
+          <div className="mt-0.5 flex items-baseline gap-1.5">
             <span className="text-[10px] font-black text-forest-green">
               {product.price_formatted}
             </span>
@@ -704,39 +704,56 @@ export default function Home() {
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-1 lg:grid-cols-1 gap-8 items-center">
+              <div className="flex flex-col gap-8">
                 {/* Hero Text (Fallback) */}
-                <div className="space-y-2 z-10" style={{ marginTop: '3%' }}>
-                  <p className="text-neon-green text-lg font-bold uppercase">
+                <div className="space-y-4 z-10" style={{ marginTop: '5%' }}>
+                  <p className="text-white text-sm font-bold uppercase tracking-tight">
                     Chez DAROUL Mouhty COMPUTER - SARL
                   </p>
 
-                  <h1 className="text-3xl md:text-2xl lg:text-3xl font-bold text-white uppercase leading-tight">
-                    Retrouver le Meilleur matériels informatiques
-                  </h1>
-
-                  <p className="text-neon-green text-1xl font-bold">À PARTIR DE 75.000 FCFA</p>
-
-                  <Link
-                    to="/shop"
-                    className="inline-block px-8 py-4 text-base bg-neon-green text-black font-bold uppercase rounded hover:bg-white transition-colors"
-                  >
-                    Acheter Maintenant
-                  </Link>
+                  <div className="space-y-0">
+                    <h1 className="text-white text-3xl font-bold uppercase tracking-tight">
+                      Retrouver le meilleur matériels
+                    </h1>
+                    <div className="flex flex-wrap items-center gap-6">
+                      <h2 className="text-white text-3xl font-bold uppercase tracking-tight mt-2">
+                        informatiques
+                      </h2>
+                      <p className="text-neon-green text-xl md:text-lg lg:text-lg font-black uppercase tracking-wider">
+                        À PARTIR DE 75.000 FCFA
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Hero Images (Fallback) */}
-                <div className="relative h-80 lg:h-[320px]">
-                  <img
-                    src="/images/hero-slider-1.png"
-                    alt="Gaming Setup"
-                    className="absolute inset-0 w-full h-full object-contain"
-                  />
-                  <img
-                    src="/images/hero-slider-2.png"
-                    alt="Laptop"
-                    className="absolute -top-20 right-50 w-24 h-24 object-contain rotate-145"
-                  />
+                {/* Hero Images & Button (Fallback) */}
+                <div className="relative mt-4">
+                  <div className="relative w-full flex items-center justify-start lg:justify-center">
+                    <div className="relative group">
+                      <img
+                        src="/images/hero-slider-1.png"
+                        alt="Hardware Group"
+                        className="w-[792px] h-[427px] object-contain drop-shadow-[0_30px_60px_rgba(0,0,0,0.6)]"
+                      />
+
+                      {/* Arrow/Laptop Image */}
+                      <img
+                        src="/images/hero-slider-2.png"
+                        alt="Decoration"
+                        className="absolute -top-20 right-20 w-28 h-32 object-contain rotate-145 opacity-80"
+                      />
+
+                      {/* Red Button Positioned exactly to the right of the desktop unit */}
+                      <div className="absolute top-[60%] -right-5 lg:-right-32 -translate-y-1/2 flex items-center z-20">
+                        <Link
+                          to="/shop"
+                          className="bg-red-600 hover:bg-red-700 text-white font-black text-sm lg:text-sm uppercase px-8 py-4 transition-all shadow-[0_10px_30px_rgba(220,38,38,0.5)] transform hover:scale-105 active:scale-95 whitespace-nowrap"
+                        >
+                          ACHETER MAINTENANT
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
@@ -755,23 +772,23 @@ export default function Home() {
                 >
                   {loading
                     ? [...Array(3)].map((_, i) => (
-                        <div
-                          key={i}
-                          style={{ width: `${100 / itemsPerView}%` }}
-                          className="flex-shrink-0 px-3"
-                        >
-                          <Skeleton className="h-44 w-full" />
-                        </div>
-                      ))
+                      <div
+                        key={i}
+                        style={{ width: `${100 / itemsPerView}%` }}
+                        className="flex-shrink-0 px-3"
+                      >
+                        <Skeleton className="h-44 w-full" />
+                      </div>
+                    ))
                     : data.featuredProducts?.map((product, index) => (
-                        <div
-                          key={index}
-                          style={{ width: `${100 / itemsPerView}%` }}
-                          className="flex-shrink-0 px-3"
-                        >
-                          <HorizontalProductCard product={product} />
-                        </div>
-                      ))}
+                      <div
+                        key={index}
+                        style={{ width: `${100 / itemsPerView}%` }}
+                        className="flex-shrink-0 px-3"
+                      >
+                        <HorizontalProductCard product={product} />
+                      </div>
+                    ))}
                 </div>
               </div>
 
@@ -815,9 +832,8 @@ export default function Home() {
                       <button
                         key={index}
                         onClick={() => setCurrentSlide(index)}
-                        className={`w-3 h-3 rounded-full transition-colors duration-300 ${
-                          currentSlide === index ? 'bg-neon-green' : 'bg-gray-400'
-                        }`}
+                        className={`w-3 h-3 rounded-full transition-colors duration-300 ${currentSlide === index ? 'bg-neon-green' : 'bg-gray-400'
+                          }`}
                       ></button>
                     ))}
                   </div>
@@ -857,32 +873,32 @@ export default function Home() {
             >
               {loading
                 ? [...Array(8)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="flex-shrink-0 w-[calc(12.5%-0.5rem)] min-w-[120px] snap-start"
-                    >
-                      <Skeleton className="h-32 w-full" />
-                    </div>
-                  ))
+                  <div
+                    key={i}
+                    className="flex-shrink-0 w-[calc(12.5%-0.5rem)] min-w-[120px] snap-start"
+                  >
+                    <Skeleton className="h-32 w-full" />
+                  </div>
+                ))
                 : data.categories?.map((category, index) => (
-                    <Link
-                      key={index}
-                      to={`/categorie/${category.slug}`}
-                      className="flex-shrink-0 w-[calc(12.5%-0.5rem)] min-w-[120px] bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow px-3 py-4 flex flex-col items-center text-center group snap-start"
-                    >
-                      <img
-                        src={resolveCategoryImage(category)}
-                        alt={category.name}
-                        className="w-14 h-14 mx-auto mb-2 object-contain group-hover:scale-110 transition-transform"
-                        onError={(e) => {
-                          e.target.src = '/images/placeholder.png';
-                        }}
-                      />
-                      <h3 className="text-xs font-semibold text-gray-900 leading-tight line-clamp-2">
-                        {category.name}
-                      </h3>
-                    </Link>
-                  ))}
+                  <Link
+                    key={index}
+                    to={`/categorie/${category.slug}`}
+                    className="flex-shrink-0 w-[calc(12.5%-0.5rem)] min-w-[120px] bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow px-3 py-4 flex flex-col items-center text-center group snap-start"
+                  >
+                    <img
+                      src={resolveCategoryImage(category)}
+                      alt={category.name}
+                      className="w-14 h-14 mx-auto mb-2 object-contain group-hover:scale-110 transition-transform"
+                      onError={(e) => {
+                        e.target.src = '/images/placeholder.png';
+                      }}
+                    />
+                    <h3 className="text-xs font-semibold text-gray-900 leading-tight line-clamp-2">
+                      {category.name}
+                    </h3>
+                  </Link>
+                ))}
             </div>
           </div>
         </div>
@@ -897,115 +913,169 @@ export default function Home() {
 
       {/* Special Offers Section */}
       {data.specialOffers && data.specialOffers.length > 0 && (
-        <section className="py-8 bg-white">
+        <section className="py-12 bg-gray-50/50">
           <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-1xl font-bold text-gray-900 uppercase">Offres du moment</h2>
-              <div className="flex gap-1">
+            <div className="flex items-center justify-between mb-8">
+              <div className="flex items-center gap-3">
+                <h2 className="text-2xl font-black text-gray-900">OFFRES DU MOMENT</h2>
+              </div>
+              <div className="flex gap-2">
                 <button
                   onClick={() => scroll(offersRef, 'left')}
-                  className="w-10 h-10 flex items-center justify-center bg-gray-100 rounded hover:bg-neon-green transition-colors"
+                  className="w-10 h-10 flex items-center justify-center bg-white border border-gray-100 shadow-sm rounded-lg hover:bg-neon-green hover:text-black transition-all group"
                 >
-                  <ChevronLeft className="w-5 h-5" />
+                  <ChevronLeft className="w-4 h-4 text-gray-400 group-hover:text-black" />
                 </button>
                 <button
                   onClick={() => scroll(offersRef, 'right')}
-                  className="w-10 h-10 flex items-center justify-center bg-gray-100 rounded hover:bg-neon-green transition-colors"
+                  className="w-10 h-10 flex items-center justify-center bg-white border border-gray-100 shadow-sm rounded-lg hover:bg-neon-green hover:text-black transition-all group"
                 >
-                  <ChevronRight className="w-5 h-5" />
+                  <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-black" />
                 </button>
               </div>
             </div>
 
             <div className="flex flex-col lg:flex-row gap-6">
-              {/* Left hero image */}
-              <div className="lg:w-1/5 hidden md:block">
-                <img
-                  src="/images/offers/laptop-colorful.jpg"
-                  alt="Special Offer"
-                  className="w-full h-full object-cover rounded-lg shadow-md"
-                />
+              {/* Left banner decoration */}
+              <div className="lg:w-1/5 hidden lg:block h-[320px]">
+                <div className="relative h-full w-full rounded-2xl overflow-hidden shadow-xl group">
+                  <img
+                    src="/images/offers/laptop-colorful.jpg"
+                    alt="Special Offer"
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
+                    onError={(e) => {
+                      e.target.src = "https://images.unsplash.com/photo-1593642632823-8f785ba67e45?q=80&w=1000&auto=format&fit=crop";
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                </div>
               </div>
 
               {/* Horizontal offers list */}
-              <div className="lg:w-3/4 relative">
+              <div className="lg:w-4/5">
                 <div
                   ref={offersRef}
-                  className="flex gap-4 md:gap-6 overflow-x-auto pb-4 -mx-3 px-3 scrollbar-hide snap-x"
+                  className="flex gap-4 overflow-x-auto pb-6 -mx-4 px-4 scrollbar-hide snap-x"
                 >
                   {data.specialOffers.map((offer, index) => (
                     <div
                       key={index}
-                      className="min-w-[280px] md:min-w-[360px] bg-white border border-gray-200 rounded-lg shadow p-3 md:p-4 flex gap-4 snap-start"
+                      className="min-w-[280px] md:min-w-[420px] bg-white rounded-2xl shadow-lg shadow-gray-200/40 p-4 md:p-5 flex flex-col md:flex-row gap-4 snap-start relative border border-white group/card"
                     >
-                      <Link to={`/produit/${offer.id}`} className="w-32 flex-shrink-0 group">
-                        <img
-                          src={offer.primary_image}
-                          alt={offer.name}
-                          className="w-full h-28 object-contain group-hover:scale-105 transition-transform duration-300"
-                        />
-                        {offer.is_on_sale && (
-                          <span className="inline-block mt-2 px-2 py-1 bg-red-600 text-white text-xs font-bold uppercase rounded">
-                            SOLDE
+                      {/* Top Badges */}
+                      <div className="absolute top-3 left-3 z-10">
+                        {offer.is_new !== false && (
+                          <span className="px-2.5 py-1 bg-[#00ff24] text-white text-[7px] font-black uppercase rounded-full shadow-lg shadow-neon-green/30">
+                            NOUVEAU
                           </span>
                         )}
-                      </Link>
+                      </div>
+                      <button className="absolute top-3 right-3 z-10 w-7 h-7 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-300 hover:text-red-500 hover:bg-white transition-all shadow-sm">
+                        <Heart className="w-3.5 h-3.5" />
+                      </button>
 
-                      <div className="flex-1 flex flex-col justify-between">
-                        <Link to={`/produit/${offer.id}`} className="group">
-                          <p className="text-gray-500 text-[10px] font-bold uppercase group-hover:text-forest-green transition-colors">
+                      {/* Column 1: Image and Basic Info */}
+                      <div className="flex-1 flex flex-col min-w-[140px]">
+                        <Link to={`/produit/${offer.id}`} className="block mb-3 relative group">
+                          <img
+                            src={offer.primary_image}
+                            alt={offer.name}
+                            className="w-full h-28 md:h-32 object-contain group-hover:scale-110 transition-transform duration-500"
+                          />
+                        </Link>
+
+                        <div className="mt-auto">
+                          <p className="text-gray-400 text-[8px] font-bold uppercase tracking-widest mb-1">
                             {offer.category_name}
                           </p>
-                          <h3 className="text-xs font-bold group-hover:text-forest-green transition-colors line-clamp-2 leading-tight mb-1">
-                            {offer.name}
-                          </h3>
+                          <Link to={`/produit/${offer.id}`}>
+                            <h3 className="text-sm font-black text-gray-900 group-hover/card:text-forest-green transition-colors leading-tight mb-2 line-clamp-2 uppercase">
+                              {offer.name}
+                            </h3>
+                          </Link>
 
-                          <div className="flex items-center gap-3 mt-1">
-                            <span className="text-sm font-black text-red-600">
-                              {offer.price_formatted}
-                            </span>
+                          <div className="flex items-center gap-1 mb-3">
+                            {[...Array(5)].map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`w-3 h-3 ${i < Math.floor(offer.rating || 4) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200 fill-gray-200'}`}
+                              />
+                            ))}
+                            <span className="text-[10px] text-gray-400 ml-1 font-bold">({offer.review_count || 0})</span>
+                          </div>
+
+                          <div className="flex items-center gap-3">
+                            <div className="flex flex-col">
+                              <span className="text-xl font-black text-red-600 leading-none">
+                                {offer.price_formatted}
+                              </span>
+                              {offer.has_discount && (
+                                <span className="text-xs text-gray-300 line-through font-bold">
+                                  {offer.old_price_formatted || '0 FCFA'}
+                                </span>
+                              )}
+                            </div>
                             {offer.has_discount && (
-                              <span className="px-1.5 py-0.5 bg-red-600 text-white text-[10px] font-bold rounded">
-                                -{offer.discount_percentage}%
+                              <span className="px-2 py-0.5 bg-red-600 text-white text-[9px] font-black rounded flex items-center">
+                                -{offer.discount_percentage || 19}%
                               </span>
                             )}
                           </div>
+                        </div>
+                      </div>
 
-                          <ul className="mt-2 space-y-0.5 text-[10px] text-gray-600">
-                            {offer.features?.slice(0, 2).map((feature, i) => (
-                              <li key={i} className="flex items-center gap-1.5">
-                                <Check className="w-3 h-3 text-forest-green" />
-                                <span className="truncate">{feature}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </Link>
+                      {/* Divider */}
+                      <div className="hidden md:block w-px bg-gray-100 my-2"></div>
 
-                        <div className="mt-4">
-                          <div className="mt-2">
-                            <div className="w-1/2 h-1 bg-gray-200 rounded-xs overflow-hidden">
-                              <div
-                                className="h-1 bg-forest-green"
-                                style={{ width: `${offer.stock_quantity > 0 ? 30 : 100}%` }}
-                              ></div>
-                            </div>
-                            <p className="text-[10px] text-gray-500 mt-1">
-                              Disponible : {offer.stock_quantity}
-                            </p>
+                      {/* Column 2: Availability and CTA */}
+                      <div className="flex-1 flex flex-col pt-2">
+                        <div className="flex items-center gap-2 mb-4">
+                          <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center">
+                            <Check className="w-3 h-3 text-[#058031]" />
                           </div>
+                          <span className="text-xs font-bold text-[#058031]">
+                            {offer.stock_quantity || 13} Dispo.
+                          </span>
+                        </div>
 
-                          <div className="mt-2">
-                            <button
-                              onClick={(e) => {
-                                e.preventDefault();
-                                addToCart(offer.product_id || offer.id);
-                              }}
-                              className="w-2/3 px-3 py-2 text-xs bg-forest-green text-white  rounded hover:bg-dark-green transition-colors"
-                            >
-                              Ajout au panier
-                            </button>
-                            <p className="text-xs text-gray-500 mt-2">SKU: {offer.sku}</p>
+                        <ul className="space-y-2 mb-6">
+                          {(offer.features?.slice(0, 3) || [
+                            "3 Mois de Garantie",
+                            "Venant des USA",
+                            "Livraison Rapide"
+                          ]).map((feature, i) => (
+                            <li key={i} className="flex items-center gap-2">
+                              <Check className="w-3.5 h-3.5 text-gray-900" />
+                              <span className="text-[10px] font-bold text-gray-500 truncate">{feature}</span>
+                            </li>
+                          ))}
+                        </ul>
+
+                        <div className="mb-6">
+                          <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden mb-1.5">
+                            <div
+                              className="h-full bg-gradient-to-r from-orange-500 to-red-600 rounded-full"
+                              style={{ width: `${60}%` }}
+                            ></div>
                           </div>
+                          <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">
+                            {60}% VENDU - DISPO : {offer.stock_quantity || 13}
+                          </p>
+                        </div>
+
+                        <div className="mt-auto space-y-3">
+                          <button
+                            onClick={(e) => {
+                              e.preventDefault();
+                              addToCart(offer.product_id || offer.id);
+                            }}
+                            className="w-full py-3 bg-[#058031] text-white rounded-lg font-black text-[10px] uppercase tracking-[0.2em] hover:bg-dark-green transition-all shadow-lg shadow-forest-green/20 transform active:scale-95"
+                          >
+                            AJOUT AU PANIER
+                          </button>
+                          <p className="text-center text-[8px] font-bold text-gray-400 uppercase tracking-[0.3em]">
+                            SKU : {offer.sku || '123'}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -1018,61 +1088,58 @@ export default function Home() {
       )}
 
       {/* Featured Detail Section */}
-      <section className="py-12 bg-white">
+      <section className="py-8 bg-white">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
-            <div>
-              <div className="bg-white rounded-lg shadow p-8">
-                <h3 className="text-1xl font-bold mb-2">Dell Desktop Ultrasharp 32 U3223QE</h3>
-                <p className="text-xs text-gray-600 mb-4">
-                  Écran 4K+ avec des couleurs réalistes. Avec 1,5 million de pixels supplémentaires
-                  par rapport à la 4K standard, vous bénéficierez d'une vision plus large et plus
-                  claire, tant au travail que dans la vie.
-                </p>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+            <div className="h-full">
+              <div className="bg-white rounded-3xl shadow-xl p-6 md:p-8 h-full flex flex-col">
+                <h3 className="text-xl font-black text-gray-900 mb-4">Dell Desktop Ultrasharp 32 U3223QE</h3>
+                <div className="space-y-3 mb-6">
+                  <h4 className="text-[11px] font-black text-gray-900 uppercase tracking-tight">
+                    Écran 4K+ avec des couleurs réalistes
+                  </h4>
+                  <p className="text-xs text-gray-400 font-medium leading-relaxed">
+                    Avec 1,5 million de pixels supplémentaires par rapport à la 4K standard, sur l'immense écran de 28,2 pouces,
+                    vous bénéficierez d'une vision plus large et plus claire, tant au travail que dans la vie.
+                  </p>
+                </div>
 
-                <div className="grid grid-cols-2 gap-4 mt-6 text-xs text-gray-700">
-                  <div className="flex items-start gap-3">
-                    <img src="/images/icons/monitor.jpeg" alt="4K+" className="w-8 h-8" />
-                    <div>
-                      <strong>4K+</strong>
-                      <div className="text-xs">Écran 4K+ Ultra HD</div>
-                    </div>
+                <div className="grid grid-cols-2 gap-x-8 gap-y-6 text-xs mt-4">
+                  <div className="flex items-center gap-4">
+                    <img src="/images/icons/monitor.jpeg" alt="4K+" className="w-10 h-10 object-contain" />
+                    <span className="text-[10px] font-bold text-gray-400">Écran 4K+ Ultra HD</span>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <img src="/images/icons/palette.jpeg" alt="DCI-P3" className="w-8 h-8" />
-                    <div>
-                      <strong>DCI-P3</strong>
-                      <div className="text-xs">Gamme de couleurs de niveau cinéma</div>
-                    </div>
+                  <div className="flex items-center gap-4">
+                    <img src="/images/icons/palette.jpeg" alt="DCI-P3" className="w-10 h-10 object-contain" />
+                    <span className="text-[10px] font-bold text-gray-400">Gamme de couleurs de niveau cinéma</span>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <img src="/images/icons/sun.jpeg" alt="HDR" className="w-8 h-8" />
-                    <div>
-                      <strong>HDR</strong>
-                      <div className="text-xs">Plage dynamique élevée</div>
-                    </div>
+                  <div className="flex items-center gap-4">
+                    <img src="/images/icons/sun.jpeg" alt="HDR" className="w-10 h-10 object-contain" />
+                    <span className="text-[10px] font-bold text-gray-400">Plage dynamique élevée</span>
                   </div>
-                  <div className="flex items-start gap-3">
-                    <img src="/images/icons/usb.jpeg" alt="USB-C" className="w-8 h-8" />
-                    <div>
-                      <strong>USB-C</strong>
-                      <div className="text-xs">Connecteur USB-C</div>
-                    </div>
+                  <div className="flex items-center gap-4">
+                    <img src="/images/icons/usb.jpeg" alt="USB-C" className="w-10 h-10 object-contain" />
+                    <span className="text-[10px] font-bold text-gray-400">Connecteur USB-C</span>
                   </div>
                 </div>
 
-                <Link to="/shop" className="inline-block mt-6 text-forest-green font-bold">
-                  Voir Plus →
-                </Link>
+                <div className="mt-auto pt-6 flex justify-end">
+                  <Link to="/shop" className="flex items-center gap-3 group">
+                    <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest group-hover:text-forest-green transition-colors">Voir Plus</span>
+                    <div className="w-8 h-8 rounded-full bg-[#058031] flex items-center justify-center text-white transition-all group-hover:bg-black shadow-lg shadow-forest-green/20">
+                      <ChevronRight className="w-4 h-4" />
+                    </div>
+                  </Link>
+                </div>
               </div>
             </div>
 
-            <div>
-              <div className="bg-gray-50 rounded-lg p-6 flex items-center justify-center">
+            <div className="h-full">
+              <div className="bg-gray-50 rounded-3xl p-6 flex items-center justify-center h-full">
                 <img
                   src="/images/products/speaker-3.png"
                   alt="Monitor"
-                  className="w-full h-auto object-contain"
+                  className="w-full h-full max-h-[320px] object-contain"
                 />
               </div>
             </div>
@@ -1279,12 +1346,12 @@ export default function Home() {
               <Link
                 key={i}
                 to={`/shop?search=${brand.name}`}
-                className="h-24 bg-white border border-gray-100 rounded-2xl flex items-center justify-center p-6 grayscale hover:grayscale-0 hover:shadow-xl hover:-translate-y-1 transition-all duration-500 group"
+                className="h-24 bg-white border border-gray-200 rounded-2xl flex items-center justify-center p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-500 group"
               >
                 <img
                   src={brand.logo}
                   alt={brand.name}
-                  className="max-w-full max-h-full object-contain opacity-60 group-hover:opacity-100 transition-opacity"
+                  className="max-w-full max-h-full object-contain opacity-80 group-hover:opacity-100 transition-all duration-500 [filter:brightness(0)_saturate(100%)_invert(28%)_sepia(97%)_saturate(1022%)_hue-rotate(117deg)_brightness(92%)_contrast(98%)]"
                 />
               </Link>
             ))}
@@ -1396,7 +1463,7 @@ export default function Home() {
           <div className="max-w-6xl mx-auto pt-12 pb-24">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
               {/* Rating Summary Card */}
-              <div className="lg:col-span-3 bg-black rounded-[1.5rem] p-4 flex flex-col items-center justify-center text-white h-fit self-center">
+              <div className="lg:col-span-3 bg-black rounded-[1.5rem] p-6 flex flex-col items-center justify-center text-white">
                 <div className="text-center">
                   <h4 className="text-4xl font-black mb-0.5">{data.reviewStats.average}</h4>
                   <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest mb-3">
@@ -1448,96 +1515,96 @@ export default function Home() {
               </div>
 
               {/* Testimonial Cards */}
-              <div className="lg:col-span-9 grid grid-cols-1 md:grid-cols-3 gap-4 h-fit">
+              <div className="lg:col-span-9 grid grid-cols-1 md:grid-cols-3 gap-4">
                 {data.reviews.length > 0
                   ? data.reviews.map((testi, i) => (
-                      <div
-                        key={testi.id || i}
-                        className="bg-white rounded-[1.5rem] p-4 shadow-sm border border-gray-50 flex flex-col items-center text-center group hover:shadow-lg transition-all duration-300"
-                      >
-                        <div className="relative mb-2">
-                          <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-50 shadow-sm flex items-center justify-center bg-gray-50">
-                            {testi.avatar ? (
-                              <img
-                                src={testi.avatar}
-                                alt={testi.name}
-                                className="w-full h-full object-cover"
-                              />
-                            ) : (
-                              <User className="w-6 h-6 text-gray-300" />
-                            )}
-                          </div>
-                          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-white shadow-xs rounded-full p-1 z-10">
-                            <svg
-                              className="w-2 h-2 text-forest-green"
-                              fill="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path d="M14.017 21L14.017 18C14.017 16.8954 14.9125 16 16.0171 16H19.0171V14.5C19.0171 13.1193 17.8978 12 16.5171 12H15.5171V10H16.5171C19.0023 10 21.0171 12.0147 21.0171 14.5V21H14.017ZM3 21L3 18C3 16.8954 3.89543 16 5 16H8V14.5C8 13.1193 6.88071 12 5.5 12H4.5V10H5.5C7.98528 10 10 12.0147 10 14.5V21H3Z" />
-                            </svg>
-                          </div>
-                        </div>
-                        <div className="flex gap-0.5 mb-2">
-                          {[...Array(5)].map((_, si) => (
-                            <Star
-                              key={si}
-                              className={`w-2 h-2 ${si < testi.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200 fill-gray-200'}`}
+                    <div
+                      key={testi.id || i}
+                      className="bg-white rounded-[1.5rem] p-4 shadow-sm border border-gray-50 flex flex-col items-center text-center group hover:shadow-lg transition-all duration-300"
+                    >
+                      <div className="relative mb-2">
+                        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-50 shadow-sm flex items-center justify-center bg-gray-50">
+                          {testi.avatar ? (
+                            <img
+                              src={testi.avatar}
+                              alt={testi.name}
+                              className="w-full h-full object-cover"
                             />
-                          ))}
+                          ) : (
+                            <User className="w-6 h-6 text-gray-300" />
+                          )}
                         </div>
-                        <p className="text-[10px] text-gray-400 font-medium italic leading-[1.4] mb-3 line-clamp-4">
-                          "{testi.comment}"
-                        </p>
-                        <div className="mt-auto">
-                          <h5 className="text-[9px] font-black text-gray-900 uppercase tracking-widest mb-0.5">
-                            {testi.name}
-                          </h5>
-                          <p className="text-[7px] font-bold text-gray-400 uppercase tracking-tighter">
-                            {testi.date}
-                          </p>
+                        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-white shadow-xs rounded-full p-1 z-10">
+                          <svg
+                            className="w-2 h-2 text-forest-green"
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path d="M14.017 21L14.017 18C14.017 16.8954 14.9125 16 16.0171 16H19.0171V14.5C19.0171 13.1193 17.8978 12 16.5171 12H15.5171V10H16.5171C19.0023 10 21.0171 12.0147 21.0171 14.5V21H14.017ZM3 21L3 18C3 16.8954 3.89543 16 5 16H8V14.5C8 13.1193 6.88071 12 5.5 12H4.5V10H5.5C7.98528 10 10 12.0147 10 14.5V21H3Z" />
+                          </svg>
                         </div>
                       </div>
-                    ))
+                      <div className="flex gap-0.5 mb-2">
+                        {[...Array(5)].map((_, si) => (
+                          <Star
+                            key={si}
+                            className={`w-2 h-2 ${si < testi.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200 fill-gray-200'}`}
+                          />
+                        ))}
+                      </div>
+                      <p className="text-[10px] text-gray-400 font-medium italic leading-[1.4] mb-3 line-clamp-4">
+                        "{testi.comment}"
+                      </p>
+                      <div className="mt-auto">
+                        <h5 className="text-[9px] font-black text-gray-900 uppercase tracking-widest mb-0.5">
+                          {testi.name}
+                        </h5>
+                        <p className="text-[7px] font-bold text-gray-400 uppercase tracking-tighter">
+                          {testi.date}
+                        </p>
+                      </div>
+                    </div>
+                  ))
                   : // Fallback text if no real reviews yet
-                    [
-                      {
-                        name: 'Ali Traoré',
-                        role: 'Étudiant',
-                        text: "Un endroit parfait surtout pour étudiants ou jeunes professionnels. Bon prix pour une très bonne qualité d'ordinateurs... Je recommande vivement",
-                      },
-                      {
-                        name: 'Kayzo Offishal (Zo)',
-                        role: 'Client Fidéle',
-                        text: "Cadre propre, climatisé, accueil chaleureux, on y sert même du café et de l'eau. Ils vendent de bon ordinateurs, fiables et avec garantie.",
-                      },
-                      {
-                        name: 'Anta Fall',
-                        role: 'Designer',
-                        text: "Pour ceux qui cherchent des ordis faites y un tour vous n'allez pas le regretter. Prix défiant toute concurrence",
-                      },
-                    ].map((testi, i) => (
-                      <div
-                        key={i}
-                        className="bg-white rounded-[1.5rem] p-4 shadow-sm border border-gray-50 flex flex-col items-center text-center group hover:shadow-lg transition-all duration-300 opacity-60"
-                      >
-                        <div className="flex gap-0.5 mb-2">
-                          {[...Array(5)].map((_, si) => (
-                            <Star key={si} className="w-2 h-2 text-yellow-400 fill-yellow-400" />
-                          ))}
-                        </div>
-                        <p className="text-[10px] text-gray-400 font-medium italic leading-[1.4] mb-3">
-                          "{testi.text}"
-                        </p>
-                        <div className="mt-auto">
-                          <h5 className="text-[9px] font-black text-gray-900 uppercase tracking-widest mb-0.5">
-                            {testi.name}
-                          </h5>
-                          <p className="text-[7px] font-bold text-gray-400 uppercase tracking-tighter">
-                            {testi.role}
-                          </p>
-                        </div>
+                  [
+                    {
+                      name: 'Ali Traoré',
+                      role: 'Étudiant',
+                      text: "Un endroit parfait surtout pour étudiants ou jeunes professionnels. Bon prix pour une très bonne qualité d'ordinateurs... Je recommande vivement",
+                    },
+                    {
+                      name: 'Kayzo Offishal (Zo)',
+                      role: 'Client Fidéle',
+                      text: "Cadre propre, climatisé, accueil chaleureux, on y sert même du café et de l'eau. Ils vendent de bon ordinateurs, fiables et avec garantie.",
+                    },
+                    {
+                      name: 'Anta Fall',
+                      role: 'Designer',
+                      text: "Pour ceux qui cherchent des ordis faites y un tour vous n'allez pas le regretter. Prix défiant toute concurrence",
+                    },
+                  ].map((testi, i) => (
+                    <div
+                      key={i}
+                      className="bg-white rounded-[1.5rem] p-4 shadow-sm border border-gray-50 flex flex-col items-center text-center group hover:shadow-lg transition-all duration-300 opacity-60"
+                    >
+                      <div className="flex gap-0.5 mb-2">
+                        {[...Array(5)].map((_, si) => (
+                          <Star key={si} className="w-2 h-2 text-yellow-400 fill-yellow-400" />
+                        ))}
                       </div>
-                    ))}
+                      <p className="text-[10px] text-gray-400 font-medium italic leading-[1.4] mb-3">
+                        "{testi.text}"
+                      </p>
+                      <div className="mt-auto">
+                        <h5 className="text-[9px] font-black text-gray-900 uppercase tracking-widest mb-0.5">
+                          {testi.name}
+                        </h5>
+                        <p className="text-[7px] font-bold text-gray-400 uppercase tracking-tighter">
+                          {testi.role}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
               </div>
             </div>
           </div>
@@ -1585,18 +1652,18 @@ export default function Home() {
             >
               {loading
                 ? [...Array(6)].map((_, i) => (
-                    <div key={i} className="w-[45%] md:w-[15%] flex-shrink-0 snap-start">
-                      <Skeleton className="aspect-square w-full" />
-                    </div>
-                  ))
+                  <div key={i} className="w-[45%] md:w-[15%] flex-shrink-0 snap-start">
+                    <Skeleton className="aspect-square w-full" />
+                  </div>
+                ))
                 : filteredBestSellers.map((product, index) => (
-                    <div
-                      key={index}
-                      className="w-[45%] md:w-[15%] flex-shrink-0 snap-start flex flex-col"
-                    >
-                      <ProductCard product={product} />
-                    </div>
-                  ))}
+                  <div
+                    key={index}
+                    className="w-[45%] md:w-[15%] flex-shrink-0 snap-start flex flex-col"
+                  >
+                    <ProductCard product={product} />
+                  </div>
+                ))}
             </div>
           </div>
 
@@ -1679,7 +1746,7 @@ export default function Home() {
                 <Link
                   key={i}
                   to={`/shop?search=${tag}`}
-                  className="px-5 py-1 bg-gray-50 hover:bg-forest-green hover:text-white rounded-lg text-[10px] font-bold text-gray-500 uppercase tracking-widest transition-all"
+                  className="px-5 py-1 bg-gray-50 hover:bg-[#058031] hover:text-white rounded-lg text-[10px] font-bold text-gray-500 uppercase tracking-widest transition-all"
                 >
                   {tag}
                 </Link>

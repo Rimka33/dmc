@@ -497,13 +497,13 @@ export default function Shop() {
                 selectedBrands.length > 0 ||
                 selectedRating ||
                 onSale) && (
-                <button
-                  onClick={handleResetFilters}
-                  className="text-[10px] font-black text-red-500 uppercase tracking-widest hover:text-red-700 transition-colors flex items-center gap-1"
-                >
-                  Réinitialiser les filtres
-                </button>
-              )}
+                  <button
+                    onClick={handleResetFilters}
+                    className="text-[10px] font-black text-red-500 uppercase tracking-widest hover:text-red-700 transition-colors flex items-center gap-1"
+                  >
+                    Réinitialiser les filtres
+                  </button>
+                )}
             </div>
 
             {/* Top Filters Block - Responsive Grid */}
@@ -706,11 +706,10 @@ export default function Shop() {
                     <button
                       key={mode.id}
                       onClick={() => setViewMode(mode.id)}
-                      className={`p-2 rounded-lg transition-all flex items-center justify-center ${
-                        viewMode === mode.id
-                          ? 'bg-forest-green shadow-lg text-white'
-                          : 'text-gray-400 hover:text-gray-600'
-                      }`}
+                      className={`p-2 rounded-lg transition-all flex items-center justify-center ${viewMode === mode.id
+                        ? 'bg-forest-green shadow-lg text-white'
+                        : 'text-gray-400 hover:text-gray-600'
+                        }`}
                     >
                       <mode.icon className={mode.size} />
                     </button>
@@ -809,11 +808,10 @@ export default function Shop() {
                             <button
                               key={page}
                               onClick={() => fetchProducts(page)}
-                              className={`w-10 h-10 rounded-xl font-black text-[11px] transition-all border-2 ${
-                                currentPage === page
-                                  ? 'bg-forest-green border-forest-green text-white shadow-lg shadow-forest-green/20'
-                                  : 'bg-white border-gray-100 text-gray-400 hover:border-forest-green hover:text-forest-green'
-                              }`}
+                              className={`w-10 h-10 rounded-xl font-black text-[11px] transition-all border-2 ${currentPage === page
+                                ? 'bg-forest-green border-forest-green text-white shadow-lg shadow-forest-green/20'
+                                : 'bg-white border-gray-100 text-gray-400 hover:border-forest-green hover:text-forest-green'
+                                }`}
                             >
                               {page}
                             </button>
@@ -854,7 +852,7 @@ export default function Shop() {
                   <button
                     onClick={handleLoadMore}
                     disabled={loadingMore}
-                    className="px-10 py-3.5 bg-gray-900 hover:bg-forest-green text-white rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all shadow-xl hover:shadow-forest-green/20 disabled:opacity-50 flex items-center gap-2 active:scale-95"
+                    className="px-10 py-3.5 bg-[#058031] hover:bg-forest-green text-white rounded-xl font-black text-[10px] uppercase tracking-[0.2em] transition-all shadow-xl hover:shadow-forest-green/20 disabled:opacity-50 flex items-center gap-2 active:scale-95"
                   >
                     {loadingMore ? 'Chargement...' : 'Charger la suite'}
                     {!loadingMore && <ChevronDown className="w-4 h-4" />}
