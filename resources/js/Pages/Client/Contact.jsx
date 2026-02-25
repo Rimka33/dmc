@@ -99,6 +99,10 @@ export default function Contact() {
 
   return (
     <MainLayout>
+      <Head>
+        <title>Contactez-nous | DMC Computer Dakar</title>
+        <meta name="description" content="Besoin d'un devis ou d'une assistance technique ? Contactez l'équipe DMC Computer à Fass Delorme, Dakar. Service client disponible au +221 77 236 77 77." />
+      </Head>
       {/* Hero Banner - Recreated to match image */}
       <div className="relative h-56 md:h-64 bg-[#004d1a] overflow-hidden flex items-center justify-center">
         <div className="absolute inset-0 z-0">
@@ -355,11 +359,10 @@ export default function Contact() {
                       <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                         <div>
                           <span
-                            className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                              msg.status === 'replied'
+                            className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${msg.status === 'replied'
                                 ? 'bg-neon-green text-black'
                                 : 'bg-gray-100 text-gray-400'
-                            }`}
+                              }`}
                           >
                             {msg.status === 'replied' ? '✓ Répondu' : '⏳ En attente'}
                           </span>

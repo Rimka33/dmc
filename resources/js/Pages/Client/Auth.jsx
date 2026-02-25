@@ -111,6 +111,10 @@ export default function Auth({ defaultMode = 'login' }) {
 
   return (
     <MainLayout>
+      <Head>
+        <title>{mode === 'login' ? 'Connexion' : 'Inscription'} | DMC Computer</title>
+        <meta name="description" content="Connectez-vous à votre compte DMC pour suivre vos commandes et profiter d'offres exclusives sur le matériel informatique au Sénégal." />
+      </Head>
       <div className="min-h-[85vh] bg-gray-50 flex items-center justify-center py-8 px-4 relative overflow-hidden">
         {/* Background Decorations */}
         <div className="absolute top-0 left-0 w-64 h-64 bg-neon-green/10 rounded-full blur-3xl pointer-events-none" />
@@ -137,22 +141,20 @@ export default function Auth({ defaultMode = 'login' }) {
               <button
                 type="button"
                 onClick={() => setMode('login')}
-                className={`flex-1 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${
-                  mode === 'login'
+                className={`flex-1 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${mode === 'login'
                     ? 'bg-white text-forest-green shadow-md scale-[1.02]'
                     : 'text-gray-500 hover:text-gray-900'
-                }`}
+                  }`}
               >
                 Connexion
               </button>
               <button
                 type="button"
                 onClick={() => setMode('register')}
-                className={`flex-1 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${
-                  mode === 'register'
+                className={`flex-1 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${mode === 'register'
                     ? 'bg-white text-forest-green shadow-md scale-[1.02]'
                     : 'text-gray-500 hover:text-gray-900'
-                }`}
+                  }`}
               >
                 Inscription
               </button>
@@ -444,13 +446,12 @@ export default function Auth({ defaultMode = 'login' }) {
                                 password_confirmation: e.target.value,
                               })
                             }
-                            className={`w-full px-4 py-3.5 bg-gray-50 border rounded-2xl focus:bg-white focus:outline-none transition-all text-xs font-bold pr-10 ${
-                              showPasswordMatchIndicator
+                            className={`w-full px-4 py-3.5 bg-gray-50 border rounded-2xl focus:bg-white focus:outline-none transition-all text-xs font-bold pr-10 ${showPasswordMatchIndicator
                                 ? passwordsMatch
                                   ? 'border-green-500'
                                   : 'border-red-500'
                                 : 'border-transparent focus:border-forest-green'
-                            }`}
+                              }`}
                             placeholder="••••••••"
                             required
                           />

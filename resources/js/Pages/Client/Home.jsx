@@ -1348,11 +1348,20 @@ export default function Home() {
                 to={`/shop?search=${brand.name}`}
                 className="h-24 bg-white border border-gray-200 rounded-2xl flex items-center justify-center p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-500 group"
               >
-                <img
-                  src={brand.logo}
-                  alt={brand.name}
-                  className="max-w-full max-h-full object-contain opacity-80 group-hover:opacity-100 transition-all duration-500 [filter:brightness(0)_saturate(100%)_invert(28%)_sepia(97%)_saturate(1022%)_hue-rotate(117deg)_brightness(92%)_contrast(98%)]"
-                />
+                <div className="relative w-full h-full flex items-center justify-center">
+                  <img
+                    src={brand.logo}
+                    alt={brand.name}
+                    className="max-w-full max-h-full object-contain opacity-80 group-hover:opacity-100 transition-all duration-500 [filter:brightness(0)_saturate(100%)_invert(28%)_sepia(97%)_saturate(1022%)_hue-rotate(117deg)_brightness(92%)_contrast(98%)]"
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      e.target.nextSibling.style.display = 'block';
+                    }}
+                  />
+                  <span className="hidden text-sm font-black text-gray-400 group-hover:text-forest-green transition-colors uppercase tracking-widest">
+                    {brand.name}
+                  </span>
+                </div>
               </Link>
             ))}
           </div>
