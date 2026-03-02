@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
+import { Head } from '@inertiajs/react';
 import MainLayout from '../../Layouts/MainLayout';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
@@ -99,10 +100,7 @@ export default function Contact() {
 
   return (
     <MainLayout>
-      <Head>
-        <title>Contactez-nous | DMC Computer Dakar</title>
-        <meta name="description" content="Besoin d'un devis ou d'une assistance technique ? Contactez l'équipe DMC Computer à Fass Delorme, Dakar. Service client disponible au +221 77 236 77 77." />
-      </Head>
+      <Head><title>Contactez-nous | DMC Computer Dakar</title><meta name="description" content="Besoin d'un devis ou d'une assistance technique ? Contactez l'équipe DMC Computer à Fass Delorme, Dakar. Service client disponible au +221 77 236 77 77."/></Head>
       {/* Hero Banner - Recreated to match image */}
       <div className="relative h-56 md:h-64 bg-[#004d1a] overflow-hidden flex items-center justify-center">
         <div className="absolute inset-0 z-0">

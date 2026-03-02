@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
+import { Head } from '@inertiajs/react';
 import MainLayout from '../../Layouts/MainLayout';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../contexts/AuthContext';
@@ -112,8 +113,11 @@ export default function Auth({ defaultMode = 'login' }) {
   return (
     <MainLayout>
       <Head>
-        <title>{mode === 'login' ? 'Connexion' : 'Inscription'} | DMC Computer</title>
-        <meta name="description" content="Connectez-vous à votre compte DMC pour suivre vos commandes et profiter d'offres exclusives sur le matériel informatique au Sénégal." />
+        <title>{`${mode === 'login' ? 'Connexion' : 'Inscription'} | DMC Computer`}</title>
+        <meta
+          name="description"
+          content="Connectez-vous à votre compte DMC pour suivre vos commandes et profiter d'offres exclusives sur le matériel informatique au Sénégal."
+        />
       </Head>
       <div className="min-h-[85vh] bg-gray-50 flex items-center justify-center py-8 px-4 relative overflow-hidden">
         {/* Background Decorations */}
@@ -142,8 +146,8 @@ export default function Auth({ defaultMode = 'login' }) {
                 type="button"
                 onClick={() => setMode('login')}
                 className={`flex-1 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${mode === 'login'
-                    ? 'bg-white text-forest-green shadow-md scale-[1.02]'
-                    : 'text-gray-500 hover:text-gray-900'
+                  ? 'bg-white text-forest-green shadow-md scale-[1.02]'
+                  : 'text-gray-500 hover:text-gray-900'
                   }`}
               >
                 Connexion
@@ -152,8 +156,8 @@ export default function Auth({ defaultMode = 'login' }) {
                 type="button"
                 onClick={() => setMode('register')}
                 className={`flex-1 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${mode === 'register'
-                    ? 'bg-white text-forest-green shadow-md scale-[1.02]'
-                    : 'text-gray-500 hover:text-gray-900'
+                  ? 'bg-white text-forest-green shadow-md scale-[1.02]'
+                  : 'text-gray-500 hover:text-gray-900'
                   }`}
               >
                 Inscription
@@ -447,10 +451,10 @@ export default function Auth({ defaultMode = 'login' }) {
                               })
                             }
                             className={`w-full px-4 py-3.5 bg-gray-50 border rounded-2xl focus:bg-white focus:outline-none transition-all text-xs font-bold pr-10 ${showPasswordMatchIndicator
-                                ? passwordsMatch
-                                  ? 'border-green-500'
-                                  : 'border-red-500'
-                                : 'border-transparent focus:border-forest-green'
+                              ? passwordsMatch
+                                ? 'border-green-500'
+                                : 'border-red-500'
+                              : 'border-transparent focus:border-forest-green'
                               }`}
                             placeholder="••••••••"
                             required

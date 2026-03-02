@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Head } from '@inertiajs/react';
 import MainLayout from '../../Layouts/MainLayout';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
@@ -27,10 +28,7 @@ export default function About() {
 
   return (
     <MainLayout>
-      <Head>
-        <title>À Propos | DMC Computer Sénégal</title>
-        <meta name="description" content="Découvrez l'histoire de Daroul Mouhty Computer (DMC), votre partenaire informatique de confiance à Dakar depuis plus de 10 ans." />
-      </Head>
+      <Head><title>À Propos | DMC Computer Sénégal</title><meta name="description" content="Découvrez l'histoire de Daroul Mouhty Computer (DMC), votre partenaire informatique de confiance à Dakar depuis plus de 10 ans."/></Head>
       {/* Hero Header */}
       <div className="relative h-[300px] bg-[#021008] overflow-hidden flex items-center">
         <div className="absolute inset-0 opacity-20">
