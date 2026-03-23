@@ -145,7 +145,7 @@ export default function CheckoutReceived() {
                   {item.label}
                 </span>
                 <span
-                  className={`text-base font-black ${item.highlight ? 'text-neon-green' : 'text-gray-900'}`}
+                  className={`text-base font-black ${item.highlight ? 'text-[#058031]' : 'text-gray-900'}`}
                 >
                   {item.value}
                 </span>
@@ -159,7 +159,7 @@ export default function CheckoutReceived() {
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
                 <div className="p-6 border-b bg-gray-50">
                   <h3 className="text-lg font-black text-gray-900 uppercase flex items-center gap-2">
-                    <Package className="w-5 h-5 text-forest-green" />
+                    <Package className="w-5 h-5 text-[#058031]" />
                     Articles commandés
                   </h3>
                 </div>
@@ -186,7 +186,7 @@ export default function CheckoutReceived() {
                             </p>
                             <p className="text-xs text-gray-500">
                               Quantité:{' '}
-                              <span className="text-forest-green font-bold">{item.quantity}</span>
+                              <span className="text-[#058031] font-bold">{item.quantity}</span>
                             </p>
                           </div>
                         </div>
@@ -210,13 +210,13 @@ export default function CheckoutReceived() {
                   </div>
                   <div className="flex justify-between text-sm text-gray-600">
                     <span>Expédition</span>
-                    <span className="font-bold text-forest-green">
+                    <span className="font-bold text-[#058031]">
                       {order.shipping_cost_formatted || '5.000 F CFA'}
                     </span>
                   </div>
                   <div className="flex justify-between text-xl font-black pt-3 border-t-2 border-gray-900">
                     <span className="text-gray-900 uppercase">Total</span>
-                    <span className="text-neon-green">{order.total_formatted}</span>
+                    <span className="text-[#058031]">{order.total_formatted}</span>
                   </div>
                 </div>
               </div>

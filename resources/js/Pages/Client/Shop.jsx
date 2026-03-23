@@ -96,7 +96,7 @@ function ProductCard({ product, viewMode = 'grid' }) {
               <Link
                 to={`/produit/${product.id}`}
                 state={{ product }}
-                className="px-6 py-3 bg-gray-900 text-white rounded-xl font-black text-[11px] uppercase tracking-widest hover:bg-forest-green transition-all"
+                className="px-6 py-3 bg-[#058031] text-white rounded-xl font-black text-[11px] uppercase tracking-widest hover:bg-forest-green transition-all"
               >
                 VOIR DETAILS
               </Link>
@@ -629,7 +629,7 @@ export default function Shop() {
                       </div>
                       <button
                         onClick={() => setOpenFilter(null)}
-                        className="w-full bg-gray-900 text-white py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-forest-green transition-all"
+                        className="w-full bg-[#058031] text-white py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-forest-green transition-all"
                       >
                         Appliquer les prix
                       </button>

@@ -965,7 +965,7 @@ export default function Home() {
                       {/* Top Badges */}
                       <div className="absolute top-3 left-3 z-10">
                         {offer.is_new !== false && (
-                          <span className="px-2.5 py-1 bg-[#00ff24] text-white text-[7px] font-black uppercase rounded-full shadow-lg shadow-neon-green/30">
+                          <span className="px-2.5 py-1 bg-[#00ff24] text-black text-[7px] font-black uppercase rounded-full shadow-lg shadow-neon-green/30">
                             NOUVEAU
                           </span>
                         )}
@@ -1393,7 +1393,7 @@ export default function Home() {
             <div className="lg:col-span-5 grid grid-cols-2 gap-x-8 gap-y-12 py-6">
               <div className="text-center lg:text-left">
                 <div className="flex items-center justify-center lg:justify-start gap-1 mb-1">
-                  <span className="text-2xl font-black text-gray-900 tracking-tighter">5.000</span>
+                  <span className="text-2xl font-black text-gray-900 tracking-tighter">1.000</span>
                   <span className="text-xl font-black text-forest-green">+</span>
                 </div>
                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] leading-tight">
@@ -1411,7 +1411,7 @@ export default function Home() {
               </div>
               <div className="text-center lg:text-left">
                 <div className="flex items-center justify-center lg:justify-start gap-1 mb-1">
-                  <span className="text-2xl font-black text-gray-900 tracking-tighter">4.000</span>
+                  <span className="text-2xl font-black text-gray-900 tracking-tighter">800</span>
                   <span className="text-xl font-black text-forest-green">+</span>
                 </div>
                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] leading-tight">
@@ -1472,7 +1472,7 @@ export default function Home() {
           <div className="max-w-6xl mx-auto pt-12 pb-24">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
               {/* Rating Summary Card */}
-              <div className="lg:col-span-3 bg-black rounded-[1.5rem] p-6 flex flex-col items-center justify-center text-white">
+              <div className="lg:col-span-3 bg-black rounded-[1.5rem] p-6 flex flex-col items-center justify-center text-white h-full">
                 <div className="text-center">
                   <h4 className="text-4xl font-black mb-0.5">{data.reviewStats.average}</h4>
                   <p className="text-[8px] font-bold text-gray-500 uppercase tracking-widest mb-3">
@@ -1516,7 +1516,7 @@ export default function Home() {
                     }
                     setIsReviewModalOpen(true);
                   }}
-                  className="w-full bg-white/5 hover:bg-neon-green hover:text-black py-2.5 rounded-lg text-[7px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 group"
+                  className="w-full bg-white/5 hover:bg-neon-green hover:text-black py-2.5 rounded-lg text-[7px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 group mt-4"
                 >
                   <Plus className="w-2.5 h-2.5" />
                   Donner mon avis
@@ -1529,10 +1529,10 @@ export default function Home() {
                   ? data.reviews.map((testi, i) => (
                     <div
                       key={testi.id || i}
-                      className="bg-white rounded-[1.5rem] p-4 shadow-sm border border-gray-50 flex flex-col items-center text-center group hover:shadow-lg transition-all duration-300"
+                      className="bg-white rounded-[1.5rem] p-4 shadow-sm border border-gray-50 flex flex-col items-center text-center group hover:shadow-lg transition-all duration-300 h-full"
                     >
-                      <div className="relative mb-2">
-                        <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-gray-50 shadow-sm flex items-center justify-center bg-gray-50">
+                      <div className="relative mb-3">
+                        <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-50 shadow-sm flex items-center justify-center bg-gray-50">
                           {testi.avatar ? (
                             <img
                               src={testi.avatar}
@@ -1540,12 +1540,12 @@ export default function Home() {
                               className="w-full h-full object-cover"
                             />
                           ) : (
-                            <User className="w-6 h-6 text-gray-300" />
+                            <User className="w-8 h-8 text-gray-300" />
                           )}
                         </div>
-                        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-white shadow-xs rounded-full p-1 z-10">
+                        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-white shadow-xs rounded-full p-1 z-10 border border-gray-50">
                           <svg
-                            className="w-2 h-2 text-forest-green"
+                            className="w-2.5 h-2.5 text-forest-green"
                             fill="currentColor"
                             viewBox="0 0 24 24"
                           >
@@ -1553,7 +1553,7 @@ export default function Home() {
                           </svg>
                         </div>
                       </div>
-                      <div className="flex gap-0.5 mb-2">
+                      <div className="flex gap-0.5 mb-2 shrink-0">
                         {[...Array(5)].map((_, si) => (
                           <Star
                             key={si}
@@ -1561,10 +1561,12 @@ export default function Home() {
                           />
                         ))}
                       </div>
-                      <p className="text-[10px] text-gray-400 font-medium italic leading-[1.4] mb-3 line-clamp-4">
-                        "{testi.comment}"
-                      </p>
-                      <div className="mt-auto">
+                      <div className="flex-grow flex items-center justify-center w-full mb-3 px-2">
+                        <p className="text-[10px] text-gray-400 font-medium italic leading-[1.6] line-clamp-4">
+                          "{testi.comment}"
+                        </p>
+                      </div>
+                      <div className="mt-auto pt-3 border-t border-gray-50 w-full shrink-0">
                         <h5 className="text-[9px] font-black text-gray-900 uppercase tracking-widest mb-0.5">
                           {testi.name}
                         </h5>
@@ -1594,17 +1596,29 @@ export default function Home() {
                   ].map((testi, i) => (
                     <div
                       key={i}
-                      className="bg-white rounded-[1.5rem] p-4 shadow-sm border border-gray-50 flex flex-col items-center text-center group hover:shadow-lg transition-all duration-300 opacity-60"
+                      className="bg-white rounded-[1.5rem] p-4 shadow-sm border border-gray-50 flex flex-col items-center text-center group hover:shadow-lg transition-all duration-300 opacity-60 h-full"
                     >
-                      <div className="flex gap-0.5 mb-2">
+                      <div className="relative mb-3">
+                        <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-50 shadow-sm flex items-center justify-center bg-gray-50">
+                          <User className="w-8 h-8 text-gray-300" />
+                        </div>
+                        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 bg-white shadow-xs rounded-full p-1 z-10 border border-gray-50">
+                          <svg className="w-2.5 h-2.5 text-forest-green" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M14.017 21L14.017 18C14.017 16.8954 14.9125 16 16.0171 16H19.0171V14.5C19.0171 13.1193 17.8978 12 16.5171 12H15.5171V10H16.5171C19.0023 10 21.0171 12.0147 21.0171 14.5V21H14.017ZM3 21L3 18C3 16.8954 3.89543 16 5 16H8V14.5C8 13.1193 6.88071 12 5.5 12H4.5V10H5.5C7.98528 10 10 12.0147 10 14.5V21H3Z" />
+                          </svg>
+                        </div>
+                      </div>
+                      <div className="flex gap-0.5 mb-2 shrink-0">
                         {[...Array(5)].map((_, si) => (
                           <Star key={si} className="w-2 h-2 text-yellow-400 fill-yellow-400" />
                         ))}
                       </div>
-                      <p className="text-[10px] text-gray-400 font-medium italic leading-[1.4] mb-3">
-                        "{testi.text}"
-                      </p>
-                      <div className="mt-auto">
+                      <div className="flex-grow flex items-center justify-center w-full mb-3 px-2">
+                        <p className="text-[10px] text-gray-400 font-medium italic leading-[1.6]">
+                          "{testi.text}"
+                        </p>
+                      </div>
+                      <div className="mt-auto pt-3 border-t border-gray-50 w-full shrink-0">
                         <h5 className="text-[9px] font-black text-gray-900 uppercase tracking-widest mb-0.5">
                           {testi.name}
                         </h5>

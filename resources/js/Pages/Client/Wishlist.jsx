@@ -55,16 +55,16 @@ export default function Wishlist() {
                 <table className="w-full text-left">
                   <thead className="bg-gray-50 border-b border-gray-100">
                     <tr>
-                      <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                      <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-900">
                         Produit
                       </th>
-                      <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                      <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-900">
                         Prix
                       </th>
-                      <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                      <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-900">
                         Statut Stock
                       </th>
-                      <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-400">
+                      <th className="px-8 py-6 text-[10px] font-black uppercase tracking-widest text-gray-900">
                         Actions
                       </th>
                       <th className="px-8 py-6"></th>
@@ -114,7 +114,7 @@ export default function Wishlist() {
                             <button
                               onClick={() => handleAddToCart(product)}
                               disabled={product.stock_quantity <= 0}
-                              className="px-6 py-3 bg-gray-900 text-white font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-forest-green transition-all shadow-lg active:scale-95 disabled:opacity-30"
+                              className="px-6 py-3 bg-[#058031] text-white font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-forest-green transition-all shadow-lg active:scale-95 disabled:opacity-30"
                             >
                               Ajouter au panier
                             </button>
@@ -122,7 +122,7 @@ export default function Wishlist() {
                           <td className="px-8 py-6 text-right">
                             <button
                               onClick={() => removeFromWishlist(product.id)}
-                              className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 hover:bg-red-50 hover:text-red-500 transition-all"
+                              className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-900 hover:bg-red-50 hover:text-red-500 transition-all"
                             >
                               <Trash2 className="w-5 h-5" />
                             </button>

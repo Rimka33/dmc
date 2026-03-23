@@ -146,13 +146,18 @@ export default function MainLayout({ children }) {
             <div className="flex items-center justify-between relative">
               <div className="flex items-center gap-10">
                 {/* Localiser la Boutique */}
-                <button className="flex items-center gap-3 text-white hover:text-neon-green transition-all group">
+                <a
+                  href="https://maps.app.goo.gl/3cgeu8w39CifWWdz9"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 text-white hover:text-neon-green transition-all group"
+                >
                   <MapPin className="w-6 h-6 text-white group-hover:text-neon-green" />
                   <div className="flex flex-col items-start leading-tight text-left">
                     <span className="text-[10px] font-bold uppercase tracking-wider">Localiser</span>
                     <span className="text-[10px] font-bold uppercase tracking-wider">la boutique</span>
                   </div>
-                </button>
+                </a>
 
                 {/* Parler au commercial */}
                 <div className="hidden lg:flex items-center gap-3">
@@ -425,7 +430,7 @@ export default function MainLayout({ children }) {
                             <p className="text-xs font-bold text-gray-900 truncate">
                               {product.name}
                             </p>
-                            <p className="text-xs font-black text-forest-green mt-0.5">
+                            <p className="text-xs font-black text-[#058031] mt-0.5">
                               {product.price_formatted}
                             </p>
                           </div>
@@ -438,7 +443,7 @@ export default function MainLayout({ children }) {
                             e.preventDefault();
                             handleSearch(e);
                           }}
-                          className="text-[10px] font-black text-forest-green uppercase tracking-wider hover:underline"
+                          className="text-[10px] font-black text-[#058031] uppercase tracking-wider hover:underline"
                         >
                           Voir tous les résultats →
                         </button>
@@ -465,7 +470,7 @@ export default function MainLayout({ children }) {
         {mobileMenuOpen && (
           <div className="lg:hidden fixed inset-0 z-[100] bg-gray-900/90 backdrop-blur-sm animate-in fade-in duration-300">
             <div className="absolute right-0 top-0 h-full w-4/5 max-w-sm bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-500">
-              <div className="p-6 bg-forest-green flex items-center justify-between">
+              <div className="p-6 bg-[#058031] flex items-center justify-between">
                 <img src="/images/logo.png" alt="DMC" className="h-8" />
                 <button
                   onClick={() => setMobileMenuOpen(false)}

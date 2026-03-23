@@ -10,12 +10,11 @@ class AdminUserSeeder extends Seeder
 {
     public function run(): void
     {
-        // Création de l'administrateur par défaut
         User::updateOrCreate(
             ['email' => 'admin@dmc.com'],
             [
                 'name' => 'Administrateur DMC',
-                'password' => Hash::make('Admin2026DMC'), // Utilisation du mot de passe sécurisé souhaité
+                'password' => Hash::make('Admin2026DMC'),
                 'role' => 'admin',
                 'is_active' => true,
                 'phone' => '+221000000000',

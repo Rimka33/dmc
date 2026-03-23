@@ -189,11 +189,10 @@ export default function UserDashboard() {
           <div className="lg:w-3/4">
             {status.message && (
               <div
-                className={`mb-6 p-4 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-300 ${
-                  status.type === 'success'
-                    ? 'bg-green-50 text-green-700 border border-green-100'
-                    : 'bg-red-50 text-red-700 border border-red-100'
-                }`}
+                className={`mb-6 p-4 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-300 ${status.type === 'success'
+                  ? 'bg-green-50 text-green-700 border border-green-100'
+                  : 'bg-red-50 text-red-700 border border-red-100'
+                  }`}
               >
                 {status.type === 'success' ? (
                   <CheckCircle2 className="w-5 h-5" />
@@ -441,7 +440,7 @@ export default function UserDashboard() {
                   <button
                     type="submit"
                     disabled={updating}
-                    className="px-10 py-5 bg-gray-900 text-white font-black text-[10px] uppercase tracking-[0.2em] rounded-2xl hover:bg-black transition-all shadow-xl shadow-gray-200/50 disabled:opacity-50"
+                    className="px-10 py-5 bg-[#058031] text-white font-black text-[10px] uppercase tracking-[0.2em] rounded-2xl hover:bg-black transition-all shadow-xl shadow-gray-200/50 disabled:opacity-50"
                   >
                     {updating ? 'Mise à jour...' : 'Changer le Mot de Passe'}
                   </button>

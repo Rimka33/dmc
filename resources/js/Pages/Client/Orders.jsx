@@ -12,7 +12,9 @@ import {
   Clock,
   CheckCircle2,
   AlertCircle,
+  Truck,
 } from 'lucide-react';
+
 import ShimmerImage from '../../Components/ShimmerImage';
 
 export default function Orders() {
@@ -85,7 +87,7 @@ export default function Orders() {
                 <Link
                   key={order.id}
                   to={`/checkout/received?order=${order.order_number}`}
-                  className="aspect-square bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl hover:border-forest-green transition-all duration-300 group flex flex-col p-4 relative overflow-hidden"
+                  className="bg-white rounded-2xl border border-gray-200 shadow-sm hover:shadow-xl hover:border-forest-green transition-all duration-300 group flex flex-col p-4 relative overflow-hidden"
                 >
                   {/* Background accent */}
                   <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-bl from-neon-green/10 to-transparent rounded-bl-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -119,7 +121,7 @@ export default function Orders() {
                   </div>
 
                   {/* Date & Payment */}
-                  <div className="text-[10px] text-gray-600 font-medium space-y-1 mb-3 flex-1 relative z-10">
+                  <div className="text-[10px] text-gray-600 font-medium space-y-1 mb-1 relative z-10">
                     <div className="flex items-center gap-1.5">
                       <Calendar className="w-3 h-3 text-forest-green flex-shrink-0" />
                       <span>
@@ -135,6 +137,15 @@ export default function Orders() {
                         {order.payment_method_formatted || 'À la livraison'}
                       </span>
                     </div>
+                    {order.delivery_method !== 'pickup' && (
+                      <div className="flex items-center gap-1.5">
+                        <Truck className="w-3 h-3 text-forest-green flex-shrink-0" />
+                        <span className="truncate text-[9px]">
+                          Livraison: {order.shipping_cost_formatted}
+                        </span>
+                      </div>
+                    )}
+
                   </div>
 
                   {/* Items Preview */}

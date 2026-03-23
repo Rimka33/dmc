@@ -189,7 +189,7 @@ export default function Cart() {
               </p>
               <Link
                 to="/shop"
-                className="inline-block px-8 py-4 bg-forest-green text-white font-bold uppercase rounded-lg shadow-lg hover:bg-dark-green hover:-translate-y-1 transition-all"
+                className="inline-block px-8 py-4 bg-[#058031] text-white font-bold uppercase rounded-lg shadow-lg hover:bg-[#058031] hover:-translate-y-1 transition-all"
               >
                 Continuer vos achats
               </Link>
@@ -318,7 +318,7 @@ export default function Cart() {
                     />
                     <button
                       onClick={applyCoupon}
-                      className="px-6 py-2 bg-gray-900 text-white font-bold uppercase rounded-lg hover:bg-black transition-all text-xs tracking-wider"
+                      className="px-6 py-2 bg-[#058031] text-white font-bold uppercase rounded-lg hover:bg-[#058031] transition-all text-xs tracking-wider"
                     >
                       Appliquer
                     </button>
@@ -326,7 +326,7 @@ export default function Cart() {
 
                   <Link
                     to="/shop"
-                    className="text-forest-green font-bold uppercase text-xs tracking-wider hover:underline flex items-center gap-2"
+                    className="text-[#058031] font-bold uppercase text-xs tracking-wider hover:underline flex items-center gap-2"
                   >
                     ← Continuer vos achats
                   </Link>
@@ -356,7 +356,7 @@ export default function Cart() {
                       </p>
 
                       <label
-                        className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${deliveryMethod === 'delivery' ? 'border-forest-green bg-green-50' : 'border-gray-200 hover:border-gray-300'}`}
+                        className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${deliveryMethod === 'delivery' ? 'border-[#058031] bg-green-50' : 'border-gray-200 hover:border-gray-300'}`}
                       >
                         <input
                           type="radio"
@@ -364,9 +364,9 @@ export default function Cart() {
                           value="delivery"
                           checked={deliveryMethod === 'delivery'}
                           onChange={(e) => setDeliveryMethod(e.target.value)}
-                          className="w-4 h-4 text-forest-green"
+                          className="w-4 h-4 text-[#058031]"
                         />
-                        <Truck className="w-5 h-5 text-forest-green" />
+                        <Truck className="w-5 h-5 text-[#058031]" />
                         <div className="flex-1">
                           <span className="text-xs font-bold text-gray-900 block">Livraison</span>
                           <span className="text-[10px] text-gray-500">
@@ -376,7 +376,7 @@ export default function Cart() {
                       </label>
 
                       <label
-                        className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${deliveryMethod === 'pickup' ? 'border-forest-green bg-green-50' : 'border-gray-200 hover:border-gray-300'}`}
+                        className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${deliveryMethod === 'pickup' ? 'border-[#058031] bg-green-50' : 'border-gray-200 hover:border-gray-300'}`}
                       >
                         <input
                           type="radio"
@@ -384,9 +384,9 @@ export default function Cart() {
                           value="pickup"
                           checked={deliveryMethod === 'pickup'}
                           onChange={(e) => setDeliveryMethod(e.target.value)}
-                          className="w-4 h-4 text-forest-green"
+                          className="w-4 h-4 text-[#058031]"
                         />
-                        <Store className="w-5 h-5 text-forest-green" />
+                        <Store className="w-5 h-5 text-[#058031]" />
                         <div className="flex-1">
                           <span className="text-xs font-bold text-gray-900 block">
                             Récupération en boutique
@@ -399,7 +399,7 @@ export default function Cart() {
                     <div className="flex justify-between items-center pt-4 border-t-2 border-gray-900">
                       <span className="text-sm font-black text-gray-900 uppercase">Total</span>
                       <span
-                        className={`text-1xl font-black text-neon-green transition-opacity duration-300 ${isUpdating ? 'opacity-50' : 'opacity-100'}`}
+                        className={`text-1xl font-black text-[#058031] transition-opacity duration-300 ${isUpdating ? 'opacity-50' : 'opacity-100'}`}
                       >
                         {finalTotal.toLocaleString()} F CFA
                       </span>
@@ -409,7 +409,7 @@ export default function Cart() {
                   <button
                     onClick={proceedToCheckout}
                     disabled={isProcessing}
-                    className="w-full py-4 bg-forest-green text-white font-black uppercase rounded-lg hover:bg-dark-green transition-all shadow-lg text-xs tracking-wider disabled:opacity-75 flex items-center justify-center gap-2"
+                    className="w-full py-4 bg-[#058031] text-white font-black uppercase rounded-lg hover:bg-[#058031] transition-all shadow-lg text-xs tracking-wider disabled:opacity-75 flex items-center justify-center gap-2"
                   >
                     {isProcessing ? (
                       <>
@@ -452,7 +452,7 @@ export default function Cart() {
           <div className="relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in zoom-in-95 duration-200">
             <div className="text-center">
               <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Store className="w-8 h-8 text-forest-green" />
+                <Store className="w-8 h-8 text-[#058031]" />
               </div>
 
               <h3 className="text-xl font-black text-gray-900 uppercase mb-2">
@@ -467,7 +467,7 @@ export default function Cart() {
               <div className="flex flex-col gap-3">
                 <button
                   onClick={handleConfirmPickup}
-                  className="w-full py-3.5 bg-forest-green text-white font-bold uppercase rounded-lg hover:bg-dark-green transition-all shadow-lg flex items-center justify-center gap-2"
+                  className="w-full py-3.5 bg-[#058031] text-white font-bold uppercase rounded-lg hover:bg-[#058031] transition-all shadow-lg flex items-center justify-center gap-2"
                 >
                   Oui, confirmer la commande
                 </button>

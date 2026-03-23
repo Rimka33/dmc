@@ -15,8 +15,11 @@ import {
   Check,
   ShoppingBag,
   CreditCard,
+  Truck,
 } from 'lucide-react';
 import ShimmerImage from '../../Components/ShimmerImage';
+import { calculateShippingFee } from '../../constants/delivery';
+
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -119,13 +122,19 @@ export default function Checkout() {
     setErrors({});
 
     try {
-      // Ajouter delivery_method aux données
+      // Recalculer le prix de livraison pour être sûr avant de l'envoyer
+      const shippingCost = deliveryMethod === 'pickup' 
+        ? 0 
+        : calculateShippingFee(formData.shipping_region, formData.shipping_neighborhood);
+
       const orderData = {
         ...formData,
         delivery_method: deliveryMethod,
+        shipping_cost: shippingCost,
       };
 
       const response = await api.post('/orders', orderData);
+
 
       if (response.data.success) {
         // Empêcher la redirection vers le panier via le useEffect
@@ -507,16 +516,53 @@ export default function Checkout() {
                               >
                                 Quartier <span className="text-red-500">*</span>
                               </label>
-                              <input
-                                id="checkout-neighborhood"
-                                type="text"
-                                name="shipping_neighborhood"
-                                value={formData.shipping_neighborhood}
-                                onChange={handleChange}
-                                placeholder="ex: Médina"
-                                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-forest-green focus:outline-none transition-colors"
-                                required={deliveryMethod === 'delivery'}
-                              />
+                              {formData.shipping_region === 'Dakar' ? (
+                                <select
+                                  id="checkout-neighborhood"
+                                  name="shipping_neighborhood"
+                                  value={formData.shipping_neighborhood}
+                                  onChange={handleChange}
+                                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-forest-green focus:outline-none transition-colors bg-white"
+                                  required={deliveryMethod === 'delivery'}
+                                >
+                                  <option value="">Choisir...</option>
+                                  {[
+                                    'Plateau',
+                                    'Médina',
+                                    'Fann',
+                                    'Point E',
+                                    'Almadies',
+                                    'Ngor',
+                                    'Ouakam',
+                                    'Mermoz',
+                                    'Sacré Cœur',
+                                    'Dieuppeul',
+                                    'Liberte',
+                                    'Yoff',
+                                    'Guediawaye',
+                                    'Pikine',
+                                    'Rufisque',
+                                  ]
+                                    .sort()
+                                    .map((n) => (
+                                      <option key={n} value={n}>
+                                        {n}
+                                      </option>
+                                    ))}
+                                  <option value="Autre">Autre</option>
+                                </select>
+                              ) : (
+                                <input
+                                  id="checkout-neighborhood"
+                                  type="text"
+                                  name="shipping_neighborhood"
+                                  value={formData.shipping_neighborhood}
+                                  onChange={handleChange}
+                                  placeholder="ex: Médina"
+                                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-forest-green focus:outline-none transition-colors"
+                                  required={deliveryMethod === 'delivery'}
+                                />
+                              )}
                               {errors.shipping_neighborhood && (
                                 <p className="text-red-500 text-xs mt-1">
                                   {errors.shipping_neighborhood[0]}
@@ -631,7 +677,7 @@ export default function Checkout() {
                         <span className="font-bold text-forest-green">
                           {deliveryMethod === 'pickup'
                             ? 'Gratuit'
-                            : cart.shipping_formatted || '5.000 F CFA'}
+                            : `${calculateShippingFee(formData.shipping_region, formData.shipping_neighborhood).toLocaleString()} F CFA`}
                         </span>
                       </div>
                       <div className="flex justify-between text-xs font-black pt-3 border-t-2 border-gray-900">
@@ -639,10 +685,10 @@ export default function Checkout() {
                         <span className="text-neon-green">
                           {deliveryMethod === 'pickup'
                             ? `${(cart.subtotal || 0).toLocaleString()} F CFA`
-                            : cart.total_formatted ||
-                              `${((cart.subtotal || 0) + (cart.shipping || 5000)).toLocaleString()} F CFA`}
+                            : `${((cart.subtotal || 0) + calculateShippingFee(formData.shipping_region, formData.shipping_neighborhood)).toLocaleString()} F CFA`}
                         </span>
                       </div>
+
                     </div>
                   </div>
 

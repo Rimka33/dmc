@@ -78,7 +78,7 @@ export default function Blog() {
             <Link to="/" className="hover:text-neon-green transition-colors">
               Accueil
             </Link>
-            <span className="text-neon-green">//</span>
+            <span className="text-neon-green">/</span>
             <span className="text-white opacity-50">Actualités & Guides</span>
           </nav>
         </div>
@@ -93,11 +93,10 @@ export default function Blog() {
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all ${
-                  activeCategory === cat
-                    ? 'bg-forest-green text-white shadow-lg shadow-forest-green/20 scale-105'
-                    : 'bg-white text-gray-500 hover:bg-gray-100 hover:text-gray-900 border border-gray-100'
-                }`}
+                className={`px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all ${activeCategory === cat
+                  ? 'bg-[#058031] text-white shadow-lg shadow-forest-green/20 scale-105'
+                  : 'bg-white text-gray-500 hover:bg-[#058031] hover:text-white border border-gray-100'
+                  }`}
               >
                 {cat}
               </button>
@@ -132,7 +131,7 @@ export default function Blog() {
                   {/* Image Container */}
                   <div className="h-56 overflow-hidden relative">
                     <div className="absolute top-4 left-4 z-10">
-                      <span className="px-3 py-1.5 bg-black/80 backdrop-blur-md text-neon-green text-[9px] font-black uppercase tracking-widest rounded-lg border border-white/10">
+                      <span className="px-3 py-1.5 bg-[#058031] text-white text-[9px] font-black uppercase tracking-widest rounded-lg border border-white/10">
                         {post.category || 'Article'}
                       </span>
                     </div>

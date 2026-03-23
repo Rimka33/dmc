@@ -100,7 +100,7 @@ export default function Contact() {
 
   return (
     <MainLayout>
-      <Head><title>Contactez-nous | DMC Computer Dakar</title><meta name="description" content="Besoin d'un devis ou d'une assistance technique ? Contactez l'équipe DMC Computer à Fass Delorme, Dakar. Service client disponible au +221 77 236 77 77."/></Head>
+      <Head><title>Contactez-nous | DMC Computer Dakar</title><meta name="description" content="Besoin d'un devis ou d'une assistance technique ? Contactez l'équipe DMC Computer à Fass Delorme, Dakar. Service client disponible au +221 77 236 77 77." /></Head>
       {/* Hero Banner - Recreated to match image */}
       <div className="relative h-56 md:h-64 bg-[#004d1a] overflow-hidden flex items-center justify-center">
         <div className="absolute inset-0 z-0">
@@ -268,13 +268,22 @@ export default function Contact() {
             {/* Info Column - Right side */}
             <div className="lg:col-span-4 space-y-8 pt-12 lg:pt-24">
               <div className="space-y-6">
-                <div className="space-y-1">
+                <div className="space-y-2">
                   <p className="text-sm font-black text-gray-900">
                     Adresse :{' '}
                     <span className="font-medium text-gray-400">
                       Rue 22 Fass Delorme - en face Keur Seydi Djamil - Dakar Sénégal
                     </span>
                   </p>
+                  <a
+                    href="https://maps.app.goo.gl/3cgeu8w39CifWWdz9"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-[10px] font-black uppercase text-[#058031] px-4 py-2 rounded-lg hover:bg-forest-green hover:text-white transition-all shadow-md mt-1"
+                  >
+                    <MapPin className="w-4 h-4" />
+                    Ouvrir dans Google Maps
+                  </a>
                 </div>
 
                 <div className="space-y-1">
@@ -358,8 +367,8 @@ export default function Contact() {
                         <div>
                           <span
                             className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${msg.status === 'replied'
-                                ? 'bg-neon-green text-black'
-                                : 'bg-gray-100 text-gray-400'
+                              ? 'bg-neon-green text-black'
+                              : 'bg-gray-100 text-gray-400'
                               }`}
                           >
                             {msg.status === 'replied' ? '✓ Répondu' : '⏳ En attente'}
@@ -428,16 +437,27 @@ export default function Contact() {
       )}
 
       {/* Map Section */}
-      <section className="h-[500px] w-full relative bg-gray-100">
+      <section className="h-[500px] w-full relative bg-gray-100 group">
+        <a
+          href="https://maps.app.goo.gl/3cgeu8w39CifWWdz9"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="absolute inset-0 z-20 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-[2px]"
+        >
+          <span className="bg-white text-gray-900 px-8 py-4 rounded-full font-black text-xs uppercase tracking-widest flex items-center gap-3 shadow-2xl transform group-hover:scale-105 transition-transform">
+            <MapPin className="w-5 h-5 text-forest-green" />
+            Ouvrir dans Google Maps
+          </span>
+        </a>
         <iframe
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3858.9876543210!2d-17.4677419!3d14.6937!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTTCsDQxJzM3LjMiTiAxN8KwMjgnMDMuOSJX!5e0!3m2!1sen!2ssn!4v1234567890"
+          src="https://maps.google.com/maps?q=Daroul+Mouhty+Computer+Sarl+Dakar&t=&z=15&ie=UTF8&iwloc=&output=embed"
           width="100%"
           height="100%"
           style={{ border: 0 }}
           allowFullScreen=""
           loading="lazy"
           title="Notre emplacement"
-          className="grayscale hover:grayscale-0 transition-all duration-700"
+          className="grayscale hover:grayscale-0 transition-all duration-700 relative z-10"
         ></iframe>
       </section>
     </MainLayout>
