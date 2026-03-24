@@ -4,6 +4,5 @@ public/build
 storage/*.key
 .env
 .git
-.docker
 README.md
 Docker*
