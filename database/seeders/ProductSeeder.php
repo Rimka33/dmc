@@ -22,8 +22,10 @@ class ProductSeeder extends Seeder
         $printersCategory = Category::where('slug', 'imprimantes')->first();
         $multimediaCategory = Category::where('slug', 'multimedia')->first();
 
-        // Produits Ordinateurs Portables
-        $product1 = Product::create([
+        // --- PRODUITS ---
+
+        // 1. Dell Inspiron 15
+        $p1 = $this->updateOrCreateProduct([
             'category_id' => $laptopCategory->id,
             'name' => 'Dell Inspiron 15 - Intel Core i7',
             'sku' => 'DELL-INS-15-I7',
@@ -36,13 +38,14 @@ class ProductSeeder extends Seeder
             'brand' => 'Dell',
             'rating' => 4,
             'review_count' => 45,
+        ], [
+            ['image' => '/images/products/speaker-1.png', 'primary' => true],
+        ], [
+            '3 Mois de Garantie', 'Venant des USA', 'Livraison Partout au Sénégal'
         ]);
-        ProductImage::create(['product_id' => $product1->id, 'image_path' => '/images/products/speaker-1.png', 'is_primary' => true, 'sort_order' => 1]);
-        ProductFeature::create(['product_id' => $product1->id, 'feature' => '3 Mois de Garantie', 'sort_order' => 1]);
-        ProductFeature::create(['product_id' => $product1->id, 'feature' => 'Venant des USA', 'sort_order' => 2]);
-        ProductFeature::create(['product_id' => $product1->id, 'feature' => 'Livraison Partout au Sénégal', 'sort_order' => 3]);
 
-        $product2 = Product::create([
+        // 2. HP Pavilion 14
+        $p2 = $this->updateOrCreateProduct([
             'category_id' => $laptopCategory->id,
             'name' => 'HP Pavilion 14 - AMD Ryzen 5',
             'sku' => 'HP-PAV-14-R5',
@@ -55,12 +58,14 @@ class ProductSeeder extends Seeder
             'brand' => 'HP',
             'rating' => 5,
             'review_count' => 78,
+        ], [
+            ['image' => '/images/products/speaker-2.png', 'primary' => true],
+        ], [
+            '3 Mois de Garantie', 'Livraison Gratuite'
         ]);
-        ProductImage::create(['product_id' => $product2->id, 'image_path' => '/images/products/speaker-2.png', 'is_primary' => true, 'sort_order' => 1]);
-        ProductFeature::create(['product_id' => $product2->id, 'feature' => '3 Mois de Garantie', 'sort_order' => 1]);
-        ProductFeature::create(['product_id' => $product2->id, 'feature' => 'Livraison Gratuite', 'sort_order' => 2]);
 
-        $product3 = Product::create([
+        // 3. ASUS VivoBook 15
+        $p3 = $this->updateOrCreateProduct([
             'category_id' => $laptopCategory->id,
             'name' => 'ASUS VivoBook 15 - Intel i5',
             'sku' => 'ASUS-VB-15-I5',
@@ -73,11 +78,14 @@ class ProductSeeder extends Seeder
             'brand' => 'ASUS',
             'rating' => 4,
             'review_count' => 32,
+        ], [
+            ['image' => '/images/products/speaker-3.png', 'primary' => true],
+        ], [
+            '6 Mois de Garantie'
         ]);
-        ProductImage::create(['product_id' => $product3->id, 'image_path' => '/images/products/speaker-3.png', 'is_primary' => true, 'sort_order' => 1]);
-        ProductFeature::create(['product_id' => $product3->id, 'feature' => '6 Mois de Garantie', 'sort_order' => 1]);
 
-        $product4 = Product::create([
+        // 4. Lenovo ThinkPad E15
+        $p4 = $this->updateOrCreateProduct([
             'category_id' => $laptopCategory->id,
             'name' => 'Lenovo ThinkPad E15 - Core i7',
             'sku' => 'LEN-TP-E15-I7',
@@ -90,12 +98,14 @@ class ProductSeeder extends Seeder
             'brand' => 'Lenovo',
             'rating' => 5,
             'review_count' => 92,
+        ], [
+            ['image' => '/images/products/drone.png', 'primary' => true],
+        ], [
+            '12 Mois de Garantie', 'Support Technique Inclus'
         ]);
-        ProductImage::create(['product_id' => $product4->id, 'image_path' => '/images/products/drone.png', 'is_primary' => true, 'sort_order' => 1]);
-        ProductFeature::create(['product_id' => $product4->id, 'feature' => '12 Mois de Garantie', 'sort_order' => 1]);
-        ProductFeature::create(['product_id' => $product4->id, 'feature' => 'Support Technique Inclus', 'sort_order' => 2]);
 
-        $product5 = Product::create([
+        // 5. MSI GF63
+        $p5 = $this->updateOrCreateProduct([
             'category_id' => $laptopCategory->id,
             'name' => 'MSI GF63 Gaming Laptop - RTX 3050',
             'sku' => 'MSI-GF63-RTX3050',
@@ -110,12 +120,14 @@ class ProductSeeder extends Seeder
             'brand' => 'MSI',
             'rating' => 5,
             'review_count' => 156,
+        ], [
+            ['image' => '/images/products/air-purifier.png', 'primary' => true],
+        ], [
+            'Gaming Performance', 'Écran 144Hz'
         ]);
-        ProductImage::create(['product_id' => $product5->id, 'image_path' => '/images/products/air-purifier.png', 'is_primary' => true, 'sort_order' => 1]);
-        ProductFeature::create(['product_id' => $product5->id, 'feature' => 'Gaming Performance', 'sort_order' => 1]);
-        ProductFeature::create(['product_id' => $product5->id, 'feature' => 'Écran 144Hz', 'sort_order' => 2]);
 
-        $product6 = Product::create([
+        // 6. Samsung Galaxy Book
+        $p6 = $this->updateOrCreateProduct([
             'category_id' => $laptopCategory->id,
             'name' => 'Samsung Galaxy Book Pro - 13.3"',
             'sku' => 'SAMSUNG-GBP-13',
@@ -128,11 +140,12 @@ class ProductSeeder extends Seeder
             'brand' => 'Samsung',
             'rating' => 4,
             'review_count' => 64,
-        ]);
-        ProductImage::create(['product_id' => $product6->id, 'image_path' => '/images/products/cleaner.png', 'is_primary' => true, 'sort_order' => 1]);
+        ], [
+            ['image' => '/images/products/cleaner.png', 'primary' => true],
+        ], []);
 
-        // MacBook (Offre Spéciale)
-        $product7 = Product::create([
+        // 7. MacBook Pro (avec Offre Spéciale)
+        $p7 = $this->updateOrCreateProduct([
             'category_id' => $laptopCategory->id,
             'name' => 'MacBook Pro 14 pouces M1 Pro',
             'sku' => 'APPLE-MBP-14-M1',
@@ -147,23 +160,20 @@ class ProductSeeder extends Seeder
             'brand' => 'Apple',
             'rating' => 5,
             'review_count' => 201,
+        ], [
+            ['image' => '/images/products/macbook.png', 'primary' => true],
+        ], [
+            '3 Mois de Garantie', 'Venant des USA', 'Livraison Partout au Sénégal'
         ]);
-        ProductImage::create(['product_id' => $product7->id, 'image_path' => '/images/products/macbook.png', 'is_primary' => true, 'sort_order' => 1]);
-        ProductFeature::create(['product_id' => $product7->id, 'feature' => '3 Mois de Garantie', 'sort_order' => 1]);
-        ProductFeature::create(['product_id' => $product7->id, 'feature' => 'Venant des USA', 'sort_order' => 2]);
-        ProductFeature::create(['product_id' => $product7->id, 'feature' => 'Livraison Partout au Sénégal', 'sort_order' => 3]);
-
-        // Offre spéciale pour MacBook
-        SpecialOffer::create([
-            'product_id' => $product7->id,
+        SpecialOffer::updateOrCreate(['product_id' => $p7->id], [
             'end_date' => now()->addDays(15),
             'available_stock' => 73,
             'total_stock' => 99,
             'is_active' => true,
         ]);
 
-        // Smartphone (Offre Spéciale)
-        $product8 = Product::create([
+        // 8. Acer Predator (Offre Spéciale)
+        $p8 = $this->updateOrCreateProduct([
             'category_id' => $multimediaCategory->id,
             'name' => 'Acer Predator Helios 300',
             'sku' => 'ACER-PH-300',
@@ -178,23 +188,20 @@ class ProductSeeder extends Seeder
             'brand' => 'Acer',
             'rating' => 0,
             'review_count' => 0,
+        ], [
+            ['image' => '/images/products/phone-fold.png', 'primary' => true],
+        ], [
+            '3 Mois de Garantie', 'Venant des USA', 'Livraison Partout au Sénégal'
         ]);
-        ProductImage::create(['product_id' => $product8->id, 'image_path' => '/images/products/phone-fold.png', 'is_primary' => true, 'sort_order' => 1]);
-        ProductFeature::create(['product_id' => $product8->id, 'feature' => '3 Mois de Garantie', 'sort_order' => 1]);
-        ProductFeature::create(['product_id' => $product8->id, 'feature' => 'Venant des USA', 'sort_order' => 2]);
-        ProductFeature::create(['product_id' => $product8->id, 'feature' => 'Livraison Partout au Sénégal', 'sort_order' => 3]);
-
-        // Offre spéciale
-        SpecialOffer::create([
-            'product_id' => $product8->id,
+        SpecialOffer::updateOrCreate(['product_id' => $p8->id], [
             'end_date' => now()->addDays(30),
             'available_stock' => 44,
             'total_stock' => 50,
             'is_active' => true,
         ]);
 
-        // Produits Multimédia & Électronique
-        $product9 = Product::create([
+        // 9. Drone
+        $p9 = $this->updateOrCreateProduct([
             'category_id' => $multimediaCategory->id,
             'name' => 'Aenean Mini Portable Drone Quadcopter',
             'sku' => 'DRONE-MINI-001',
@@ -207,10 +214,10 @@ class ProductSeeder extends Seeder
             'brand' => 'Aenean',
             'rating' => 0,
             'review_count' => 0,
-        ]);
-        ProductImage::create(['product_id' => $product9->id, 'image_path' => '/images/products/drone.png', 'is_primary' => true, 'sort_order' => 1]);
+        ], [['image' => '/images/products/drone.png', 'primary' => true]], []);
 
-        $product10 = Product::create([
+        // 10. Purificateur d'air
+        $p10 = $this->updateOrCreateProduct([
             'category_id' => $multimediaCategory->id,
             'name' => 'Home Office Fast Air Clean Multifunctional Air Purifier',
             'sku' => 'AIR-PURIFIER-001',
@@ -222,10 +229,10 @@ class ProductSeeder extends Seeder
             'is_active' => true,
             'rating' => 0,
             'review_count' => 0,
-        ]);
-        ProductImage::create(['product_id' => $product10->id, 'image_path' => '/images/products/air-purifier.png', 'is_primary' => true, 'sort_order' => 1]);
+        ], [['image' => '/images/products/air-purifier.png', 'primary' => true]], []);
 
-        $product11 = Product::create([
+        // 11. Nettoyeur
+        $p11 = $this->updateOrCreateProduct([
             'category_id' => $multimediaCategory->id,
             'name' => 'Manufacturer Reusable Cleaner Home Washable',
             'sku' => 'CLEANER-001',
@@ -236,10 +243,10 @@ class ProductSeeder extends Seeder
             'is_active' => true,
             'rating' => 0,
             'review_count' => 0,
-        ]);
-        ProductImage::create(['product_id' => $product11->id, 'image_path' => '/images/products/cleaner.png', 'is_primary' => true, 'sort_order' => 1]);
+        ], [['image' => '/images/products/cleaner.png', 'primary' => true]], []);
 
-        $product12 = Product::create([
+        // 12. Caméra Sécurité
+        $p12 = $this->updateOrCreateProduct([
             'category_id' => $multimediaCategory->id,
             'name' => 'Vinova Mix 360° Home Security Camera 2K Pro',
             'sku' => 'CAM-SECURITY-2K',
@@ -252,10 +259,10 @@ class ProductSeeder extends Seeder
             'brand' => 'Vinova',
             'rating' => 0,
             'review_count' => 0,
-        ]);
-        ProductImage::create(['product_id' => $product12->id, 'image_path' => '/images/products/camera-security.png', 'is_primary' => true, 'sort_order' => 1]);
+        ], [['image' => '/images/products/camera-security.png', 'primary' => true]], []);
 
-        $product13 = Product::create([
+        // 13. Fer à repasser 1
+        $p13 = $this->updateOrCreateProduct([
             'category_id' => $multimediaCategory->id,
             'name' => 'Steam Pro Stainless Steel Soleplate Professional',
             'sku' => 'IRON-STEAM-PRO',
@@ -266,10 +273,10 @@ class ProductSeeder extends Seeder
             'is_active' => true,
             'rating' => 0,
             'review_count' => 0,
-        ]);
-        ProductImage::create(['product_id' => $product13->id, 'image_path' => '/images/products/iron-1.png', 'is_primary' => true, 'sort_order' => 1]);
+        ], [['image' => '/images/products/iron-1.png', 'primary' => true]], []);
 
-        $product14 = Product::create([
+        // 14. Fer à repasser 2
+        $p14 = $this->updateOrCreateProduct([
             'category_id' => $multimediaCategory->id,
             'name' => 'Perfect Care 3000 Series Steam Iron 1250 W Power',
             'sku' => 'IRON-PC3000',
@@ -280,10 +287,10 @@ class ProductSeeder extends Seeder
             'is_active' => true,
             'rating' => 0,
             'review_count' => 0,
-        ]);
-        ProductImage::create(['product_id' => $product14->id, 'image_path' => '/images/products/iron-2.png', 'is_primary' => true, 'sort_order' => 1]);
+        ], [['image' => '/images/products/iron-2.png', 'primary' => true]], []);
 
-        $product15 = Product::create([
+        // 15. Micro-ondes
+        $p15 = $this->updateOrCreateProduct([
             'category_id' => $multimediaCategory->id,
             'name' => 'Retro Small Microwave Oven With Compact Size',
             'sku' => 'MICROWAVE-RETRO',
@@ -294,11 +301,10 @@ class ProductSeeder extends Seeder
             'is_active' => true,
             'rating' => 0,
             'review_count' => 0,
-        ]);
-        ProductImage::create(['product_id' => $product15->id, 'image_path' => '/images/products/microwave.png', 'is_primary' => true, 'sort_order' => 1]);
+        ], [['image' => '/images/products/microwave.png', 'primary' => true]], []);
 
-        // Produits Accessoires
-        $product16 = Product::create([
+        // 16. Logitech Mouse
+        $p16 = $this->updateOrCreateProduct([
             'category_id' => $accessoriesCategory->id,
             'name' => 'Souris Logitech MX Master 3',
             'sku' => 'LOGI-MX3',
@@ -311,10 +317,10 @@ class ProductSeeder extends Seeder
             'brand' => 'Logitech',
             'rating' => 5,
             'review_count' => 89,
-        ]);
-        ProductImage::create(['product_id' => $product16->id, 'image_path' => '/images/products/mouse.png', 'is_primary' => true, 'sort_order' => 1]);
+        ], [['image' => '/images/products/mouse.png', 'primary' => true]], []);
 
-        $product17 = Product::create([
+        // 17. Powerbank Anker
+        $p17 = $this->updateOrCreateProduct([
             'category_id' => $accessoriesCategory->id,
             'name' => 'Power Bank Anker 20000mAh',
             'sku' => 'ANKER-PB-20K',
@@ -326,10 +332,10 @@ class ProductSeeder extends Seeder
             'brand' => 'Anker',
             'rating' => 5,
             'review_count' => 145,
-        ]);
-        ProductImage::create(['product_id' => $product17->id, 'image_path' => '/images/products/powerbank.png', 'is_primary' => true, 'sort_order' => 1]);
+        ], [['image' => '/images/products/powerbank.png', 'primary' => true]], []);
 
-        $product18 = Product::create([
+        // 18. Galaxy Buds
+        $p18 = $this->updateOrCreateProduct([
             'category_id' => $accessoriesCategory->id,
             'name' => 'Ecouteurs Samsung Galaxy Buds Pro',
             'sku' => 'SAMSUNG-BUDS-PRO',
@@ -341,10 +347,10 @@ class ProductSeeder extends Seeder
             'brand' => 'Samsung',
             'rating' => 4,
             'review_count' => 22,
-        ]);
-        ProductImage::create(['product_id' => $product18->id, 'image_path' => '/images/products/earbuds.png', 'is_primary' => true, 'sort_order' => 1]);
+        ], [['image' => '/images/products/earbuds.png', 'primary' => true]], []);
 
-        $product19 = Product::create([
+        // 19. JBL Flip 6
+        $p19 = $this->updateOrCreateProduct([
             'category_id' => $accessoriesCategory->id,
             'name' => 'Enceinte Bluetooth JBL Flip 6',
             'sku' => 'JBL-FLIP6',
@@ -356,10 +362,10 @@ class ProductSeeder extends Seeder
             'brand' => 'JBL',
             'rating' => 4,
             'review_count' => 34,
-        ]);
-        ProductImage::create(['product_id' => $product19->id, 'image_path' => '/images/products/speaker.png', 'is_primary' => true, 'sort_order' => 1]);
+        ], [['image' => '/images/products/speaker.png', 'primary' => true]], []);
 
-        $product20 = Product::create([
+        // 20. Sony WH-1000XM5
+        $p20 = $this->updateOrCreateProduct([
             'category_id' => $accessoriesCategory->id,
             'name' => 'Casque Sony WH-1000XM5',
             'sku' => 'SONY-WH1000XM5',
@@ -372,9 +378,36 @@ class ProductSeeder extends Seeder
             'brand' => 'Sony',
             'rating' => 5,
             'review_count' => 56,
-        ]);
-        ProductImage::create(['product_id' => $product20->id, 'image_path' => '/images/products/headphone.png', 'is_primary' => true, 'sort_order' => 1]);
+        ], [['image' => '/images/products/headphone.png', 'primary' => true]], []);
 
-        $this->command->info('20 produits créés avec succès avec images et features !');
+        $this->command->info('Produits créés ou mis à jour avec succès !');
+    }
+
+    private function updateOrCreateProduct($data, $images, $features)
+    {
+        $product = Product::updateOrCreate(['sku' => $data['sku']], $data);
+
+        // Nettoyage et recréation des images (pour éviter les doublons à chaque démarrage)
+        ProductImage::where('product_id', $product->id)->delete();
+        foreach ($images as $img) {
+            ProductImage::create([
+                'product_id' => $product->id,
+                'image_path' => $img['image'],
+                'is_primary' => $img['primary'],
+                'sort_order' => 1
+            ]);
+        }
+
+        // Nettoyage et recréation des features
+        ProductFeature::where('product_id', $product->id)->delete();
+        foreach ($features as $f) {
+            ProductFeature::create([
+                'product_id' => $product->id,
+                'feature' => $f,
+                'sort_order' => 1
+            ]);
+        }
+
+        return $product;
     }
 }
