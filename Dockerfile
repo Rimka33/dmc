@@ -42,5 +42,5 @@ RUN chmod -R 775 storage bootstrap/cache
 # Exposer le port par défaut attendu par Render (80 ou défini via PORT env)
 EXPOSE 80
 
-# Script de démarrage
-CMD ["apache2-foreground"]
+# Script de démarrage : migrations, seeders puis Apache
+CMD php artisan migrate --force && php artisan db:seed --force && apache2-foreground
