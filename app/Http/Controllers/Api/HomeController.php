@@ -11,9 +11,12 @@ use App\Models\Product;
 use App\Models\ProductReview;
 use App\Models\SpecialOffer;
 use Illuminate\Http\Request;
+use OpenApi\Attributes as OA;
 
 class HomeController extends Controller
 {
+    #[OA\Get(path: '/api/home', summary: 'Données de la page d accueil', tags: ['Home'])]
+    #[OA\Response(response: 200, description: 'Succès')]
     public function index()
     {
         // 1. Catégories actives (pour l'affichage en grille sur la home)

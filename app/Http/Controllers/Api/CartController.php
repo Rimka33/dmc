@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Services\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use OpenApi\Attributes as OA;
 
 class CartController extends Controller
 {
@@ -16,6 +17,8 @@ class CartController extends Controller
         $this->cartService = $cartService;
     }
 
+    #[OA\Get(path: '/api/cart', summary: 'Récupérer le panier', tags: ['Cart'])]
+    #[OA\Response(response: 200, description: 'Succès')]
     /**
      * Récupérer le panier
      */
@@ -37,6 +40,12 @@ class CartController extends Controller
         }
     }
 
+    #[OA\Post(path: '/api/cart/add', summary: 'Ajouter au panier', tags: ['Cart'])]
+    #[OA\RequestBody(required: true, content: new OA\JsonContent(required: ['product_id', 'quantity'], properties: [
+        new OA\Property(property: 'product_id', type: 'integer'),
+        new OA\Property(property: 'quantity', type: 'integer')
+    ]))]
+    #[OA\Response(response: 200, description: 'Produit ajouté')]
     /**
      * Ajouter un produit au panier
      */

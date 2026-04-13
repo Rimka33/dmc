@@ -5,9 +5,13 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use Illuminate\Http\Request;
+use OpenApi\Attributes as OA;
 
 class BannerController extends Controller
 {
+    #[OA\Get(path: '/api/banners', summary: 'Liste des bannières', tags: ['Banners'])]
+    #[OA\Parameter(name: 'type', in: 'query', required: false, description: 'Type de bannière (banner, popup, etc.)')]
+    #[OA\Response(response: 200, description: 'Succès')]
     public function index(Request $request)
     {
         $type = $request->get('type', 'banner');

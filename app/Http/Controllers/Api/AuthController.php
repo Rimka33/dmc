@@ -8,9 +8,29 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use OpenApi\Attributes as OA;
 
 class AuthController extends Controller
 {
+    #[OA\Post(
+        path: '/api/login',
+        summary: 'Connexion utilisateur',
+        tags: ['Authentication'],
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['email', 'password'],
+                properties: [
+                    new OA\Property(property: 'email', type: 'string', example: 'user@example.com'),
+                    new OA\Property(property: 'password', type: 'string', example: 'password123')
+                ]
+            )
+        ),
+        responses: [
+            new OA\Response(response: 200, description: 'Connexion réussie'),
+            new OA\Response(response: 422, description: 'Identifiants incorrects')
+        ]
+    )]
     /**
      * Connexion avec Sanctum (token-based)
      */
@@ -108,6 +128,8 @@ class AuthController extends Controller
         ], 201);
     }
 
+    #[OA\Post(path: '/api/logout', summary: 'Déconnexion', security: [['bearerAuth' => []]], tags: ['Authentication'])]
+    #[OA\Response(response: 200, description: 'Succès')]
     /**
      * Déconnexion (révoque le token actuel)
      */
@@ -144,6 +166,14 @@ class AuthController extends Controller
         ]);
     }
 
+    #[OA\Post(path: '/api/profile/update', summary: 'Mettre à jour le profil', security: [['bearerAuth' => []]], tags: ['Authentication'])]
+    #[OA\RequestBody(required: true, content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'name', type: 'string'),
+        new OA\Property(property: 'email', type: 'string'),
+        new OA\Property(property: 'phone', type: 'string'),
+        new OA\Property(property: 'address', type: 'string')
+    ]))]
+    #[OA\Response(response: 200, description: 'Profil mis à jour')]
     /**
      * Mettre à jour le profil
      */
@@ -176,6 +206,13 @@ class AuthController extends Controller
         ]);
     }
 
+    #[OA\Post(path: '/api/profile/password', summary: 'Changer le mot de passe', security: [['bearerAuth' => []]], tags: ['Authentication'])]
+    #[OA\RequestBody(required: true, content: new OA\JsonContent(required: ['current_password', 'password', 'password_confirmation'], properties: [
+        new OA\Property(property: 'current_password', type: 'string'),
+        new OA\Property(property: 'password', type: 'string'),
+        new OA\Property(property: 'password_confirmation', type: 'string')
+    ]))]
+    #[OA\Response(response: 200, description: 'Mot de passe modifié')]
     /**
      * Changer le mot de passe
      */

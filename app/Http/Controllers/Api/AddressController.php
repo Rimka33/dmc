@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\UserAddress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use OpenApi\Attributes as OA;
 
 class AddressController extends Controller
 {
+    #[OA\Get(path: '/api/addresses', summary: 'Liste des adresses', security: [['bearerAuth' => []]], tags: ['Addresses'])]
+    #[OA\Response(response: 200, description: 'Succès')]
     /**
      * Liste des adresses de l'utilisateur
      */
@@ -27,6 +30,8 @@ class AddressController extends Controller
         ]);
     }
 
+    #[OA\Post(path: '/api/addresses', summary: 'Créer une adresse', security: [['bearerAuth' => []]], tags: ['Addresses'])]
+    #[OA\Response(response: 201, description: 'Adresse créée')]
     /**
      * Créer une nouvelle adresse
      */

@@ -8,6 +8,7 @@ use App\Services\CartService;
 use App\Services\OrderService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use OpenApi\Attributes as OA;
 
 class OrderController extends Controller
 {
@@ -21,6 +22,8 @@ class OrderController extends Controller
         $this->cartService = $cartService;
     }
 
+    #[OA\Post(path: '/api/orders', summary: 'Créer une nouvelle commande', security: [['bearerAuth' => []]], tags: ['Orders'])]
+    #[OA\Response(response: 201, description: 'Commande créée')]
     /**
      * Créer une nouvelle commande
      */
@@ -93,6 +96,9 @@ class OrderController extends Controller
         }
     }
 
+    #[OA\Get(path: '/api/orders/{orderNumber}', summary: 'Détails d une commande par numéro', tags: ['Orders'])]
+    #[OA\Parameter(name: 'orderNumber', in: 'path', required: true)]
+    #[OA\Response(response: 200, description: 'Succès')]
     /**
      * Afficher les détails d'une commande
      */
@@ -113,6 +119,8 @@ class OrderController extends Controller
         }
     }
 
+    #[OA\Get(path: '/api/user/orders', summary: 'Historique des commandes de l utilisateur', security: [['bearerAuth' => []]], tags: ['Orders'])]
+    #[OA\Response(response: 200, description: 'Succès')]
     /**
      * Historique des commandes de l'utilisateur connecté
      */

@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ProductResource;
 use App\Models\Wishlist;
 use Illuminate\Http\Request;
+use OpenApi\Attributes as OA;
 
 class WishlistController extends Controller
 {
+    #[OA\Get(path: '/api/wishlist', summary: 'Liste de souhaits', security: [['bearerAuth' => []]], tags: ['Wishlist'])]
+    #[OA\Response(response: 200, description: 'Succès')]
     /**
      * Liste de souhaits de l'utilisateur
      */

@@ -5,9 +5,13 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Blog;
 use Illuminate\Http\Request;
+use OpenApi\Attributes as OA;
 
 class BlogController extends Controller
 {
+    #[OA\Get(path: '/api/blogs', summary: 'Liste des articles de blog', tags: ['Blog'])]
+    #[OA\Parameter(name: 'category', in: 'query', required: false, description: 'Filtrer par catégorie')]
+    #[OA\Response(response: 200, description: 'Succès')]
     public function index(Request $request)
     {
         $query = Blog::where('status', 'published');

@@ -7,9 +7,12 @@ use App\Http\Resources\CategoryResource;
 use App\Http\Resources\ProductResource;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use OpenApi\Attributes as OA;
 
 class CategoryController extends Controller
 {
+    #[OA\Get(path: '/api/categories', summary: 'Liste toutes les catégories actives', tags: ['Categories'])]
+    #[OA\Response(response: 200, description: 'Succès')]
     /**
      * Liste toutes les catégories actives
      */

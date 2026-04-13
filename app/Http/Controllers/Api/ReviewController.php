@@ -8,9 +8,13 @@ use App\Models\Product;
 use App\Models\ProductReview;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use OpenApi\Attributes as OA;
 
 class ReviewController extends Controller
 {
+    #[OA\Get(path: '/api/products/{productId}/reviews', summary: 'Liste des avis d un produit', tags: ['Reviews'])]
+    #[OA\Parameter(name: 'productId', in: 'path', required: true)]
+    #[OA\Response(response: 200, description: 'Succès')]
     /**
      * Liste des avis d'un produit
      */

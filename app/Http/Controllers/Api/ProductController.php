@@ -7,12 +7,13 @@ use App\Http\Resources\ProductCollection;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use OpenApi\Attributes as OA;
 
 class ProductController extends Controller
 {
-    /**
-     * Liste tous les produits avec filtres et pagination
-     */
+    #[OA\Get(path: '/api/products', summary: 'Liste tous les produits avec filtres et pagination', tags: ['Products'])]
+    #[OA\Parameter(name: 'search', description: 'Terme de recherche', in: 'query', required: false)]
+    #[OA\Response(response: 200, description: 'Opération réussie')]
     public function index(Request $request)
     {
         $query = Product::with(['images', 'category'])
@@ -62,6 +63,8 @@ class ProductController extends Controller
         return new ProductCollection($products);
     }
 
+    #[OA\Get(path: '/api/products/featured', summary: 'Produits mis en avant', tags: ['Products'])]
+    #[OA\Response(response: 200, description: 'Succès')]
     /**
      * Produits mis en avant
      */
@@ -77,6 +80,8 @@ class ProductController extends Controller
         return ProductResource::collection($products);
     }
 
+    #[OA\Get(path: '/api/products/new', summary: 'Nouveaux produits', tags: ['Products'])]
+    #[OA\Response(response: 200, description: 'Succès')]
     /**
      * Nouveaux produits
      */
@@ -93,6 +98,8 @@ class ProductController extends Controller
         return ProductResource::collection($products);
     }
 
+    #[OA\Get(path: '/api/products/on-sale', summary: 'Produits en promotion', tags: ['Products'])]
+    #[OA\Response(response: 200, description: 'Succès')]
     /**
      * Produits en promotion
      */
@@ -109,6 +116,10 @@ class ProductController extends Controller
         return ProductResource::collection($products);
     }
 
+    #[OA\Get(path: '/api/products/{id}', summary: 'Détails d un produit', tags: ['Products'])]
+    #[OA\Parameter(name: 'id', in: 'path', required: true, description: 'ID du produit')]
+    #[OA\Response(response: 200, description: 'Succès')]
+    #[OA\Response(response: 404, description: 'Produit non trouvé')]
     /**
      * Détails d'un produit
      */
@@ -133,6 +144,9 @@ class ProductController extends Controller
         ]);
     }
 
+    #[OA\Get(path: '/api/products/search', summary: 'Recherche de produits', tags: ['Products'])]
+    #[OA\Parameter(name: 'q', in: 'query', required: true, description: 'Terme de recherche')]
+    #[OA\Response(response: 200, description: 'Succès')]
     /**
      * Recherche de produits
      */
