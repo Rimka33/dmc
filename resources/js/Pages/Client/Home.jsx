@@ -1248,11 +1248,11 @@ export default function Home() {
                     <div key={i} className="min-w-full h-full flex items-center justify-center p-4">
                       <img
                         src={
-                          filteredNewProducts[i]?.primary_image || '/images/home/laptop-feature.png'
+                          filteredNewProducts[i]?.primary_image || '/images/placeholder.jpg'
                         }
                         alt="Featured Product"
                         className="w-full h-full object-contain"
-                        onError={(e) => (e.target.src = '/images/home/laptop-feature.png')}
+                        onError={(e) => (e.target.src = '/images/placeholder.jpg')}
                       />
                     </div>
                   ))}
