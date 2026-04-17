@@ -35,7 +35,8 @@ log_warn() {
 log_info "1. Mise à jour du système..."
 # =============================================================================
 dnf update -y
-dnf install -y epel-release dnf-utils wget zip unzip supervisor nano wget tar
+dnf install -y epel-release dnf-utils wget zip unzip nano tar
+dnf install -y supervisor
 
 # =============================================================================
 log_info "2. Installation de Nginx..."
