@@ -170,9 +170,12 @@ run_migrations() {
 # =============================================================================
 set_permissions() {
     cd "$APP_DIR"
-
     log_info "Configuration des permissions..."
-    sudo chown -R www-data:www-data storage bootstrap/cache
+    if id "nginx" &>/dev/null; then
+        sudo chown -R nginx:nginx storage bootstrap/cache
+    else
+        sudo chown -R www-data:www-data storage bootstrap/cache
+    fi
     sudo chmod -R 775 storage bootstrap/cache
 
     # Créer le lien symbolique storage si absent
