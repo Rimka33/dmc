@@ -122,10 +122,7 @@ export default function Checkout() {
     setErrors({});
 
     try {
-      // Recalculer le prix de livraison pour être sûr avant de l'envoyer
-      const shippingCost = deliveryMethod === 'pickup' 
-        ? 0 
-        : calculateShippingFee(formData.shipping_region, formData.shipping_neighborhood);
+      const shippingCost = 0; // Calcul automatique supprimé
 
       const orderData = {
         ...formData,
@@ -664,86 +661,28 @@ export default function Checkout() {
                       ))}
                     </div>
 
-                    <div className="pt-4 space-y-3 border-t">
-                      <div className="flex justify-between text-xs text-gray-600">
-                        <span>Sous-total</span>
-                        <span className="font-bold">
-                          {cart.subtotal_formatted ||
-                            `${(cart.subtotal || 0).toLocaleString()} F CFA`}
-                        </span>
-                      </div>
-                      <div className="flex justify-between text-xs text-gray-600">
-                        <span>Expédition</span>
-                        <span className="font-bold text-forest-green">
-                          {deliveryMethod === 'pickup'
-                            ? 'Gratuit'
-                            : `${calculateShippingFee(formData.shipping_region, formData.shipping_neighborhood).toLocaleString()} F CFA`}
-                        </span>
-                      </div>
+                    <div className="pt-4 border-t">
                       <div className="flex justify-between text-xs font-black pt-3 border-t-2 border-gray-900">
-                        <span className="text-gray-900 uppercase">Total</span>
+                        <span className="text-gray-900 uppercase">Total à payer</span>
                         <span className="text-neon-green">
-                          {deliveryMethod === 'pickup'
-                            ? `${(cart.subtotal || 0).toLocaleString()} F CFA`
-                            : `${((cart.subtotal || 0) + calculateShippingFee(formData.shipping_region, formData.shipping_neighborhood)).toLocaleString()} F CFA`}
+                          {`${(cart.subtotal || 0).toLocaleString()} F CFA`}
                         </span>
                       </div>
-
                     </div>
                   </div>
 
-                  {/* Payment Methods */}
-                  <div className="space-y-3 mb-6">
+                  {/* Payment Method */}
+                  <div className="mb-6">
                     <h4 className="font-black text-gray-900 uppercase text-xs tracking-wider mb-3">
                       Mode de paiement
                     </h4>
-
-                    <label
-                      className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${formData.payment_method === 'cash_on_delivery' ? 'border-forest-green bg-green-50' : 'border-gray-200 hover:border-gray-300'}`}
-                    >
-                      <input
-                        type="radio"
-                        name="payment_method"
-                        value="cash_on_delivery"
-                        checked={formData.payment_method === 'cash_on_delivery'}
-                        onChange={handleChange}
-                        className="w-4 h-4 text-forest-green"
-                      />
-                      <DollarSign className="w-5 h-5 text-forest-green" />
-                      <span className="text-xs font-bold text-gray-900">
-                        Paiement à la livraison
-                      </span>
-                    </label>
-
-                    <label
-                      className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${formData.payment_method === 'mobile_money' ? 'border-forest-green bg-green-50' : 'border-gray-200 hover:border-gray-300'}`}
-                    >
-                      <input
-                        type="radio"
-                        name="payment_method"
-                        value="mobile_money"
-                        checked={formData.payment_method === 'mobile_money'}
-                        onChange={handleChange}
-                        className="w-4 h-4 text-forest-green"
-                      />
-                      <Smartphone className="w-5 h-5 text-forest-green" />
-                      <span className="text-xs font-bold text-gray-900">Mobile Money</span>
-                    </label>
-
-                    <label
-                      className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${formData.payment_method === 'bank_transfer' ? 'border-forest-green bg-green-50' : 'border-gray-200 hover:border-gray-300'}`}
-                    >
-                      <input
-                        type="radio"
-                        name="payment_method"
-                        value="bank_transfer"
-                        checked={formData.payment_method === 'bank_transfer'}
-                        onChange={handleChange}
-                        className="w-4 h-4 text-forest-green"
-                      />
-                      <Landmark className="w-5 h-5 text-forest-green" />
-                      <span className="text-xs font-bold text-gray-900">Transfert Bancaire</span>
-                    </label>
+                    <div className="flex items-center gap-3 p-4 rounded-xl border-2 border-[#058031] bg-green-50">
+                      <DollarSign className="w-5 h-5 text-[#058031]" />
+                      <div>
+                        <span className="text-xs font-bold text-gray-900 block tracking-tight">Paiement à la livraison</span>
+                        <span className="text-[10px] text-gray-500">Payez en espèces dès réception</span>
+                      </div>
+                    </div>
                   </div>
 
                   {/* Terms */}

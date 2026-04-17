@@ -11,7 +11,6 @@ import {
   Bell,
   Save,
   CheckCircle,
-  DollarSign,
   ShieldCheck,
   Mail,
 } from 'lucide-react';
@@ -38,21 +37,7 @@ export default function SettingsIndex({ settings = {}, flash = {} }) {
     maintenance_mode: settings.maintenance_mode === '1' || settings.maintenance_mode === true,
   });
 
-  const {
-    data: paymentData,
-    setData: setPaymentData,
-    post: postPayment,
-    processing: paymentProcessing,
-  } = useForm({
-    group: 'payment',
-    payment_stripe: settings.payment_stripe === '1' || settings.payment_stripe === true,
-    payment_paypal: settings.payment_paypal === '1' || settings.payment_paypal === true,
-    payment_bank_transfer:
-      settings.payment_bank_transfer === '1' || settings.payment_bank_transfer === true,
-    payment_cod: settings.payment_cod === '1' || settings.payment_cod === true,
-    stripe_key: settings.stripe_key || '',
-    paypal_client_id: settings.paypal_client_id || '',
-  });
+
 
   const {
     data: notifData,
@@ -77,10 +62,7 @@ export default function SettingsIndex({ settings = {}, flash = {} }) {
     postGeneral('/admin/settings');
   };
 
-  const submitPayment = (e) => {
-    e.preventDefault();
-    postPayment('/admin/settings');
-  };
+
 
   const submitNotif = (e) => {
     e.preventDefault();
@@ -89,7 +71,6 @@ export default function SettingsIndex({ settings = {}, flash = {} }) {
 
   const tabs = [
     { key: 'general', label: 'Général', icon: Globe },
-    { key: 'payment', label: 'Paiement', icon: DollarSign },
     { key: 'notifications', label: 'Alertes', icon: Bell },
   ];
 
@@ -219,63 +200,7 @@ export default function SettingsIndex({ settings = {}, flash = {} }) {
           </div>
         )}
 
-        {/* Payment Settings */}
-        {activeTab === 'payment' && (
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-            <form onSubmit={submitPayment} className="space-y-6">
-              <Section title="Méthodes de Paiement" icon={DollarSign}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {[
-                    { key: 'payment_stripe', label: 'Stripe (Cartes Bancaires)' },
-                    { key: 'payment_paypal', label: 'PayPal Checkout' },
-                    { key: 'payment_bank_transfer', label: 'Virement Bancaire (Manuel)' },
-                    { key: 'payment_cod', label: 'Paiement à la livraison' },
-                  ].map((method) => (
-                    <label
-                      key={method.key}
-                      className="flex items-center justify-between p-5 border border-gray-100 rounded-2xl hover:bg-gray-50 cursor-pointer transition-all"
-                    >
-                      <span className="font-bold text-sm text-gray-700">{method.label}</span>
-                      <input
-                        type="checkbox"
-                        checked={paymentData[method.key]}
-                        onChange={(e) => setPaymentData(method.key, e.target.checked)}
-                        className="w-5 h-5 border-gray-200 rounded text-forest-green focus:ring-forest-green"
-                      />
-                    </label>
-                  ))}
-                </div>
-              </Section>
 
-              <Section title="Configuration API">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    label="Clé Publique Stripe"
-                    value={paymentData.stripe_key}
-                    onChange={(e) => setPaymentData('stripe_key', e.target.value)}
-                    placeholder="pk_test_..."
-                  />
-                  <FormField
-                    label="PayPal Client ID"
-                    value={paymentData.paypal_client_id}
-                    onChange={(e) => setPaymentData('paypal_client_id', e.target.value)}
-                    placeholder="Axxxxxxxxxxxx"
-                  />
-                </div>
-              </Section>
-
-              <div className="flex justify-end p-6 bg-white rounded-3xl shadow-sm">
-                <button
-                  disabled={paymentProcessing}
-                  className="flex items-center gap-2 px-8 py-4 bg-forest-green text-white rounded-xl hover:bg-dark-green transition-all font-black text-[10px] uppercase tracking-widest shadow-lg shadow-forest-green/20"
-                >
-                  <Save size={16} />{' '}
-                  {paymentProcessing ? 'Enregistrement...' : 'Mettre à jour les paiements'}
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
 
         {/* Notifications */}
         {activeTab === 'notifications' && (

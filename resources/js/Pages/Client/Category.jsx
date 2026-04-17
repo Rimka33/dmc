@@ -303,19 +303,9 @@ export default function Category() {
         />
       </Head>
       {/* Hero Dark Banner with Floating Card */}
-      <section className="relative bg-[#021008] h-[340px] md:h-[400px] flex items-center justify-center z-10">
-        <div className="absolute inset-0">
-          <img
-            src={
-              category?.image || category?.icon
-                ? resolveCategoryImage(category)
-                : '/images/back.jpg'
-            }
-            alt=""
-            className="absolute right-0 top-0 w-full h-full object-cover md:object-contain object-right opacity-80"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#021008] via-[#021008]/80 to-transparent"></div>
-        </div>
+      <section className="relative bg-[#021008] h-[200px] md:h-[260px] flex items-center justify-center z-10 overflow-visible">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-forest-green/10 via-transparent to-transparent opacity-30"></div>
+
 
         <div className="container mx-auto px-4 relative z-20 text-center">
           <h1 className="text-2xl md:text-3xl font-black text-neon-green uppercase tracking-widest mb-4 drop-shadow-[0_0_20px_rgba(5,255,0,0.3)]">
@@ -347,7 +337,7 @@ export default function Category() {
       </section>
 
       {/* Main Content Sections */}
-      <section className="bg-white pt-40 pb-20">
+      <section className="bg-white pt-32 pb-20">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
             {/* Sidebar */}

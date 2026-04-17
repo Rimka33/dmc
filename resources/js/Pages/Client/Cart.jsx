@@ -101,7 +101,7 @@ export default function Cart() {
   }
 
   const currentSubtotal = Number(cart.subtotal) || 0;
-  const shippingCost = deliveryMethod === 'delivery' ? Number(cart.shipping) || 5000 : 0;
+  const shippingCost = 0; // Calcul automatique supprimé
   const finalTotal = currentSubtotal + shippingCost;
 
   return (
@@ -421,13 +421,7 @@ export default function Cart() {
                     )}
                   </button>
 
-                  <div className="mt-6 flex items-center justify-center">
-                    <img
-                      src="/images/payment-methods.png"
-                      alt="Moyens de paiement sécurisés"
-                      className="h-6 object-contain opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all"
-                    />
-                  </div>
+
                 </div>
               </div>
             </div>

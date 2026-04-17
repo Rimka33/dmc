@@ -50,7 +50,7 @@ class OrderService
 
             // Frais de livraison : 0 pour pickup, 5000 pour delivery
             $deliveryMethod = $data['delivery_method'] ?? 'delivery';
-            $shipping = $deliveryMethod === 'pickup' ? 0 : ($data['shipping_cost'] ?? 5000);
+            $shipping = $deliveryMethod === 'pickup' ? 0 : ($data['shipping_cost'] ?? 0);
 
             $tax = $data['tax'] ?? 0;
             $discount = $data['discount'] ?? 0;

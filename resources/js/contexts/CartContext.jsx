@@ -11,7 +11,7 @@ export const CartProvider = ({ children }) => {
     count: 0,
     totalQuantity: 0, // Somme totale des quantités d'articles
     subtotal: 0,
-    shipping: 5000,
+    shipping: 0,
     tax: 0,
     total: 0,
   });
@@ -79,7 +79,7 @@ export const CartProvider = ({ children }) => {
         count: 0,
         totalQuantity: 0,
         subtotal: 0,
-        shipping: 5000,
+        shipping: 0,
         tax: 0,
         total: 0,
       });

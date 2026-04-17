@@ -39,7 +39,7 @@ RUN npm install && npm run build
 RUN chown -R www-data:www-data storage bootstrap/cache
 RUN chmod -R 775 storage bootstrap/cache
 
-# Exposer le port par défaut attendu par Render (80 ou défini via PORT env)
+# Exposer le port par défaut (80)
 EXPOSE 80
 
 # Script de démarrage : migrations, seeders puis Apache

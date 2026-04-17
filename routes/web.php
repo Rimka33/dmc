@@ -11,7 +11,7 @@ use Inertia\Inertia;
 | Seules les routes admin Inertia sont conservées ici.
 */
 
-Route::middleware(['auth:sanctum', 'permission:admin.access'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'permission:admin.access'])->prefix('admin')->name('admin.')->group(function () {
     // Dashboard (Accessible par Admin et Manager)
     Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/notifications', [\App\Http\Controllers\Admin\AdminNotificationController::class, 'index'])->name('notifications.index');

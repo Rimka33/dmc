@@ -4,7 +4,7 @@ import { Link, router } from '@inertiajs/react';
 import PageHeader from '../../../Components/Admin/PageHeader';
 import SearchFilter from '../../../Components/Admin/SearchFilter';
 import ConfirmDialog from '../../../Components/Admin/ConfirmDialog';
-import { User, Trash2, Shield, Edit, Plus, CheckCircle, XCircle } from 'lucide-react';
+import { User, Trash2, Shield, Edit, Plus, CheckCircle, XCircle, Phone } from 'lucide-react';
 
 export default function Index({ users, filters = {} }) {
   const [showConfirm, setShowConfirm] = useState(false);

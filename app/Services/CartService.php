@@ -146,7 +146,7 @@ class CartService
     {
         $items = $this->getItems();
         $subtotal = $this->getTotal();
-        $shipping = $subtotal > 0 ? 5000 : 0; // Frais de livraison fixes
+        $shipping = 0; // Frais de livraison désactivés (0 par défaut)
         $tax = 0; // Pas de taxe pour l'instant
         $total = $subtotal + $shipping + $tax;
 

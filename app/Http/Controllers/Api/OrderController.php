@@ -44,7 +44,7 @@ class OrderController extends Controller
             'shipping_city' => 'nullable|string|max:100',
             'shipping_neighborhood' => 'nullable|string|max:255',
             'shipping_postal_code' => 'nullable|string|max:20',
-            'payment_method' => 'required|in:cash_on_delivery,bank_transfer,mobile_money',
+            'payment_method' => 'required|in:cash_on_delivery',
             'notes' => 'nullable|string',
             'termsAccepted' => 'nullable|boolean',
         ]);
