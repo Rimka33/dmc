@@ -154,6 +154,7 @@ supervisorctl update
 if command -v setenforce &> /dev/null; then
     log_info "Configuration de SELinux..."
     setsebool -P httpd_can_network_connect 1 || true
+    setsebool -P httpd_can_network_connect_db 1 || true
     setsebool -P httpd_unified 1 || true
     # Accord des permissions SELinux sur les fichiers web
     if [ -d "$APP_DIR" ]; then
