@@ -120,6 +120,7 @@ dnf install -y certbot python3-certbot-nginx
 # =============================================================================
 log_info "10. Configuration du Firewall (Firewalld)..."
 # =============================================================================
+dnf install -y firewalld
 systemctl enable --now firewalld
 firewall-cmd --permanent --add-service=http
 firewall-cmd --permanent --add-service=https
