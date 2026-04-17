@@ -17,11 +17,11 @@ YELLOW='\033[1;33m'
 NC='\033[0m'
 
 PHP_VERSION="8.2"
-DOMAIN="__VOTRE_DOMAINE__"
+DOMAIN="57.129.122.107"
 APP_DIR="/var/www/dmc"
 DB_NAME="dmc_db"
 DB_USER="dmc_user"
-DB_PASS="__MOT_DE_PASSE_DB__"
+DB_PASS="SecurePass123!"
 
 log_info() {
     echo -e "${GREEN}[INFO]${NC} $1"
