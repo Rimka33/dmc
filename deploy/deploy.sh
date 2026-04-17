@@ -190,7 +190,11 @@ set_permissions() {
 # =============================================================================
 restart_services() {
     log_info "Redémarrage de PHP-FPM..."
-    sudo systemctl restart php${PHP_VERSION}-fpm
+    if systemctl list-unit-files | grep -q "php${PHP_VERSION}-fpm"; then
+        sudo systemctl restart php${PHP_VERSION}-fpm
+    else
+        sudo systemctl restart php-fpm
+    fi
 
     log_info "Redémarrage de Nginx..."
     sudo systemctl restart nginx
