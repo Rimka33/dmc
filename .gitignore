@@ -2,7 +2,6 @@
 .DS_Store
 .env
 .env.backup
-.env.production
 .phpactor.json
 .phpunit.result.cache
 /.fleet
@@ -24,3 +23,10 @@ Homestead.yaml
 Thumbs.db
 dmc-key.pem
 git_status_output.txt
+
+# Fichiers de debug/temp
+debug_*.php
+error_log.txt
+lint_errors.txt
+lint_output.txt
+fix_perms.ps1
