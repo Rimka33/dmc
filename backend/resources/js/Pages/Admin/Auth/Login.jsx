@@ -40,7 +40,10 @@ export default function Login({ status, canResetPassword }) {
       <div className="max-w-4xl w-full relative z-10 flex flex-col md:flex-row bg-white rounded-[40px] shadow-[0_20px_70px_-10px_rgba(0,0,0,0.1)] overflow-hidden min-h-[600px]">
         {/* Left Panel - Brand Identity */}
         <div className="hidden md:flex md:w-5/12 bg-[#011a0a] p-12 flex-col justify-center text-center text-white relative">
-          <div className="absolute inset-0 opacity-10 bg-[url('/images/pattern.png')] bg-repeat pointer-events-none" />
+          {/* Grainy/Pattern Overlay via CSS instead of missing PNG */}
+          <div className="absolute inset-0 opacity-[0.03] pointer-events-none" 
+               style={{ backgroundImage: `radial-gradient(#ffffff 1px, transparent 1px)`, backgroundSize: '20px 20px' }} />
+
           
           <motion.div 
             initial={{ opacity: 0, y: -20 }}
