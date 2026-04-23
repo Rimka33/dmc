@@ -1,32 +1,57 @@
-*.log
+# Root GitIgnore for Monorepo (Laravel + Vite/React)
+
+# OS Files
 .DS_Store
+Thumbs.db
+*.log
+
+# Environment Files
 .env
 .env.backup
-.phpactor.json
-.phpunit.result.cache
-/.fleet
-/.idea
-/.nova
-/.phpunit.cache
-/.vscode
-/.zed
-/auth.json
-/node_modules
+.env.production
+.env.local
+
+# Build/Artifacts
+/public/storage
 /public/build
 /public/hot
-/public/storage
-/storage/*.key
-/storage/pail
-/vendor
-Homestead.json
-Homestead.yaml
-Thumbs.db
-dmc-key.pem
-git_status_output.txt
+dist/
 
-# Fichiers de debug/temp
+# Dependencies
+node_modules/
+vendor/
+
+# Laravel Specific
+backend/.env
+backend/storage/*.key
+backend/storage/framework/cache/data/*
+backend/storage/framework/sessions/*
+backend/storage/framework/testing/*
+backend/storage/framework/views/*
+backend/storage/logs/*
+backend/vendor/
+backend/node_modules/
+backend/public/storage
+backend/public/build
+backend/public/hot
+backend/artisan.php
+backend/dmc-key.pem
+
+# Frontend Specific
+frontend/.env
+frontend/node_modules/
+frontend/dist/
+
+# IDE
+.vscode/
+.idea/
+.claude/
+.agent/
+
+# Temp/Debug
 debug_*.php
 error_log.txt
 lint_errors.txt
 lint_output.txt
 fix_perms.ps1
+git_status_output.txt

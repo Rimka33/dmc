@@ -1,0 +1,103 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+
+/*
+|--------------------------------------------------------------------------
+| Routes ADMIN PUBLIQUES (Sans authentification)
+|--------------------------------------------------------------------------
+| Routes de connexion/déconnexion admin
+*/
+
+Route::middleware('guest')->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/login', [\App\Http\Controllers\Admin\AdminAuthController::class, 'showLogin'])->name('login');
+    Route::post('/login', [\App\Http\Controllers\Admin\AdminAuthController::class, 'login'])->name('login.store');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Routes ADMIN (Protégées par middleware role:admin)
+|--------------------------------------------------------------------------
+| Toutes les routes client sont maintenant gérées par l'API REST.
+| Seules les routes admin Inertia sont conservées ici.
+*/
+
+Route::post('/admin/logout', [\App\Http\Controllers\Admin\AdminAuthController::class, 'logout'])->middleware('auth')->name('admin.logout');
+
+Route::middleware(['auth', 'permission:admin.access'])->prefix('admin')->name('admin.')->group(function () {
+    // Dashboard (Accessible par Admin et Manager)
+    Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/notifications', [\App\Http\Controllers\Admin\AdminNotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/mark-all-as-read', [\App\Http\Controllers\Admin\AdminNotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
+    Route::post('/notifications/{id}/read', [\App\Http\Controllers\Admin\AdminNotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
+    Route::delete('/notifications/{id}', [\App\Http\Controllers\Admin\AdminNotificationController::class, 'destroy'])->name('notifications.destroy');
+
+    // CRUD Produits & Catégories (Accessible par Manager)
+    Route::resource('products', \App\Http\Controllers\Admin\AdminProductController::class);
+    Route::resource('categories', \App\Http\Controllers\Admin\AdminCategoryController::class);
+    Route::resource('orders', \App\Http\Controllers\Admin\AdminOrderController::class);
+    Route::get('orders/{order}/invoice', [\App\Http\Controllers\Admin\AdminOrderController::class, 'downloadInvoice'])->name('orders.invoice');
+    Route::resource('collections', \App\Http\Controllers\Admin\AdminCollectionController::class);
+
+    // Routes réservées strictement aux Admins (Système & Clients)
+    Route::middleware(['role:admin'])->group(function () {
+        Route::get('users/search', [\App\Http\Controllers\Admin\AdminUserController::class, 'search'])->name('users.search');
+        Route::resource('users', \App\Http\Controllers\Admin\AdminUserController::class);
+        Route::resource('roles', \App\Http\Controllers\Admin\AdminRoleController::class);
+        Route::get('/settings', [\App\Http\Controllers\Admin\AdminSettingController::class, 'index'])->name('settings.index');
+        Route::post('/settings', [\App\Http\Controllers\Admin\AdminSettingController::class, 'store'])->name('settings.store');
+
+        Route::resource('customers', \App\Http\Controllers\Admin\AdminCustomerController::class); // Managers might need read-only access later
+        Route::resource('newsletter', \App\Http\Controllers\Admin\AdminNewsletterController::class);
+        Route::get('newsletter/export', [\App\Http\Controllers\Admin\AdminNewsletterController::class, 'export'])->name('newsletter.export');
+        Route::post('newsletter/{newsletter}/toggle-status', [\App\Http\Controllers\Admin\AdminNewsletterController::class, 'toggleStatus'])->name('newsletter.toggle-status');
+
+        Route::resource('pages', \App\Http\Controllers\Admin\AdminPageController::class);
+        Route::resource('banners', \App\Http\Controllers\Admin\AdminBannerController::class);
+    });
+
+    // Routes additionnelles accessibles par Managers (Permissions spécifiques à ajouter si besoin plus tard)
+    Route::resource('reviews', \App\Http\Controllers\Admin\AdminReviewController::class);
+    Route::post('reviews/{review}/approve', [\App\Http\Controllers\Admin\AdminReviewController::class, 'approve'])->name('reviews.approve');
+    Route::post('reviews/{review}/reject', [\App\Http\Controllers\Admin\AdminReviewController::class, 'reject'])->name('reviews.reject');
+
+    Route::resource('questions', \App\Http\Controllers\Admin\AdminQuestionController::class);
+    Route::post('questions/{question}/answer', [\App\Http\Controllers\Admin\AdminQuestionController::class, 'answer'])->name('questions.answer');
+    Route::post('questions/{question}/toggle-visibility', [\App\Http\Controllers\Admin\AdminQuestionController::class, 'toggleVisibility'])->name('questions.toggle-visibility');
+
+    Route::resource('messages', \App\Http\Controllers\Admin\AdminMessageController::class);
+    Route::post('messages/{message}/mark-as-read', [\App\Http\Controllers\Admin\AdminMessageController::class, 'markAsRead'])->name('messages.mark-as-read');
+    Route::post('messages/{message}/mark-as-replied', [\App\Http\Controllers\Admin\AdminMessageController::class, 'markAsReplied'])->name('messages.mark-as-replied');
+    Route::post('messages/{message}/archive', [\App\Http\Controllers\Admin\AdminMessageController::class, 'archive'])->name('messages.archive');
+
+    Route::resource('blog', \App\Http\Controllers\Admin\AdminBlogController::class);
+});
+
+// Redirection pour le middleware auth (Admin)
+Route::get('/login', function () {
+    return redirect()->route('admin.login');
+})->name('login');
+
+Route::post('/logout', function (Illuminate\Http\Request $request) {
+    Illuminate\Support\Facades\Auth::logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect('/');
+})->name('logout');
+
+// SEO Tools
+Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index']);
+
+/*
+|--------------------------------------------------------------------------
+| Fallback pour SPA
+|--------------------------------------------------------------------------
+| Toutes les autres routes retournent l'application React
+*/
+
+// Root route redirects to admin dashboard (which will redirect to login if not authenticated)
+Route::get('/', function () {
+    return redirect('/admin/dashboard');
+});
