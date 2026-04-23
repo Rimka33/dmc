@@ -10,12 +10,15 @@ class AdminUserSeeder extends Seeder
 {
     public function run(): void
     {
+        $adminRole = \App\Models\Role::where('slug', 'admin')->first();
+
         User::updateOrCreate(
             ['email' => 'admin@dmc.com'],
             [
                 'name' => 'Administrateur DMC',
                 'password' => Hash::make('Admin2026DMC'),
                 'role' => 'admin',
+                'role_id' => $adminRole ? $adminRole->id : null,
                 'is_active' => true,
                 'phone' => '+221000000000',
                 'address' => 'Administration DMC',

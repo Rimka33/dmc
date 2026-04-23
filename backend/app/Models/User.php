@@ -100,6 +100,15 @@ class User extends Authenticatable
      */
     public function hasRole(string|array $slug): bool
     {
+        // Fallback to deprecated role column
+        if ($this->role) {
+            if (is_array($slug)) {
+                if (in_array($this->role, $slug)) return true;
+            } else {
+                if ($this->role === $slug) return true;
+            }
+        }
+
         if (! $this->roleModel) {
             return false;
         }
