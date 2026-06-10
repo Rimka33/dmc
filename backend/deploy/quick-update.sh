@@ -8,19 +8,23 @@
 
 set -e
 
-APP_DIR="/var/www/dmc"
+REPO_DIR="/var/www/dmc"
+APP_DIR="/var/www/dmc/backend"
 BRANCH="main"
 
-cd "$APP_DIR"
+# Ajouter l'exception Git pour le dossier du dépôt
+git config --global --add safe.directory "$REPO_DIR" || true
 
-echo "🔄 Mise à jour rapide DMC..."
+cd "$REPO_DIR"
+echo "🔄 Mise à jour rapide DMC (Git Pull)..."
+git fetch origin
+git reset --hard origin/$BRANCH
+
+cd "$APP_DIR"
+echo "🔄 Configuration et compilation Laravel..."
 
 # Mode maintenance
 php artisan down --retry=30 || true
-
-# Pull du code
-git fetch origin
-git reset --hard origin/$BRANCH
 
 # Dépendances PHP
 composer install --no-dev --optimize-autoloader --no-interaction
@@ -38,8 +42,9 @@ php artisan optimize
 # Migrations
 php artisan migrate --force
 
-# Permissions
-sudo chown -R www-data:www-data storage bootstrap/cache
+# Permissions (Adapté pour AlmaLinux avec nginx)
+sudo chown -R almalinux:nginx storage bootstrap/cache
+sudo chmod -R 775 storage bootstrap/cache
 
 # Restart queue
 php artisan queue:restart
