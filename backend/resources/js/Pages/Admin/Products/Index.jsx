@@ -43,6 +43,9 @@ export default function Index({ products, filters = {}, categories = [] }) {
   const resolveSrc = (path) => {
     if (!path) return '/images/placeholder.png';
     if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    if (path.startsWith('/images/')) return path;
+    if (path.startsWith('/storage/')) return path;
+    if (path.startsWith('storage/')) return '/' + path;
     if (path.startsWith('/')) return path;
     if (path.startsWith('images/') || path.startsWith('public/images/'))
       return `/${path.replace(/^\/+/, '')}`;

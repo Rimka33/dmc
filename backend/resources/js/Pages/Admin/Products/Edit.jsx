@@ -139,6 +139,9 @@ export default function Edit({ product, categories = [] }) {
   const resolveSrc = (path) => {
     if (!path) return '/images/placeholder.png';
     if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    if (path.startsWith('/images/')) return path;
+    if (path.startsWith('/storage/')) return path;
+    if (path.startsWith('storage/')) return '/' + path;
     if (path.startsWith('/')) return path;
     return `/storage/${path}`;
   };

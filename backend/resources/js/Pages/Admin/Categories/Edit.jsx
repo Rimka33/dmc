@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 import { useForm, Link } from '@inertiajs/react';
 import { ArrowLeft, Save, AlertCircle, Upload, X } from 'lucide-react';
+import { resolveImagePath } from '../../../utils/imageUtils';
 
 export default function Edit({ category }) {
   const { data, setData, post, processing, errors } = useForm({
@@ -16,7 +17,7 @@ export default function Edit({ category }) {
   });
 
   const [imagePreview, setImagePreview] = useState(
-    category.image ? `/storage/${category.image}` : null
+    category.image ? resolveImagePath(category.image) : null
   );
 
   const handleImageChange = (e) => {
