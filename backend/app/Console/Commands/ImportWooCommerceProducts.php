@@ -6,6 +6,8 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ImportWooCommerceProducts extends Command
@@ -284,12 +286,47 @@ PYTHON;
         $product->images()->delete();
 
         foreach ($urls as $index => $url) {
+            $imagePath = $this->storeImageFromUrl($url) ?? $url;
+
             ProductImage::create([
                 'product_id' => $product->id,
-                'image_path' => $url,
+                'image_path' => $imagePath,
                 'is_primary'  => $index === 0,
                 'sort_order'  => $index,
             ]);
+        }
+    }
+
+    private function storeImageFromUrl(string $url): ?string
+    {
+        if ($this->dryRun) {
+            return null;
+        }
+
+        try {
+            $response = Http::timeout(10)
+                ->withHeaders(['User-Agent' => 'DMC-Import/1.0', 'Accept' => 'image/*'])
+                ->get($url);
+
+            if (! $response->successful()) {
+                return null;
+            }
+
+            $body = $response->body();
+            if ($body === '' || str_starts_with(ltrim($body), '<!DOCTYPE') || str_starts_with(ltrim($body), '<html')) {
+                return null;
+            }
+
+            $path = parse_url($url, PHP_URL_PATH) ?: $url;
+            $basename = preg_replace('/[^a-zA-Z0-9._-]/', '_', basename($path) ?: 'image');
+            $filename = substr(md5($url), 0, 8).'_'.$basename;
+            $storagePath = 'products/'.$filename;
+
+            Storage::disk('public')->put($storagePath, $body);
+
+            return $storagePath;
+        } catch (\Throwable) {
+            return null;
         }
     }
 
