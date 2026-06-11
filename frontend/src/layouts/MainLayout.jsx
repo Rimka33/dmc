@@ -28,6 +28,9 @@ import {
 import { resolveCategoryImage } from '../utils/imageUtils';
 import BannerPopup from '../components/BannerPopup';
 
+const ADMIN_URL =
+  import.meta.env.VITE_ADMIN_URL || `${window.location.origin}/admin/dashboard`;
+
 export default function MainLayout({ children }) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -281,7 +284,7 @@ export default function MainLayout({ children }) {
                           {user?.role === 'admin' ||
                             (user?.permissions && user.permissions.length > 0) ? (
                             <a
-                              href="/admin/dashboard"
+                              href={ADMIN_URL}
                               className="flex items-center gap-3 px-5 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-forest-green font-bold transition-all border-t border-gray-50"
                             >
                               <Settings className="w-4 h-4 text-gray-400" /> Administration

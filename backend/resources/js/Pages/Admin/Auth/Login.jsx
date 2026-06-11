@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, useForm, usePage } from '@inertiajs/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Eye,
@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 
 export default function Login({ status, canResetPassword }) {
+  const { frontend_url: frontendUrl } = usePage().props;
   const { data, setData, post, processing, errors, reset } = useForm({
     email: '',
     password: '',
@@ -220,12 +221,12 @@ export default function Login({ status, canResetPassword }) {
             </form>
 
             <div className="text-center mt-12">
-              <Link
-                href="/"
+              <a
+                href={frontendUrl || '/'}
                 className="inline-flex items-center gap-2 text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-forest-green transition-colors"
               >
                 <ArrowLeft size={14} /> Retour au Site Public
-              </Link>
+              </a>
             </div>
           </motion.div>
         </div>

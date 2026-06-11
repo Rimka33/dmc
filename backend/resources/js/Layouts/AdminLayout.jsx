@@ -28,7 +28,7 @@ import AdminNotifications from '../Components/Admin/AdminNotifications';
 
 export default function AdminLayout({ children }) {
   const { url } = usePage();
-  const { auth, flash } = usePage().props;
+  const { auth, flash, frontend_url: frontendUrl } = usePage().props;
   const user = auth?.user;
   const { showNotification } = useNotification();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -328,8 +328,8 @@ export default function AdminLayout({ children }) {
           </div>
           <div className="flex items-center gap-6">
             <AdminNotifications />
-            <Link
-              href="/"
+            <a
+              href={frontendUrl || '/'}
               className="flex items-center gap-2 px-4 py-2 bg-forest-green/10 text-forest-green hover:bg-forest-green hover:text-white rounded-xl transition-all font-bold text-[10px] uppercase tracking-widest group"
             >
               <ExternalLink
@@ -337,7 +337,7 @@ export default function AdminLayout({ children }) {
                 className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
               />
               <span className="hidden md:inline">Voir le site</span>
-            </Link>
+            </a>
             <div className="flex items-center gap-3 pl-6 border-l border-forest-green/10">
               <div className="text-right hidden sm:block">
                 <p className="text-sm font-bold text-dark-green font-montserrat">

@@ -49,6 +49,7 @@ class HandleInertiaRequests extends InertiaMiddleware
                 'success' => fn () => $request->session()->get('success'),
                 'error' => fn () => $request->session()->get('error'),
             ],
+            'frontend_url' => config('app.frontend_url'),
         ]);
     }
 }
